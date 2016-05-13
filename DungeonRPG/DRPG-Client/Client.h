@@ -3,7 +3,8 @@
 #include <tchar.h>
 #include <io.h>
 #include <fcntl.h>
-#include <iostream>
+#include <iostream> //se vai ser em C, excluir esta lib
+#include <stdio.h>
 #include <string>
 using namespace std;
 
@@ -20,6 +21,6 @@ using namespace std;
 #define tstring string
 #endif
 
-#define PIPE_NAME TEXT("\\\\.\\pipe\\teste")
+#define PIPE_NAME TEXT("\\\\.\\pipe\\DRPG")
 
 DWORD WINAPI EscrevePipe(LPVOID param);
