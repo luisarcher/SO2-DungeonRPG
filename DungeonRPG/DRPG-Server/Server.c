@@ -102,3 +102,5 @@ void ServerBroadcasting() { //Depois passa-se a estrutura por parâmetro
 		/*_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), n, totalConnections);
 	} while (_tcsncmp(buf, TEXT("fim"), 3));*/
 }
+
+//2315
