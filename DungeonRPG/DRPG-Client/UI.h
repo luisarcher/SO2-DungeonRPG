@@ -25,13 +25,13 @@ void MenuInicial(int opt) {
 	}
 }
 
-char Getch() {
+/*char Getch() {
 	INPUT_RECORD irInputRecord;
 	DWORD dwEventsRead;
 	CHAR cChar;
 
 	while (ReadConsoleInputA(hStdin, &irInputRecord, 1, &dwEventsRead)) /* Read key press */
-		if (irInputRecord.EventType == KEY_EVENT
+		/*if (irInputRecord.EventType == KEY_EVENT
 			&& irInputRecord.Event.KeyEvent.wVirtualKeyCode != VK_SHIFT
 			&& irInputRecord.Event.KeyEvent.wVirtualKeyCode != VK_MENU
 			&& irInputRecord.Event.KeyEvent.wVirtualKeyCode != VK_CONTROL)
@@ -40,7 +40,7 @@ char Getch() {
 			cChar = irInputRecord.Event.KeyEvent.uChar.AsciiChar;
 			ReadConsoleInputA(hStdin, &irInputRecord, 1, &dwEventsRead); /* Read key release */
 
-			if (irInputRecord.Event.KeyEvent.wVirtualKeyCode == VK_LEFT) return LEFT;
+			/*if (irInputRecord.Event.KeyEvent.wVirtualKeyCode == VK_LEFT) return LEFT;
 			if (irInputRecord.Event.KeyEvent.wVirtualKeyCode == VK_RIGHT) return RIGHT;
 			if (irInputRecord.Event.KeyEvent.wVirtualKeyCode == VK_UP) return UP;
 			if (irInputRecord.Event.KeyEvent.wVirtualKeyCode == VK_DOWN) return DOWN;
@@ -51,4 +51,4 @@ char Getch() {
 		}
 
 	return EOF;
-}
+}*/
