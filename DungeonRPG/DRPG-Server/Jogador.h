@@ -13,8 +13,8 @@ struct JOGADOR {
 	HANDLE hThread;
 };
 
-Jogador NovoJogador(TCHAR *n);
-int MoverJogador(int playerId);
+void NovoJogador(Jogador * j);
+int MoverJogador(int playerId, int keystroke);
 
 extern Jogador gClients[MAX_CLIENTS];
 extern Jogador j; //eliminar

@@ -52,8 +52,8 @@
 	#define PEDRAS 500		//+1 ataque quando usada
 
 // ---  Game Globals
-//extern HANDLE pipeClients[MAX_CLIENTS]; //Usar antes o array de jogadores e cada um ter o seu handle (linha cima)
 extern BOOL fim;
+extern BOOL start;
 extern int totalConnections;
 
 #endif
