@@ -1,6 +1,9 @@
 #include "Common.h"
 #include "Labirinto.h"
+#include "Jogador.h"
 
-HANDLE pipeClients[MAX_CLIENTS];
+Jogador gClients[MAX_CLIENTS];
+
+//HANDLE pipeClients[MAX_CLIENTS];
 BOOL fim = FALSE;
 int totalConnections = 0;

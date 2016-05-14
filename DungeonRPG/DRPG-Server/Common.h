@@ -39,8 +39,8 @@
 	//objectos boost 30~49
 	//monstros 51~99
 	//pedras 50(quant), 500+ , ex 503 -> 3 pedras numa posição
-	//#define EMPTY 0
-	#define PLAYER_START_INDEX 1
+	#define EMPTY -1
+	#define PLAYER_START_INDEX 0
 	#define PLAYER_END_INDEX 19
 
 	#define STONEWALL 20
@@ -52,7 +52,7 @@
 	#define PEDRAS 500		//+1 ataque quando usada
 
 // ---  Game Globals
-extern HANDLE pipeClients[MAX_CLIENTS]; //Usar antes o array de jogadores e cada um ter o seu handle (linha cima)
+//extern HANDLE pipeClients[MAX_CLIENTS]; //Usar antes o array de jogadores e cada um ter o seu handle (linha cima)
 extern BOOL fim;
 extern int totalConnections;
 

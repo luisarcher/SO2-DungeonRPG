@@ -1,4 +1,5 @@
 #include "Server.h"
+#include "Jogador.h"
 
 //SignUp and connect clients
 DWORD WINAPI RecebeClientes(LPVOID param) {
@@ -6,7 +7,7 @@ DWORD WINAPI RecebeClientes(LPVOID param) {
 	while (!fim && totalConnections < MAX_CLIENTS) {
 
 		_tprintf(TEXT("[SERVER] Vou passar à criação de uma cópia do pipe '%s' ... \n"), PIPE_NAME);
-		if ((pipeClients[totalConnections] = CreateNamedPipe(PIPE_NAME, PIPE_ACCESS_DUPLEX, PIPE_WAIT | PIPE_TYPE_MESSAGE
+		if ((gClients[totalConnections].hPipe = CreateNamedPipe(PIPE_NAME, PIPE_ACCESS_DUPLEX, PIPE_WAIT | PIPE_TYPE_MESSAGE
 			| PIPE_READMODE_MESSAGE, MAX_CLIENTS, BUFFERSIZE * sizeof(TCHAR), BUFFERSIZE * sizeof(TCHAR),
 			1000, NULL)) == INVALID_HANDLE_VALUE){
 			_tperror(TEXT("Erro ao criar named pipe!"));
@@ -15,22 +16,22 @@ DWORD WINAPI RecebeClientes(LPVOID param) {
 
 		//Espera a ligação de um cliente (ConnectNamedPipe é bloqueante)
 		_tprintf(TEXT("[SERVER] Esperar ligação de um cliente...\n"));
-		if (!ConnectNamedPipe(pipeClients[totalConnections], NULL)) {
+		if (!ConnectNamedPipe(gClients[totalConnections].hPipe, NULL)) {
 			_tperror(TEXT("Erro na ligação!"));
 			exit(-1);
 		}
 
 		//Atende o cliente que se ligou
-		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)AtendeCliente, (LPVOID)totalConnections, 0, &n);
+		gClients[totalConnections].hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)AtendeCliente, (LPVOID)totalConnections, 0, &n);
 		totalConnections++;
 	}
-	DesligarNamedPipes(); //depois de fim //VERIFICAR!!
+	//DesligarNamedPipes(); //depois de fim //VERIFICAR!!
 	return 0;
 }
 
 DWORD WINAPI AtendeCliente(LPVOID param) {
 	//ide buscar o handle do cliente que está no array global
-	HANDLE hPipeCliente = pipeClients[(int)param];
+	HANDLE hPipeCliente = gClients[(int)param].hPipe;
 
 	TCHAR buf[256];
 	DWORD n;
@@ -45,7 +46,6 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 
 		/* Enviar para todos */
 		ServerBroadcasting();
-
 	}
 	return 0;
 }
@@ -53,9 +53,9 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 //Disconnect from all pipes
 void DesligarNamedPipes() {
 	for (int i = 0; i < totalConnections; i++) {
-		DisconnectNamedPipe(pipeClients[i]);
+		DisconnectNamedPipe(gClients[i].hPipe);
 		_tprintf(TEXT("[ESCRITOR] Vou desligar o pipe... (CloseHandle)\n"));
-		CloseHandle(pipeClients[i]);
+		CloseHandle(gClients[i].hPipe);
 	}
 }
 
@@ -66,7 +66,7 @@ void ServerBroadcasting() { //Depois passa-se a estrutura por parâmetro
 		_tcscpy(buf, TEXT("Isto é o jogo vindo do servidor"));
 		//Escrever para todos os clientes inscritos
 		for (int i = 0; i < totalConnections; i++)
-			if (!WriteFile(pipeClients[i], buf, _tcslen(buf)*sizeof(TCHAR), &n, NULL)) {
+			if (!WriteFile(gClients[i].hPipe, buf, _tcslen(buf)*sizeof(TCHAR), &n, NULL)) {
 				_tperror(TEXT("[ERRO] Escrever no pipe... (WriteFile)\n"));
 				exit(-1);
 			}

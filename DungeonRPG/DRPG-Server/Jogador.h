@@ -10,6 +10,7 @@ struct JOGADOR {
 	int id;
 	int hp;
 	HANDLE hPipe;
+	HANDLE hThread;
 };
 
 Jogador NovoJogador(TCHAR *n);
