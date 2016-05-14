@@ -1,42 +1,12 @@
 #include "Server.h"
 
-HANDLE pipeClients[MAX_CLIENTS];
-BOOL fim = FALSE;
-int totalConnections = 0;
-
-//isto depois tem de ir para o .h
-void DesligarNamedPipes();
-void debug_ServerBroadcasting();
-
-int _tmain(int argc, LPTSTR argv[]) {
-	HANDLE hThread; //handle para a thread que regista/liga os clientes
-
-#ifdef UNICODE 
-	_setmode(_fileno(stdin), _O_WTEXT);
-	_setmode(_fileno(stdout), _O_WTEXT);
-	_setmode(_fileno(stderr), _O_WTEXT);
-#endif
-	//Invocar a thread que inscreve novos clientes
-	hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecebeClientes, NULL, 0, NULL);
-
-	//debug_ServerBroadcasting();
-
-	//fim = TRUE; //define quando a thread deve terminar
-
-	//Esperar a thread RecebeClientes terminar e fecha o handle
-	WaitForSingleObject(hThread, INFINITE);
-	CloseHandle(hThread);
-
-	exit(0);
-}
-
 //SignUp and connect to clients
 DWORD WINAPI RecebeClientes(LPVOID param) {
 	DWORD n;
 	while (!fim && totalConnections < MAX_CLIENTS) {
 
-		_tprintf(TEXT("[SERVER] Vou passar à criação de uma cópia do pipe '%s' ... (CreateNamedPipe)\n"), PIPE_NAME);
-		
+		_tprintf(TEXT("[SERVER] Vou passar à criação de uma cópia do pipe '%s' ... \n"), PIPE_NAME);
+
 		if ((pipeClients[totalConnections] = CreateNamedPipe(PIPE_NAME, PIPE_ACCESS_DUPLEX, PIPE_WAIT | PIPE_TYPE_MESSAGE
 			| PIPE_READMODE_MESSAGE, MAX_CLIENTS, BUFFERSIZE * sizeof(TCHAR), BUFFERSIZE * sizeof(TCHAR),
 			1000, NULL)) == INVALID_HANDLE_VALUE) {
@@ -45,9 +15,9 @@ DWORD WINAPI RecebeClientes(LPVOID param) {
 		}
 
 		//Espera a ligação de um cliente (ConnectNamedPipe é bloqueante)
-		_tprintf(TEXT("[SERVER] Esperar ligação de um cliente... (ConnectNamedPipe)\n"));
+		_tprintf(TEXT("[SERVER] Esperar ligação de um cliente...\n"));
 		if (!ConnectNamedPipe(pipeClients[totalConnections], NULL)) {
-			_tperror(TEXT("Erro na ligação ao leitor!"));
+			_tperror(TEXT("Erro na ligação!"));
 			exit(-1);
 		}
 
@@ -55,11 +25,10 @@ DWORD WINAPI RecebeClientes(LPVOID param) {
 		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)AtendeCliente, (LPVOID)totalConnections, 0, &n);
 		totalConnections++;
 	}
-	DesligarNamedPipes();
 	return 0;
 }
 
-DWORD WINAPI AtendeCliente(LPVOID param){
+DWORD WINAPI AtendeCliente(LPVOID param) {
 	//ide buscar o handle do cliente que está no array global
 	HANDLE hPipeCliente = pipeClients[(int)param];
 
@@ -69,18 +38,13 @@ DWORD WINAPI AtendeCliente(LPVOID param){
 
 	while (1) {
 		ret = ReadFile(hPipeCliente, buf, sizeof(buf), &n, NULL);
-		//buf[n / sizeof(TCHAR)] = '\0';
+		buf[n / sizeof(TCHAR)] = '\0';
 		if (!ret || !n)
 			break;
-		tcout << TEXT("[Server] Recebi ") << n << TEXT(" bytes: \'") << buf << TEXT("\'... (ReadFile)\n");
+		_tprintf(TEXT("[Server] Recebi %d bytes: \'%s\'... (ReadFile)\n"),n,buf);
 
 		/* Enviar para todos */
-		_tcscpy(buf, TEXT("Os clientes são todos uns conas"));
-		for (int i = 0; i < totalConnections; i++)
-			if (!WriteFile(pipeClients[i], buf, _tcslen(buf)*sizeof(TCHAR), &n, NULL)) {
-				_tperror(TEXT("[ERRO] Escrever no pipe... (WriteFile)\n"));
-				exit(-1);
-			}
+		ServerBroadcasting();
 
 	}
 	return 0;
@@ -95,12 +59,11 @@ void DesligarNamedPipes() {
 	}
 }
 
-void debug_ServerBroadcasting() {
+void ServerBroadcasting() { //Depois passa-se a estrutura por parâmetro
 	TCHAR buf[BUFFERSIZE];
 	DWORD n;
-	do {
-		_tprintf(TEXT("[SERVER] Frase: "));
-		_fgetts(buf, 256, stdin);
+	//do {
+		_tcscpy(buf, TEXT("Isto é o jogo vindo do servidor"));
 		//Escrever para todos os clientes inscritos
 		for (int i = 0; i < totalConnections; i++)
 			if (!WriteFile(pipeClients[i], buf, _tcslen(buf)*sizeof(TCHAR), &n, NULL)) {
@@ -108,6 +71,6 @@ void debug_ServerBroadcasting() {
 				exit(-1);
 			}
 
-		_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), n, totalConnections);
-	} while (_tcsncmp(buf, TEXT("fim"), 3));
+		/*_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), n, totalConnections);
+	} while (_tcsncmp(buf, TEXT("fim"), 3));*/
 }
