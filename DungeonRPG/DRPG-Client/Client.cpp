@@ -146,4 +146,3 @@ DWORD WINAPI EscrevePipe(LPVOID param) {
 	}
 	return 0;
 }
-
