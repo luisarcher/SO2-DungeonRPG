@@ -13,10 +13,19 @@ typedef struct CLIENTREQUEST {
 	TCHAR msg[BUFFERSIZE];
 } ClientRequest;
 
+
 void EscreveMensagem(HANDLE pipe, ClientRequest req) {
-	DWORD n;
-	WriteFile(pipe, &req, sizeof(req), &n, NULL);
-	tcout << TEXT("[CLIENTE]Escrevi...\n");
+	DWORD b;
+	BOOL ret;
+	TCHAR buf[256];
+	if (!WriteFile(pipe, &req, sizeof(ClientRequest), &b, NULL))
+	{
+		_tperror(TEXT("[ERRO] Escrever no pipe... (WriteFile)\n"));
+		exit(-1);
+	}
+	else
+		tcout << TEXT("[CLIENTE]Escrevi...\n");
+	
 }
 
 void LerMensagem() {
@@ -57,16 +66,19 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	tcout << TEXT("[CLIENTE]Liguei-me...\n");
 	iniciado = TRUE;
-	req.command = 1;
+	_tprintf(TEXT("[CLIENTE] Frase: "));
+	_fgetts(req.msg, 256, stdin);
+	EscreveMensagem(hPipe, req);
 	
-	while (iniciado) {
+	
+	/*while (iniciado) {
 		MenuInicial(1);
-		EscreveMensagem(hPipe, req);
+		//EscreveMensagem(hPipe, req);
 		//tcout << TEXT("[CLIENTE]Liguei-me...\n");
 		break;
-	} 
-	//WaitForSingleObject(hThread, INFINITE);
+	} */
 	
+	//WaitForSingleObject(hThread, INFINITE);
 	CloseHandle(hPipe);
 
 	Sleep(200);
@@ -79,13 +91,14 @@ DWORD WINAPI EscrevePipe(LPVOID param) {
 	TCHAR buf[256];
 	DWORD n;
 	BOOL ret;
+	ClientRequest req;
 
 	while (1) {
 		//ler do terminal
 		_tprintf(TEXT("[CLIENTE] Frase: "));
-		_fgetts(buf, 256, stdin);
+		_fgetts(req.msg, 256, stdin);
 
-		WriteFile(pipe, buf, 256, &n, NULL);
+		WriteFile(pipe, &req, sizeof(ClientRequest), &n, NULL);
 
 		/* Ler resposta */
 		ret = ReadFile(pipe, buf, sizeof(buf), &n, NULL);
