@@ -1,5 +1,6 @@
 #include "UI.h"
 
-void MenuInicial()
+/*void MenuInicial()
 {
-}
+	_tprintf(TEXT("teste"));
+}*/

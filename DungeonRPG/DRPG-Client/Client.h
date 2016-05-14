@@ -6,6 +6,8 @@
 #include <iostream> //se vai ser em C, excluir esta lib
 #include <stdio.h>
 #include <string>
+#include "UI.h"
+
 using namespace std;
 
 //Permitir que o mesmo código possa funcionar para ASCII ou UNICODE
