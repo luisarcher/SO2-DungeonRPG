@@ -1,6 +1,6 @@
 #pragma once
-#ifndef CONFIGURATION_H_
-#define CONFIGURATION_H_
+#ifndef COMMON_HEADER
+#define COMMON_HEADER
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <windows.h>
@@ -8,6 +8,9 @@
 #include <io.h>
 #include <fcntl.h>
 #include <stdio.h>
+
+
+// ---  Game Globals
 
 #ifdef UNICODE 
 #define tcout wcout
@@ -39,7 +42,7 @@
 //objectos boost 30~49
 //monstros 51~99
 //pedras 50(quant), 500+ , ex 503 -> 3 pedras numa posição
-#define EMPTY 0
+//#define EMPTY 0
 #define PLAYER_START_INDEX 1
 #define PLAYER_END_INDEX 19
 
@@ -51,13 +54,10 @@
 #define REB_CAFEINA 32	//-2 Lentidão (1min, não stackam)
 #define PEDRAS 500		//+1 ataque quando usada
 
-// ---  Game Globals
-
-extern Labirinto l;
-extern Jogador gClients[MAX_CLIENTS];
-
 extern HANDLE pipeClients[MAX_CLIENTS]; //Usar antes o array de jogadores e cada um ter o seu handle (linha cima)
 extern BOOL fim;
 extern int totalConnections;
-extern HANDLE hconsola;
+
+//extern Jogador gClients[MAX_CLIENTS];
+
 #endif

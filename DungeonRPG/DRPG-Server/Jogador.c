@@ -1,4 +1,5 @@
 #include "Jogador.h"
+#include "Labirinto.h"
 
 Jogador NovoJogador(TCHAR *n) {
 	Jogador j;
@@ -24,7 +25,7 @@ int MoverJogador(int playerId) {
 					l.labirinto[j.x][j.y] = 0;
 					j.x--;
 					l.labirinto[j.x][j.y] = 2;
-					desenhaLabirinto(l);
+					//desenhaLabirinto(l);
 				}
 				/*else
 				desenhaLabirinto(l);*/
@@ -37,7 +38,7 @@ int MoverJogador(int playerId) {
 					l.labirinto[j.x][j.y] = 0;
 					j.x++;
 					l.labirinto[j.x][j.y] = 2;
-					desenhaLabirinto(l);
+					//desenhaLabirinto(l);
 				}
 				/*else
 				desenhaLabirinto(l);*/

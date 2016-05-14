@@ -1,10 +1,10 @@
 #include "Common.h"
+#include "Labirinto.h"
 
-Labirinto l;
-Jogador gClients[MAX_CLIENTS];
-
+extern Labirinto l;
+//Jogador gClients[MAX_CLIENTS];
+extern Jogador j;
 HANDLE pipeClients[MAX_CLIENTS];
-HANDLE hconsola;
 
-extern BOOL fim = FALSE;
-extern int totalConnections = 0;
+BOOL fim = FALSE;
+int totalConnections = 0;
