@@ -48,7 +48,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 #endif
 
 	//Ligar ao pipe (PIPE_NAME)
-	tcout << TEXT("[CLIENTE]Esperar pelo pipe \'") << PIPE_NAME << TEXT("\'(WaitNamedPipe)\n");
+	/*tcout << TEXT("[CLIENTE]Esperar pelo pipe \'") << PIPE_NAME << TEXT("\'(WaitNamedPipe)\n");
 	if (!WaitNamedPipe(PIPE_NAME, NMPWAIT_WAIT_FOREVER)) {
 		tcout << TEXT("[ERRO] Ligar ao pipe \'") << PIPE_NAME << TEXT("\'... (WaitNamedPipe)\n");
 		system("pause");
@@ -62,24 +62,26 @@ int _tmain(int argc, LPTSTR argv[]) {
 		exit(-1);
 	}
 
-	//hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)EscrevePipe, (LPVOID)hPipe, 0, NULL);
+	//hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)EscrevePipe, (LPVOID)hPipe, 0, NULL);//WaitForSingleObject(hThread, INFINITE);
 
 	tcout << TEXT("[CLIENTE]Liguei-me...\n");
 	iniciado = TRUE;
 	_tprintf(TEXT("[CLIENTE] Frase: "));
 	_fgetts(req.msg, 256, stdin);
-	EscreveMensagem(hPipe, req);
+	EscreveMensagem(hPipe, req);*/
 	
-	
-	/*while (iniciado) {
-		MenuInicial(1);
+	int kp;
+	while (iniciado) {
+		kp = Getch();
+		tcout << kp;
+		//MenuInicial();
 		//EscreveMensagem(hPipe, req);
 		//tcout << TEXT("[CLIENTE]Liguei-me...\n");
 		break;
-	} */
+	}
 	
-	//WaitForSingleObject(hThread, INFINITE);
-	CloseHandle(hPipe);
+	
+	//CloseHandle(hPipe);
 
 	Sleep(200);
 	system("pause");
