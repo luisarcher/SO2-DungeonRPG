@@ -33,27 +33,28 @@
 #define KEY_RIGHT 77
 
 // - Ints da matriz
-	//0 - espaço vazio
-	//players 1~19
-	//paredes 20~29
-	//objectos boost 30~49
-	//monstros 51~99
-	//pedras 50(quant), 500+ , ex 503 -> 3 pedras numa posição
-	#define EMPTY 0
-	#define PLAYER_START_INDEX 1
-	#define PLAYER_END_INDEX 19
+//0 - espaço vazio
+//players 1~19
+//paredes 20~29
+//objectos boost 30~49
+//monstros 51~99
+//pedras 50(quant), 500+ , ex 503 -> 3 pedras numa posição
+#define EMPTY 0
+#define PLAYER_START_INDEX 1
+#define PLAYER_END_INDEX 19
 
-	#define STONEWALL 20
-	// ... vários tipos (chamar tijolo, stonewall, agua, erva, etc?)?
-	
-	#define VITAMINA	30	//+1 HP (Up to 200% base hp (200))
-	#define ORANGE_BULL 31	//+3 HP (Up to 200% base hp (200))
-	#define REB_CAFEINA 32	//-2 Lentidão (1min, não stackam)
-	#define PEDRAS 500		//+1 ataque quando usada
+#define STONEWALL 20
+// ... vários tipos (chamar tijolo, stonewall, agua, erva, etc?)?
+
+#define VITAMINA	30	//+1 HP (Up to 200% base hp (200))
+#define ORANGE_BULL 31	//+3 HP (Up to 200% base hp (200))
+#define REB_CAFEINA 32	//-2 Lentidão (1min, não stackam)
+#define PEDRAS 500		//+1 ataque quando usada
 
 // ---  Game Globals
-Labirinto l;
-Jogador gClients[MAX_CLIENTS];
+
+extern Labirinto l;
+extern Jogador gClients[MAX_CLIENTS];
 
 extern HANDLE pipeClients[MAX_CLIENTS]; //Usar antes o array de jogadores e cada um ter o seu handle (linha cima)
 extern BOOL fim;

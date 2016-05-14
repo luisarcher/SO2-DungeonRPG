@@ -1,5 +1,4 @@
 #include "Common.h"
-#include "Labirinto.h"
 
 Labirinto l;
 Jogador gClients[MAX_CLIENTS];

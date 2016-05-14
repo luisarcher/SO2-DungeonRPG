@@ -1,4 +1,4 @@
-# SO2-DungeonRPG
+﻿# SO2-DungeonRPG
 Projecto Final - Sistemas Operativos 2 - Engenharia Informática
 
 Estruturas de comunicação de cliente e servidor
@@ -9,3 +9,5 @@ Cliente recebe o seu line of sight processado pelo servidor
 
 Quando receber os comandos do cliente, verificar se pode mover (parede á volta)
   - Criar uma func chamada CheckPlayerSurroundings()
+
+Verificar se o user pode apanhar as pedras no chão, só pode carregar 15

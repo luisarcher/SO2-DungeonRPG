@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Consola.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Common.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -42,9 +39,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Labirinto.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Consola.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Jogador.h">
