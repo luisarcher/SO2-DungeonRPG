@@ -1,5 +1,7 @@
 ﻿# SO2-DungeonRPG
 Projecto Final - Sistemas Operativos 2 - Engenharia Informática
+________________________
+Registar os clientes num array de estruturas do tipo Jogador [FEITO]
 
 Estruturas de comunicação de cliente e servidor
 
