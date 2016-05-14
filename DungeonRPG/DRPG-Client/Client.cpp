@@ -145,4 +145,4 @@ DWORD WINAPI EscrevePipe(LPVOID param) {
 		tcout << TEXT("[CLIENTE] Recebi ") << n << TEXT(" bytes: \'") << resp.msg<< TEXT("\'... (ReadFile)\n");
 	}
 	return 0;
-}
+} 

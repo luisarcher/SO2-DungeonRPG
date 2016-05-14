@@ -43,11 +43,10 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 
 	do {
 		ret = ReadFile(hPipeCliente, &pedido, sizeof(ClientRequest), &n, NULL);
-		//pedido.msg[n / sizeof(TCHAR)] = '\0';
-		//pedido.msg[6] = '\0';
+		buf[n / sizeof(TCHAR)] = '\0';
 		if (!ret || !n)
 			break;
-		_tprintf(TEXT("[Server] Recebi %d bytes: \'%s\'... (ReadFile)\n"),n,pedido.msg);
+		_tprintf(TEXT("[Server] Recebi %d bytes: \'%s\'... (ReadFile)\n"),n,buf);
 
 		if (!start) {
 			switch (pedido.command)
@@ -55,9 +54,12 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 			case SETNAME:
 				_tcscpy(gClients[(int)param].nome, pedido.msg);
 
-				_tcscpy(resposta.msg, TEXT("O teu nome é rebeca"));
-				//_tcscpy(resposta.msg, '\0');
-				ret = WriteFile(hPipeCliente, &resposta, sizeof(ServerResponse), &n, NULL);
+				_tcscpy(resposta.msg, "O teu nome é %s", pedido.msg);
+				
+				if (!WriteFile(hPipeCliente, &resposta, _tcslen(buf)*sizeof(TCHAR), &n, NULL)) {
+					_tperror(TEXT("[ERRO] Escrever no pipe... (WriteFile)\n"));
+					exit(-1);
+				}
 				break;
 			default:
 				break;
@@ -65,10 +67,6 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 		}
 		else {
 
-		}
-		if (!ret) {
-			_tperror(TEXT("[ERRO] Escrever no pipe... (WriteFile)\n"));
-			exit(-1);
 		}
 		/* Enviar para todos */
 		ServerBroadcasting();
@@ -102,4 +100,4 @@ void ServerBroadcasting() { //Depois passa-se a estrutura por parâmetro
 
 		/*_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), n, totalConnections);
 	} while (_tcsncmp(buf, TEXT("fim"), 3));*/
-} 
+}
