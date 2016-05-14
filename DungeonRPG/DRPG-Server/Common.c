@@ -4,6 +4,6 @@
 
 Jogador gClients[MAX_CLIENTS];
 
-//HANDLE pipeClients[MAX_CLIENTS];
+BOOL start = FALSE;
 BOOL fim = FALSE;
 int totalConnections = 0;

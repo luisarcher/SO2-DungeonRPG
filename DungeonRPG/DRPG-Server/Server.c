@@ -23,6 +23,7 @@ DWORD WINAPI RecebeClientes(LPVOID param) {
 
 		//Atende o cliente que se ligou
 		gClients[totalConnections].hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)AtendeCliente, (LPVOID)totalConnections, 0, &n);
+		NovoJogador(&gClients[totalConnections]); //prepara os dados do jogador
 		totalConnections++;
 	}
 	//DesligarNamedPipes(); //depois de fim //VERIFICAR!!
@@ -37,16 +38,42 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 	DWORD n;
 	BOOL ret;
 
-	while (1) {
-		ret = ReadFile(hPipeCliente, buf, sizeof(buf), &n, NULL);
+	ClientRequest pedido;
+	ServerResponse resposta;
+
+	do {
+		ret = ReadFile(hPipeCliente, &pedido, sizeof(ClientRequest), &n, NULL);
 		buf[n / sizeof(TCHAR)] = '\0';
 		if (!ret || !n)
 			break;
 		_tprintf(TEXT("[Server] Recebi %d bytes: \'%s\'... (ReadFile)\n"),n,buf);
 
+		if (!start) {
+			switch (pedido.command)
+			{
+			case SETNAME:
+				_tcscpy(gClients[(int)param].nome, pedido.msg);
+
+				_tcscpy(resposta.msg, "O teu nome é %s", pedido.msg);
+				
+				if (!WriteFile(hPipeCliente, &resposta, _tcslen(buf)*sizeof(TCHAR), &n, NULL)) {
+					_tperror(TEXT("[ERRO] Escrever no pipe... (WriteFile)\n"));
+					exit(-1);
+				}
+				break;
+			default:
+				break;
+			}
+		}
+		else {
+
+		}
 		/* Enviar para todos */
 		ServerBroadcasting();
 	}
+	while (pedido.command != QUITGAME);
+
+	_tprintf(TEXT("[SERVIDOR] Cliente [%d] desligou-se!\n"), hPipeCliente);
 	return 0;
 }
 
