@@ -43,10 +43,9 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 
 	do {
 		ret = ReadFile(hPipeCliente, &pedido, sizeof(ClientRequest), &n, NULL);
-		buf[n / sizeof(TCHAR)] = '\0';
 		if (!ret || !n)
 			break;
-		_tprintf(TEXT("[Server] Recebi %d bytes: \'%s\'... (ReadFile)\n"),n,buf);
+		_tprintf(TEXT("[Server] Recebi %d bytes: \'%s\'... (ReadFile)\n"),n,pedido.msg);
 
 		if (!start) {
 			switch (pedido.command)
@@ -54,7 +53,9 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 			case SETNAME:
 				_tcscpy(gClients[(int)param].nome, pedido.msg);
 
-				_tcscpy(resposta.msg, "O teu nome é %s", pedido.msg);
+				memset(resposta.msg, '\0', sizeof(TCHAR));
+				_tcscpy(resposta.msg, TEXT("O teu nome é: "));
+				_tcscat(resposta.msg, pedido.msg);
 				
 				if (!WriteFile(hPipeCliente, &resposta, _tcslen(buf)*sizeof(TCHAR), &n, NULL)) {
 					_tperror(TEXT("[ERRO] Escrever no pipe... (WriteFile)\n"));
@@ -101,4 +102,3 @@ void ServerBroadcasting() { //Depois passa-se a estrutura por parâmetro
 		/*_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), n, totalConnections);
 	} while (_tcsncmp(buf, TEXT("fim"), 3));*/
 }
-//2230

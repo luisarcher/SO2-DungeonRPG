@@ -118,24 +118,19 @@ DWORD WINAPI EscrevePipe(LPVOID param) {
 
 	while (1) {
 		//ler do terminal
-		/*_tprintf(TEXT("[CLIENTE] Frase: "));
-		_fgetts(req.msg, 256, stdin);*/
+		memset(req.msg, '\0', sizeof(TCHAR));
+		_tprintf(TEXT("[CLIENTE] Nome: "));
+		_fgetts(req.msg, 256, stdin);
 
-		_tprintf(TEXT("Vou enviar..."));
-		system("pause");
-
-		_tcscpy(req.msg, TEXT("rebeca")); //nome
+		//_tcscpy(req.msg, TEXT("rebeca")); //nome
 		//_tcscpy(req.msg, '\0');
 		
-
+		
 		req.command = (int)SETNAME;
 
 		if (!WriteFile(pipe, &req, sizeof(ClientRequest), &n, NULL)) {
 			_tprintf(TEXT("Erro"));
 		}
-
-		_tprintf(TEXT("Enviei, vou receber..."));
-		system("pause");
 			
 		/* Ler resposta */
 		ret = ReadFile(pipe, &resp, sizeof(ServerResponse), &n, NULL);
