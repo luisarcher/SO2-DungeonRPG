@@ -110,12 +110,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Configuration.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Server.cpp" />
+    <ClCompile Include="Common.c" />
+    <ClCompile Include="Consola.c" />
+    <ClCompile Include="Jogador.c" />
+    <ClCompile Include="Labirinto.c" />
+    <ClCompile Include="main.c" />
+    <ClCompile Include="Server.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Configuration.h" />
+    <ClInclude Include="Common.h" />
+    <ClInclude Include="Consola.h" />
+    <ClInclude Include="Jogador.h" />
+    <ClInclude Include="Labirinto.h" />
     <ClInclude Include="Server.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

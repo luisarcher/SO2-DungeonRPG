@@ -1,14 +1,13 @@
+#pragma once
 #ifndef CONFIGURATION_H_
 #define CONFIGURATION_H_
-using namespace std;
 #define _CRT_SECURE_NO_WARNINGS
-#include <string>
+
 #include <windows.h>
 #include <tchar.h>
 #include <io.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include <iostream>
 
 #ifdef UNICODE 
 #define tcout wcout
@@ -31,4 +30,5 @@ using namespace std;
 extern HANDLE pipeClients[MAX_CLIENTS];
 extern BOOL fim;
 extern int totalConnections;
+extern HANDLE hconsola;
 #endif

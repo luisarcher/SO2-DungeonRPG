@@ -1,15 +1,14 @@
 #include "Server.h"
 
-//SignUp and connect to clients
+//SignUp and connect clients
 DWORD WINAPI RecebeClientes(LPVOID param) {
 	DWORD n;
 	while (!fim && totalConnections < MAX_CLIENTS) {
 
 		_tprintf(TEXT("[SERVER] Vou passar à criação de uma cópia do pipe '%s' ... \n"), PIPE_NAME);
-
 		if ((pipeClients[totalConnections] = CreateNamedPipe(PIPE_NAME, PIPE_ACCESS_DUPLEX, PIPE_WAIT | PIPE_TYPE_MESSAGE
 			| PIPE_READMODE_MESSAGE, MAX_CLIENTS, BUFFERSIZE * sizeof(TCHAR), BUFFERSIZE * sizeof(TCHAR),
-			1000, NULL)) == INVALID_HANDLE_VALUE) {
+			1000, NULL)) == INVALID_HANDLE_VALUE){
 			_tperror(TEXT("Erro ao criar named pipe!"));
 			exit(-1);
 		}
@@ -25,6 +24,7 @@ DWORD WINAPI RecebeClientes(LPVOID param) {
 		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)AtendeCliente, (LPVOID)totalConnections, 0, &n);
 		totalConnections++;
 	}
+	DesligarNamedPipes(); //depois de fim //VERIFICAR!!
 	return 0;
 }
 
