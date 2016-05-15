@@ -25,16 +25,36 @@ typedef struct SERVERRESPONSE {
 
 
 void EscreveMensagem(HANDLE pipe, ClientRequest req) {
-	DWORD b;
+	DWORD n;
 	BOOL ret;
 	TCHAR buf[256];
-	if (!WriteFile(pipe, &req, sizeof(ClientRequest), &b, NULL))
+
+	
+
+	/*_tprintf(TEXT("[CLIENTE] Nome: "));
+	_fgetts(req.msg, 256, stdin);*/
+
+	//_tcscpy(req.msg, TEXT("rebeca")); //nome
+	//_tcscpy(req.msg, '\0');
+
+
+	
+
+	if (!WriteFile(pipe, &req, sizeof(ClientRequest), &n, NULL)) {
+		_tprintf(TEXT("Erro"));
+	}
+	else
+		tcout << TEXT("[CLIENTE]Escrevi...\n"); 
+
+
+
+	/*if (!WriteFile(pipe, &req, sizeof(ClientRequest), &b, NULL))
 	{
 		_tperror(TEXT("[ERRO] Escrever no pipe... (WriteFile)\n"));
 		exit(-1);
 	}
 	else
-		tcout << TEXT("[CLIENTE]Escrevi...\n");
+		tcout << TEXT("[CLIENTE]Escrevi...\n");*/
 	
 }
 
@@ -83,13 +103,16 @@ int _tmain(int argc, LPTSTR argv[]) {
 		exit(-1);
 	}
 
-	hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)EscrevePipe, (LPVOID)hPipe, 0, NULL);
+	//hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)EscrevePipe, (LPVOID)hPipe, 0, NULL);
 
-	/*tcout << TEXT("[CLIENTE]Liguei-me...\n");
+	tcout << TEXT("[CLIENTE]Liguei-me...\n");
 	iniciado = TRUE;
+	memset(req.msg, '\0', sizeof(TCHAR));
 	_tprintf(TEXT("[CLIENTE] Frase: "));
-	_fgetts(req.msg, 256, stdin);*/
-	//EscreveMensagem(hPipe, req);
+	_fgetts(req.msg, 256, stdin);
+	req.command = (int)SETNAME;
+	
+	EscreveMensagem(hPipe, req);
 	
 	
 	/*while (iniciado) {
@@ -98,9 +121,9 @@ int _tmain(int argc, LPTSTR argv[]) {
 		//tcout << TEXT("[CLIENTE]Liguei-me...\n");
 		break;
 	} */
-	while (1) { Sleep(10000); } //ta quieto, não termines
+	//while (1) { Sleep(10000); } //ta quieto, não termines
 
-	WaitForSingleObject(hThread, INFINITE);
+	//WaitForSingleObject(hThread, INFINITE);
 	CloseHandle(hPipe);
 
 	Sleep(200);
