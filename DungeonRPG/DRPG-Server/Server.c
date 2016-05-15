@@ -1,6 +1,8 @@
 #include "Server.h"
 #include "Jogador.h"
 
+TCHAR broadcastMessage[BUFFERSIZE];
+
 //SignUp and connect clients
 DWORD WINAPI RecebeClientes(LPVOID param) {
 	DWORD n;
@@ -33,44 +35,47 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 	//ide buscar o handle do cliente que está no array global
 	HANDLE hPipeCliente = gClients[(int)param].hPipe;
 
-	TCHAR buf[256];
+	TCHAR buf[BUFFERSIZE];
 	DWORD n;
 	BOOL ret;
 
 	ClientRequest pedido;
-	ServerResponse resposta;
+
+	//Limpar "strings" para receberem os primeiros pedidos
+	memset(gClients[(int)param].resposta, TEXT('\0'), sizeof(TCHAR));	//Notificação privada
+	memset(broadcastMessage, TEXT('\0'), sizeof(TCHAR));				//Notificação broadcast
 
 	do {
 		ret = ReadFile(hPipeCliente, &pedido, sizeof(ClientRequest), &n, NULL);
 		if (!ret || !n) break;
 		_tprintf(TEXT("[Server] Recebi %d bytes: \'%s\'... (ReadFile)\n"),n,pedido.msg);
-
-		memset(resposta.msg, '\0', sizeof(TCHAR)); //prepara a "string" de resposta //del
-		UpdatePlayerLOS(gClients[(int)param].x, gClients[(int)param].y, resposta.matriz);
 		
-		memset(gClients[(int)param].resposta, '\0', sizeof(TCHAR)); //posteriormente preenche a resposta para o cliente
 		if (!start) {
 			switch (pedido.command)
 			{
 			case GAMESTATUS:
 				//swprintf(resposta.msg, "%d", totalConnections); //Clientes Ligados
-				_tcscpy(resposta.msg, TEXT("Estatísticas dados pré-jogo...\n"));
+				_tcscpy(gClients[(int)param].resposta, TEXT("Estatísticas dados pré-jogo...\n"));
 				_swprintf(buf, TEXT("%d"), totalConnections);
-				_tcscat(resposta.msg, TEXT("Total de jogadores ligados: "));
-				_tcscat(resposta.msg, buf);
-				ret = WriteFile(hPipeCliente, &resposta, sizeof(ServerResponse), &n, NULL);
+				_tcscat(gClients[(int)param].resposta, TEXT("Total de jogadores ligados: "));
+				_tcscat(gClients[(int)param].resposta, buf);
 				break;
+
 			case SETNAME:
+				//Private Notification
 				_tcscpy(gClients[(int)param].nome, pedido.msg);
-				_tcscpy(resposta.msg, TEXT("Estás registado como: "));
-				_tcscat(resposta.msg, pedido.msg);
-				ret = WriteFile(hPipeCliente, &resposta, sizeof(ServerResponse), &n, NULL);
+				_tcscpy(gClients[(int)param].resposta, TEXT("Estás registado como: "));
+				_tcscat(gClients[(int)param].resposta, pedido.msg);
+				//Broadcast
+				_tcscat(broadcastMessage, TEXT("Novo Cliente Ligado: "));
+				_tcscat(broadcastMessage, gClients[(int)param].nome);
 				break;
 
 			case STARTGAME:
 				start = TRUE;
-				_tcscpy(resposta.msg, TEXT("Começaste um novo jogo!"));
-				ret = WriteFile(hPipeCliente, &resposta, sizeof(ServerResponse), &n, NULL);
+				//broadcast
+				_tcscat(broadcastMessage, TEXT("Novo jogo iniciado por: "));
+				_tcscat(broadcastMessage, gClients[(int)param].nome);
 				break;
 
 			case QUITGAME:
@@ -88,19 +93,18 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 				switch (pedido.command)
 				{
 				case GAMESTATUS:
-					_tcscpy(resposta.msg, TEXT("Estatísticas de jogo a decorrer"));
-					ret = WriteFile(hPipeCliente, &resposta, sizeof(ServerResponse), &n, NULL);
+					_tcscpy(gClients[(int)param].resposta, TEXT("Estatísticas de jogo a decorrer"));
 					break;
+
 				case SWITCH_STONE_AUTOHIT:
 					if (gClients[(int)param].stoneAutoHit) {
 						gClients[(int)param].stoneAutoHit = FALSE;
-						_tcscpy(resposta.msg, TEXT("Stone AutoHit: Desligado!"));
+						_tcscpy(gClients[(int)param].resposta, TEXT("Stone AutoHit: Desligado!"));
 					}
 					else {
 						gClients[(int)param].stoneAutoHit = TRUE;
-						_tcscpy(resposta.msg, TEXT("Stone AutoHit: Ligado!"));
+						_tcscpy(gClients[(int)param].resposta, TEXT("Stone AutoHit: Ligado!"));
 					}
-					ret = WriteFile(hPipeCliente, &resposta, sizeof(ServerResponse), &n, NULL);
 					break;
 
 				case QUITGAME:
@@ -122,20 +126,38 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 DWORD WINAPI ActualizaClientes(LPVOID param){
 	TCHAR buf[BUFFERSIZE];
 	DWORD n;
-	
-	do {
+	ServerResponse resposta;
+	while (fim == FALSE && totalConnections > 0) {
 
-		/*_tcscpy(buf, TEXT("Isto é o jogo vindo do servidor"));
-		//Escrever para todos os clientes inscritos
-		for (int i = 0; i < totalConnections; i++){
-			if (!WriteFile(gClients[i].hPipe, buf, _tcslen(buf)*sizeof(TCHAR), &n, NULL)) {
-				_tperror(TEXT("[ERRO] Escrever no pipe... (WriteFile)\n"));
-				exit(-1);
+		//prepara a "string" de resposta
+		memset(resposta.msg, TEXT('\0'), sizeof(TCHAR));
+		//Cortar "strings"
+		if (broadcastMessage != TEXT('\0')) {
+			_tcscpy(resposta.msg, broadcastMessage);
+			memset(broadcastMessage, TEXT('\0'), sizeof(TCHAR));
+		}
+		if (gClients[(int)param].resposta != TEXT('\0')) {
+			_tcscat(resposta.msg, TEXT('\n'));
+			_tcscat(resposta.msg, gClients[(int)param].resposta);
+			memset(gClients[(int)param].resposta, TEXT('\0'), sizeof(TCHAR));
+		}
+		//Para cada cliente
+		for (int i = 0; i < totalConnections; i++) {
+			if (gClients[i].hp > 0) {
+
+				if (!start) SetEmptyMatrix(resposta.matriz); //security
+				else UpdatePlayerLOS(gClients[i].x, gClients[i].y,resposta.matriz);
+
+				if (!WriteFile(gClients[i].hPipe, &resposta, sizeof(ServerResponse), &n, NULL)) {
+					_tperror(TEXT("[ERRO] Escrever no pipe... (WriteFile)\n"));
+					exit(-1);
+				}
 			}
-		}*/
-
-		/*_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), n, totalConnections);*/
-	} while (fim == TRUE);
+		}
+		Sleep(1500);
+		//Sleep(1000/15); //15 instantes por segundo
+		//_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), n, totalConnections);
+	}
 }
 
 //Disconnect from all pipes (Provavelmente não vai ser preciso)

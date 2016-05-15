@@ -5,7 +5,8 @@
 Labirinto gLabirinto; //Isto vai para memória partilhada com os monstros (META2)
 
 int _tmain(int argc, LPTSTR argv[]) {
-	HANDLE hThread;
+	HANDLE hThreadL;
+	HANDLE hThreadE;
 
 #ifdef UNICODE 
 	_setmode(_fileno(stdin), _O_WTEXT);
@@ -16,12 +17,13 @@ int _tmain(int argc, LPTSTR argv[]) {
 	gLabirinto = NovoLabirinto();
 
 	//Invocar a thread que inscreve novos clientes
-	hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecebeClientes, NULL, 0, NULL);
+	hThreadL = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecebeClientes, NULL, 0, NULL);
+	hThreadE = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ActualizaClientes, NULL, 0, NULL);
 	//fim = TRUE; //define quando a thread deve terminar
 
 	//Esperar a thread RecebeClientes terminar e fecha o handle
-	WaitForSingleObject(hThread, INFINITE);
-	CloseHandle(hThread);
+	WaitForSingleObject(hThreadL, INFINITE);
+	CloseHandle(hThreadL);
 
 	exit(0);
 }

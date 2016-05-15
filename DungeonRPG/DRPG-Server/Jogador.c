@@ -75,11 +75,25 @@ void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS]) {
 	else if ((y + PLAYER_LOS) > LABIRINTOSIZE - 1) y = LABIRINTOSIZE - 1 - PLAYER_LOS;
 
 	//The Matrix is a system, Neo. That system is our enemy.
+	int _i = 0;
+	int _j = 0;
 	for (int i = y - PLAYER_LOS; i <= y + PLAYER_LOS; i++)
 	{
+		++_i; _j = 0;
 		for (int j = x - PLAYER_LOS; j <= x + PLAYER_LOS; j++)
 		{
-			matriz[i][j] = gLabirinto.labirinto[i][j];
+			_j++;
+			matriz[_i][_j] = gLabirinto.labirinto[i][j];
+		}
+	}
+}
+
+void SetEmptyMatrix(int(*matriz)[PLAYER_LOS]) {
+	for (int i = 0; i < PLAYER_LOS; i++)
+	{
+		for (int j = 0; j < PLAYER_LOS; j++)
+		{
+			matriz[i][j] = EMPTY;
 		}
 	}
 }

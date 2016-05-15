@@ -28,4 +28,6 @@ DWORD WINAPI AtendeCliente(LPVOID param);
 DWORD WINAPI ActualizaClientes(LPVOID param);
 
 void DesligarNamedPipes();
+
+extern TCHAR broadcastMessage[BUFFERSIZE];
 #endif
