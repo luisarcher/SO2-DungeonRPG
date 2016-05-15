@@ -2,9 +2,7 @@
 #include "Common.h"
 #include "Labirinto.h"
 
-Labirinto l;
-Jogador j;
-
+Labirinto gLabirinto; //Isto vai para memória partilhada com os monstros
 
 int _tmain(int argc, LPTSTR argv[]) {
 	HANDLE hThread;
@@ -14,6 +12,9 @@ int _tmain(int argc, LPTSTR argv[]) {
 	_setmode(_fileno(stdout), _O_WTEXT);
 	_setmode(_fileno(stderr), _O_WTEXT);
 #endif
+
+	gLabirinto = NovoLabirinto();
+
 	//Invocar a thread que inscreve novos clientes
 	hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecebeClientes, NULL, 0, NULL);
 	//fim = TRUE; //define quando a thread deve terminar

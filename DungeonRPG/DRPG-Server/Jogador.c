@@ -7,67 +7,59 @@ void NovoJogador(Jogador *j) {
 	j->y = 0;
 	j->hp = 100;
 	j->id = 0;
+	j->nStones = 0;
+	j->stoneAutoHit = TRUE;
 }
 
 int MoverJogador(int playerId, int keystroke) {
-	j = gClients[playerId];
+	Jogador j = gClients[playerId];
+	//if(gLabirinto.labirinto[j.x][j.y] > 1000)
+	//existe um monstro na mesma posição que o jogador
+
 	switch (keystroke) {
 		case KEY_UP:
 		{
 			if (j.x > 1)
 			{
-				l.labirinto[j.x][j.y] = 0;
+				gLabirinto.labirinto[j.x][j.y] = EMPTY;
 				j.x--;
-				l.labirinto[j.x][j.y] = 2;
-				//desenhaLabirinto(l);
+				gLabirinto.labirinto[j.x][j.y] = playerId;
 			}
-			/*else
-			desenhaLabirinto(l);*/
 			break;
 		}
 		case KEY_DOWN:
 		{
 			if (j.x < 68)
 			{
-				l.labirinto[j.x][j.y] = 0;
+				gLabirinto.labirinto[j.x][j.y] = EMPTY;
 				j.x++;
-				l.labirinto[j.x][j.y] = 2;
-				//desenhaLabirinto(l);
+				gLabirinto.labirinto[j.x][j.y] = playerId;
 			}
-			/*else
-			desenhaLabirinto(l);*/
 			break;
 		}
 		case KEY_LEFT:
 		{
 			if (j.y > 1)
 			{
-				l.labirinto[j.x][j.y] = 0;
+				gLabirinto.labirinto[j.x][j.y] = EMPTY;
 				j.y--;
-				l.labirinto[j.x][j.y] = 2;
-				//desenhaLabirinto(l);
+				gLabirinto.labirinto[j.x][j.y] = playerId;
 			}
-			/*else
-			desenhaLabirinto(l);*/
 			break;
 		}
 		case KEY_RIGHT:
 		{
 			if (j.y < 68)
 			{
-				l.labirinto[j.x][j.y] = 0;
+				gLabirinto.labirinto[j.x][j.y] = EMPTY;
 				j.y++;
-				l.labirinto[j.x][j.y] = 2;
-				//desenhaLabirinto(l);
+				gLabirinto.labirinto[j.x][j.y] = playerId;
 			}
-			/*else
-			desenhaLabirinto(l);*/
 			break;
 		}
 		default:
 		{
-			//desenhaLabirinto(l);
-
+			//Nothing to do here
 			break;
 		}
 	}
@@ -75,6 +67,7 @@ int MoverJogador(int playerId, int keystroke) {
 }
 
 void PlayerLOS(int * matrix) {
+	//Obter o que está á volta do jogador para enviar ao cliente
 	int m[10][10];
 
 }
