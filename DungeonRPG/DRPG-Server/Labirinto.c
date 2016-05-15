@@ -6,13 +6,14 @@ Labirinto NovoLabirinto() {
 	{
 		for (int j = 0; j < 70; j++)
 		{
+			//escreve as margens
 			if (i == 0 || i == 69 || j == 0 || j == 69)
 			{
-				l.labirinto[i][j] = 1;
+				l.labirinto[i][j] = 2;
 			}
 			else
 			{
-				l.labirinto[i][j] = 0;
+				l.labirinto[i][j] = EMPTY;
 			}
 		}
 	}

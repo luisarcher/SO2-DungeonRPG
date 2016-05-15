@@ -2,7 +2,7 @@
 #include "Common.h"
 #include "Labirinto.h"
 
-Labirinto gLabirinto; //Isto vai para memória partilhada com os monstros
+Labirinto gLabirinto; //Isto vai para memória partilhada com os monstros (META2)
 
 int _tmain(int argc, LPTSTR argv[]) {
 	HANDLE hThread;
@@ -19,7 +19,6 @@ int _tmain(int argc, LPTSTR argv[]) {
 	hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecebeClientes, NULL, 0, NULL);
 	//fim = TRUE; //define quando a thread deve terminar
 
-	//if(fim == TRUE) 
 	//Esperar a thread RecebeClientes terminar e fecha o handle
 	WaitForSingleObject(hThread, INFINITE);
 	CloseHandle(hThread);

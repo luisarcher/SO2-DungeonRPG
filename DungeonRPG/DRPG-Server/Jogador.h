@@ -18,7 +18,7 @@ struct JOGADOR {
 
 void NovoJogador(Jogador * j);
 int MoverJogador(int playerId, int keystroke);
-void PlayerLOS(int * matrix);
+void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS]);
 
 extern Jogador gClients[MAX_CLIENTS];
 #endif

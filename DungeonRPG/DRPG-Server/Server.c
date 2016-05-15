@@ -44,8 +44,11 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 		ret = ReadFile(hPipeCliente, &pedido, sizeof(ClientRequest), &n, NULL);
 		if (!ret || !n) break;
 		_tprintf(TEXT("[Server] Recebi %d bytes: \'%s\'... (ReadFile)\n"),n,pedido.msg);
-		memset(resposta.msg, '\0', sizeof(TCHAR)); //prepara a "string" de resposta
-		memset(gClients[(int)param].resposta, '\0', sizeof(TCHAR));
+
+		memset(resposta.msg, '\0', sizeof(TCHAR)); //prepara a "string" de resposta //del
+		UpdatePlayerLOS(gClients[(int)param].x, gClients[(int)param].y, resposta.matriz);
+		
+		memset(gClients[(int)param].resposta, '\0', sizeof(TCHAR)); //posteriormente preenche a resposta para o cliente
 		if (!start) {
 			switch (pedido.command)
 			{
@@ -116,20 +119,12 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 	return 0;
 }
 
-//Disconnect from all pipes (Provavelmente não vai ser preciso, só para as threads)
-void DesligarNamedPipes() {
-	for (int i = 0; i < totalConnections; i++) {
-		DisconnectNamedPipe(gClients[i].hPipe);
-		_tprintf(TEXT("[ESCRITOR] Vou desligar o pipe... (CloseHandle)\n"));
-		CloseHandle(gClients[i].hPipe);
-	}
-}
-
 DWORD WINAPI ActualizaClientes(LPVOID param){
 	TCHAR buf[BUFFERSIZE];
 	DWORD n;
 	
-	//do {
+	do {
+
 		/*_tcscpy(buf, TEXT("Isto é o jogo vindo do servidor"));
 		//Escrever para todos os clientes inscritos
 		for (int i = 0; i < totalConnections; i++){
@@ -139,6 +134,15 @@ DWORD WINAPI ActualizaClientes(LPVOID param){
 			}
 		}*/
 
-		/*_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), n, totalConnections);
-	} while (_tcsncmp(buf, TEXT("fim"), 3));*/
+		/*_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), n, totalConnections);*/
+	} while (fim == TRUE);
+}
+
+//Disconnect from all pipes (Provavelmente não vai ser preciso)
+void DesligarNamedPipes() {
+	for (int i = 0; i < totalConnections; i++) {
+		DisconnectNamedPipe(gClients[i].hPipe);
+		_tprintf(TEXT("[ESCRITOR] Vou desligar o pipe... (CloseHandle)\n"));
+		CloseHandle(gClients[i].hPipe);
+	}
 }
