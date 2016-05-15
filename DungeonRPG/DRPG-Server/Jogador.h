@@ -12,6 +12,7 @@ struct JOGADOR {
 	int nStones;
 	BOOL stoneAutoHit;
 	HANDLE hPipe;
+	HANDLE hPipeJogo;
 	HANDLE hThread;
 	TCHAR resposta[BUFFERSIZE]; //Resposta que será dada ao cliente no próximo envio
 };

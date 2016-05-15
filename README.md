@@ -30,3 +30,5 @@ As threads que alteram dados do mapa precisam de MutEx
 Se o jogador já tiver uma mensagem privada por entregar e houver uma mensagem de broadcast (tipo, o jogo começou), concatena esta ultima.
 
 TimingMatrix to work with ActualizaClientes Thread
+
+fechar a thread respectiva ao cliente quando ele se desliga

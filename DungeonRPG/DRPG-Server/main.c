@@ -25,6 +25,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	WaitForSingleObject(hThreadL, INFINITE);
 	WaitForSingleObject(hThreadE, INFINITE);
 	CloseHandle(hThreadL);
+	CloseHandle(hThreadE);
 
 	exit(0);
 }

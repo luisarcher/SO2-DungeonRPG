@@ -6,10 +6,9 @@ Labirinto NovoLabirinto() {
 	{
 		for (int j = 0; j < 70; j++)
 		{
-			//escreve as margens
 			if (i == 0 || i == 69 || j == 0 || j == 69)
 			{
-				l.labirinto[i][j] = 2;
+				l.labirinto[i][j] = STONEWALL;
 			}
 			else
 			{
