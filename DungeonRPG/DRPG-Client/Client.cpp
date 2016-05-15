@@ -48,18 +48,38 @@ void EscreveMensagem(HANDLE pipe, ClientRequest req) {
 
 
 
-	/*if (!WriteFile(pipe, &req, sizeof(ClientRequest), &b, NULL))
-	{
-		_tperror(TEXT("[ERRO] Escrever no pipe... (WriteFile)\n"));
-		exit(-1);
-	}
-	else
-		tcout << TEXT("[CLIENTE]Escrevi...\n");*/
+	
 	
 }
 
-void LerMensagem() {
+void LerMensagem(HANDLE pipe) {
+	BOOL ret;
+	ServerResponse resp;
+	DWORD n;
+	
+	ret = ReadFile(pipe, &resp, sizeof(ServerResponse), &n, NULL);
+	//buf[n / sizeof(TCHAR)] = '\0';
+	/*if (!ret || !n)
+		break;*/
+	tcout << TEXT("[CLIENTE] Recebi ") << n << TEXT(" bytes: \'") << resp.msg << TEXT("\'... (ReadFile)\n");
+}
 
+DWORD WINAPI EsperaComando(LPVOID param) {
+	HANDLE pipe = (HANDLE)param;
+	TCHAR buf[256];
+	DWORD n;
+	BOOL ret;
+	ClientRequest req;
+	ServerResponse resp;
+	while (1) {
+		memset(req.msg, '\0', sizeof(TCHAR));
+		_tprintf(TEXT("[CLIENTE] Frase: "));
+		_fgetts(req.msg, 256, stdin);
+		req.command = (int)SETNAME;
+		EscreveMensagem(pipe, req);
+		LerMensagem(pipe);
+	}
+	return 0;
 }
 
 #ifdef UNICODE 
@@ -107,23 +127,10 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	tcout << TEXT("[CLIENTE]Liguei-me...\n");
 	iniciado = TRUE;
-	memset(req.msg, '\0', sizeof(TCHAR));
-	_tprintf(TEXT("[CLIENTE] Frase: "));
-	_fgetts(req.msg, 256, stdin);
-	req.command = (int)SETNAME;
 	
-	EscreveMensagem(hPipe, req);
-	
-	
-	/*while (iniciado) {
-		MenuInicial(1);
-		//EscreveMensagem(hPipe, req);
-		//tcout << TEXT("[CLIENTE]Liguei-me...\n");
-		break;
-	} */
-	//while (1) { Sleep(10000); } //ta quieto, não termines
+	hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)EsperaComando, (LPVOID)hPipe, 0, NULL);
 
-	//WaitForSingleObject(hThread, INFINITE);
+	WaitForSingleObject(hThread, INFINITE);
 	CloseHandle(hPipe);
 
 	Sleep(200);
@@ -131,37 +138,5 @@ int _tmain(int argc, LPTSTR argv[]) {
 	return 0;
 }
 
-DWORD WINAPI EscrevePipe(LPVOID param) {
-	HANDLE pipe = (HANDLE)param;
-	TCHAR buf[256];
-	DWORD n;
-	BOOL ret;
-	ClientRequest req;
-	ServerResponse resp;
 
-	while (1) {
-		//ler do terminal
-		memset(req.msg, '\0', sizeof(TCHAR));
-		_tprintf(TEXT("[CLIENTE] Nome: "));
-		_fgetts(req.msg, 256, stdin);
-
-		//_tcscpy(req.msg, TEXT("rebeca")); //nome
-		//_tcscpy(req.msg, '\0');
-		
-		
-		req.command = (int)SETNAME;
-
-		if (!WriteFile(pipe, &req, sizeof(ClientRequest), &n, NULL)) {
-			_tprintf(TEXT("Erro"));
-		}
-			
-		/* Ler resposta */
-		ret = ReadFile(pipe, &resp, sizeof(ServerResponse), &n, NULL);
-		//buf[n / sizeof(TCHAR)] = '\0';
-		if (!ret || !n)
-			break;
-		tcout << TEXT("[CLIENTE] Recebi ") << n << TEXT(" bytes: \'") << resp.msg<< TEXT("\'... (ReadFile)\n");
-	}
-	return 0;
-} 
 //2315
