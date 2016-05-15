@@ -23,6 +23,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	//Esperar a thread RecebeClientes terminar e fecha o handle
 	WaitForSingleObject(hThreadL, INFINITE);
+	WaitForSingleObject(hThreadE, INFINITE);
 	CloseHandle(hThreadL);
 
 	exit(0);

@@ -136,14 +136,15 @@ DWORD WINAPI ActualizaClientes(LPVOID param){
 			_tcscpy(resposta.msg, broadcastMessage);
 			memset(broadcastMessage, TEXT('\0'), sizeof(TCHAR));
 		}
-		if (gClients[(int)param].resposta != TEXT('\0')) {
-			_tcscat(resposta.msg, TEXT('\n'));
-			_tcscat(resposta.msg, gClients[(int)param].resposta);
-			memset(gClients[(int)param].resposta, TEXT('\0'), sizeof(TCHAR));
-		}
 		//Para cada cliente
 		for (int i = 0; i < totalConnections; i++) {
 			if (gClients[i].hp > 0) {
+
+				if (gClients[i].resposta != TEXT('\0')) {
+					_tcscat(resposta.msg, TEXT('\n'));
+					_tcscat(resposta.msg, gClients[i].resposta);
+					memset(gClients[i].resposta, TEXT('\0'), sizeof(TCHAR));
+				}
 
 				if (!start) SetEmptyMatrix(resposta.matriz); //security
 				else UpdatePlayerLOS(gClients[i].x, gClients[i].y,resposta.matriz);
