@@ -6,10 +6,12 @@
 #define SETNAME		600
 #define STARTGAME	601
 #define QUITGAME	604
+#define GAMESTATUS	610
 #define MOVEUP		672
 #define MOVEDOWN	680
 #define MOVELEFT	675
 #define MOVERIGHT	677
+#define SWITCH_STONE_AUTOHIT 650
 
 typedef struct CLIENTREQUEST {
 	int command;
@@ -23,7 +25,7 @@ typedef struct SERVERRESPONSE {
 
 DWORD WINAPI RecebeClientes(LPVOID param);
 DWORD WINAPI AtendeCliente(LPVOID param);
+DWORD WINAPI ActualizaClientes(LPVOID param);
 
 void DesligarNamedPipes();
-void ServerBroadcasting();
 #endif

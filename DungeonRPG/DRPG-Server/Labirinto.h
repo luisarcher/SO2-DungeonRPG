@@ -14,5 +14,5 @@ Labirinto NovoLabirinto();
 
 void posicionaJogador(Jogador *j, Labirinto *l);
 
-extern Labirinto l;
+extern Labirinto gLabirinto;
 #endif

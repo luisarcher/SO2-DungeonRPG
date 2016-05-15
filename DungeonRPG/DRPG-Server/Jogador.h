@@ -9,13 +9,16 @@ struct JOGADOR {
 	int y;
 	int id;
 	int hp;
+	int nStones;
+	BOOL stoneAutoHit;
 	HANDLE hPipe;
 	HANDLE hThread;
+	TCHAR resposta[BUFFERSIZE]; //Resposta que será dada ao cliente no próximo envio
 };
 
 void NovoJogador(Jogador * j);
 int MoverJogador(int playerId, int keystroke);
+void PlayerLOS(int * matrix);
 
 extern Jogador gClients[MAX_CLIENTS];
-extern Jogador j; //eliminar
 #endif
