@@ -28,3 +28,5 @@ O broadcast é só para os jogadores que têm HP > 0, definir a HP = 0, quando u
 As threads que alteram dados do mapa precisam de MutEx
 
 Se o jogador já tiver uma mensagem privada por entregar e houver uma mensagem de broadcast (tipo, o jogo começou), concatena esta ultima.
+
+TimingMatrix to work with ActualizaClientes Thread

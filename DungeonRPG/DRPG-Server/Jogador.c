@@ -66,8 +66,13 @@ int MoverJogador(int playerId, int keystroke) {
 	return 0;
 }
 
-void PlayerLOS(int * matrix) {
-	//Obter o que está á volta do jogador para enviar ao cliente
-	int m[10][10];
-
+void ChangePlayerLOS(int playerId, int (*matriz)[PLAYER_LOS]) {
+	for (size_t i = 0; i < PLAYER_LOS; i++)
+	{
+		for (size_t j = 0; j < PLAYER_LOS; j++)
+		{
+			matriz[i][j] = 1;
+		}
+	}
+	//The Matrix is a system, Neo. That system is our enemy.
 }
