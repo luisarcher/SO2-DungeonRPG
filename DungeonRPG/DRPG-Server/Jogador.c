@@ -66,13 +66,20 @@ int MoverJogador(int playerId, int keystroke) {
 	return 0;
 }
 
-void ChangePlayerLOS(int playerId, int (*matriz)[PLAYER_LOS]) {
-	for (size_t i = 0; i < PLAYER_LOS; i++)
+void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS]) {
+	//validar o scroll
+	// - Definir margens e encostar o scroll ao mapa
+	if ((x - PLAYER_LOS) < 0) x = PLAYER_LOS;
+	else if ((x + PLAYER_LOS) > LABIRINTOSIZE - 1) x = LABIRINTOSIZE - 1 - PLAYER_LOS;
+	if ((y - PLAYER_LOS) < 0) y = PLAYER_LOS;
+	else if ((y + PLAYER_LOS) > LABIRINTOSIZE - 1) y = LABIRINTOSIZE - 1 - PLAYER_LOS;
+
+	//The Matrix is a system, Neo. That system is our enemy.
+	for (int i = y - PLAYER_LOS; i <= y + PLAYER_LOS; i++)
 	{
-		for (size_t j = 0; j < PLAYER_LOS; j++)
+		for (int j = x - PLAYER_LOS; j <= x + PLAYER_LOS; j++)
 		{
-			matriz[i][j] = 1;
+			matriz[i][j] = gLabirinto.labirinto[i][j];
 		}
 	}
-	//The Matrix is a system, Neo. That system is our enemy.
 }

@@ -26,6 +26,7 @@
 #define MAX_CLIENTS 10
 #define BUFFERSIZE 256
 #define PLAYER_LOS 10	//player line of sight
+#define LABIRINTOSIZE 70
 
 #define KEY_UP 72
 #define KEY_DOWN 80

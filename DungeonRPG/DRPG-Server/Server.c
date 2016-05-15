@@ -26,7 +26,6 @@ DWORD WINAPI RecebeClientes(LPVOID param) {
 		NovoJogador(&gClients[totalConnections]); //prepara os dados do jogador
 		totalConnections++;
 	}
-	//DesligarNamedPipes(); //depois de fim //VERIFICAR!!
 	return 0;
 }
 

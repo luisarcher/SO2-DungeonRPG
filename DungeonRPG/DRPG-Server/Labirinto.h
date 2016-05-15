@@ -6,7 +6,7 @@
 typedef struct LABIRINTO Labirinto;
 
 struct LABIRINTO {
-	int labirinto[70][70];
+	int labirinto[LABIRINTOSIZE][LABIRINTOSIZE];
 	boolean init;
 };
 
