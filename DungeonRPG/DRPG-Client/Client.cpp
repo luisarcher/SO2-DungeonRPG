@@ -10,6 +10,7 @@
 #define MOVEDOWN	680
 #define MOVELEFT	675
 #define MOVERIGHT	677
+#define SWITCH_STONE_AUTOHIT 650
 #define BUFFERSIZE 256
 
 #define PLAYER_LOS 10
@@ -170,17 +171,17 @@ void enviaTecla(int k, HANDLE pipe, HANDLE hThread) {
 		//LerMensagem(pipe);
 		break;
 	}
-	case 7:
-
+	case 7://escape
+	{
 		iniciado = false;
-		
+
 		clrscr();
 		seta = 0;
 
 		gotoxy(0, 0);
 		MenuEscape(seta);
 
-		//AQUI LUIS
+
 		while (iniciado == false)
 		{
 
@@ -212,14 +213,14 @@ void enviaTecla(int k, HANDLE pipe, HANDLE hThread) {
 					MenuEscape(seta);
 				}
 				break;
-			case 6:
+			case 6://enter
 				if (seta == 0)
 				{
-							
+
 					iniciado = true;
-					//hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LerBroadcast, (LPVOID)hPipeJogo, 0, NULL);
+
 				}
-				else if(seta == 1)
+				else if (seta == 1)
 				{
 					MenuInicial(0);
 				}
@@ -231,13 +232,19 @@ void enviaTecla(int k, HANDLE pipe, HANDLE hThread) {
 
 
 		}
-			
-		
+
+
 		break;
-	
+	}
 	case 5:
-		//apanha pedras
+	{
+		memset(req.msg, '\0', sizeof(TCHAR));
+		_tcscpy(req.msg, TEXT("Activa Pedras\n"));
+		req.command = (int)SWITCH_STONE_AUTOHIT;
+		EscreveMensagem(pipe, req);
+
 		break;
+	}
 	default:
 		break;
 	}
