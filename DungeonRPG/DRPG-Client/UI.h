@@ -23,6 +23,26 @@ void gotoxy(int x, int y) {
 	SetConsoleCursorPosition(hStdout, coord);
 }
 
+void clrscr() {
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	const COORD startCoords = { 0, 0 };
+	DWORD dummy;
+	HANDLE hconsola = GetStdHandle(STD_OUTPUT_HANDLE);;
+
+	GetConsoleScreenBufferInfo(hconsola, &csbi);
+	FillConsoleOutputCharacter(hconsola,
+		' ',
+		csbi.dwSize.X * csbi.dwSize.Y,
+		startCoords,
+		&dummy);
+	FillConsoleOutputAttribute(hconsola,
+		csbi.wAttributes,
+		csbi.dwSize.X * csbi.dwSize.Y,
+		startCoords,
+		&dummy);
+	gotoxy(0, 0);
+}
+
 void MenuInicial(int op) {
 	system("cls");
 	//gotoxy(5, 5);
@@ -74,6 +94,7 @@ char Getch() {
 
 void MostraLOS(int(*los)[10]) {
 	//system("cls");
+	
 	for (int i = 0; i < 10; i++)
 	{
 		for (int j = 0; j < 10; j++)
@@ -138,3 +159,4 @@ void MostraLOS(int(*los)[10]) {
 		}
 	}
 }
+

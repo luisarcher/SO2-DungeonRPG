@@ -179,8 +179,8 @@ DWORD WINAPI ActualizaClientes(LPVOID param) {
 					}
 				}
 			}//fim for
-			Sleep(3000);
-			//Sleep(1000/15); //15 instantes por segundo
+			//Sleep(3000);
+			Sleep(1000/15); //15 instantes por segundo
 			_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), n, totalConnections);
 		}
 	}

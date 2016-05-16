@@ -87,6 +87,8 @@ void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS], int id) {
 		}
 	}
 	
+
+
 	matriz[PLAYER_LOS/2][PLAYER_LOS/2] = id;
 }
 

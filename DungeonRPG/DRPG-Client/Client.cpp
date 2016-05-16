@@ -92,7 +92,7 @@ DWORD WINAPI LerBroadcast(LPVOID param) {
 	BOOL ret;
 	ServerResponse resp;
 	DWORD n;
-
+	clrscr();
 	while (1)
 	{
 		
@@ -108,6 +108,7 @@ DWORD WINAPI LerBroadcast(LPVOID param) {
 					{
 						//tcout << resp.matriz[i][j];
 						//system("cls");
+						
 						MostraLOS(resp.matriz);
 					}
 				}
@@ -278,6 +279,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 				EscreveMensagem(hPipe, req);
 				//Lê o "iniciaste"
 				LerMensagem(hPipe);
+				
 				/*entre estas funções é preciso esperar pelo setup dos players*/
 				//Broadcast da posiçao
 				hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LerBroadcast, (LPVOID)hPipeJogo, 0, NULL);
@@ -286,7 +288,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 				//HANDLE hMove = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Movimento, (LPVOID)hPipeJogo, 0, NULL);
 				while (1)
 				{
-					
+					clrscr();
 					k = Getch();
 					enviaTecla(k,hPipe);
 				}
@@ -294,7 +296,12 @@ int _tmain(int argc, LPTSTR argv[]) {
 			}
 			else if (seta == 1)
 			{
-				system("pause");
+				memset(req.msg, '\0', sizeof(TCHAR));
+				_tprintf(TEXT("[CLIENTE] Frase: "));
+				_fgetts(req.msg, 256, stdin);
+				req.command = (int)SETNAME;
+				EscreveMensagem(hPipe, req);
+				LerMensagem(hPipe);
 			}
 			else
 				//sai do jogo
