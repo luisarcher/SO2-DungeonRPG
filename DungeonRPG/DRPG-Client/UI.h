@@ -160,3 +160,20 @@ void MostraLOS(int(*los)[10]) {
 	}
 }
 
+void MenuEscape(int op) {
+	system("cls");
+	//gotoxy(5, 5);
+	switch (op) {
+	case 0:
+		_tprintf(TEXT(" >> Resumir\n\n"));
+		//_tprintf(TEXT("    Informacao\n\n"));
+		_tprintf(TEXT("    Sair"));
+		break;
+	case 1:
+		_tprintf(TEXT("    Jogar\n\n"));
+		//_tprintf(TEXT("    Informacao\n\n"));
+		_tprintf(TEXT(" >> Sair"));
+		break;
+	
+	}
+}
