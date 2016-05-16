@@ -123,16 +123,25 @@ void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS], int id) {
 	else
 		maxY = y + 5;
 	int m=0, n= 0;
-	for (int j = iniY; j < maxY; j++)
+	for (int i = iniY; i < maxY; i++)
 	{
-		for (int i = iniX; i < maxX; i++)
+		for (int j = iniX; j < maxX; j++)
 		{
-			matriz[m][n] = gLabirinto.labirinto[i][j];
+			matriz[m][n] = gLabirinto.labirinto[j][i];
 			m++;
 			
 		}
 		n++;
 		m = 0;
+	}
+	for (int i = 0; i < 10; i++)
+	{
+
+		for (int j = 0; j < 10; j++)
+		{
+			_tprintf(TEXT("%d"), matriz[j][i]);
+		}
+		_tprintf(TEXT("\n"));
 	}
 	
 }
