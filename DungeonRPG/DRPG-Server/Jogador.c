@@ -1,5 +1,8 @@
 #include "Jogador.h"
 #include "Labirinto.h"
+#include "Common.h"
+#include "Server.h"
+
 
 void NovoJogador(Jogador *j) {
 	_tcscpy(j->nome, "guest");
@@ -19,26 +22,6 @@ int MoverJogador(int playerId, int keystroke) {
 	switch (keystroke) {
 		case KEY_UP:
 		{
-			if (j->x > 1)
-			{
-				gLabirinto.labirinto[j->x][j->y] = EMPTY;
-				j->x--;
-				gLabirinto.labirinto[j->x][j->y] = playerId;
-			}
-			break;
-		}
-		case KEY_DOWN:
-		{
-			if (j->x < 68)
-			{
-				gLabirinto.labirinto[j->x][j->y] = EMPTY;
-				j->x++;
-				gLabirinto.labirinto[j->x][j->y] = playerId;
-			}
-			break;
-		}
-		case KEY_LEFT:
-		{
 			if (j->y > 1)
 			{
 				gLabirinto.labirinto[j->x][j->y] = EMPTY;
@@ -47,12 +30,32 @@ int MoverJogador(int playerId, int keystroke) {
 			}
 			break;
 		}
-		case KEY_RIGHT:
+		case KEY_DOWN:
 		{
-			if (j->y < 68)
+			if (j->y < LABIRINTOSIZE-1)
 			{
 				gLabirinto.labirinto[j->x][j->y] = EMPTY;
 				j->y++;
+				gLabirinto.labirinto[j->x][j->y] = playerId;
+			}
+			break;
+		}
+		case KEY_LEFT:
+		{
+			if (j->x > 1)
+			{
+				gLabirinto.labirinto[j->x][j->y] = EMPTY;
+				j->x--;
+				gLabirinto.labirinto[j->x][j->y] = playerId;
+			}
+			break;
+		}
+		case KEY_RIGHT:
+		{
+			if (j->x < LABIRINTOSIZE - 1)
+			{
+				gLabirinto.labirinto[j->x][j->y] = EMPTY;
+				j->x++;
 				gLabirinto.labirinto[j->x][j->y] = playerId;
 			}
 			break;
@@ -69,27 +72,69 @@ int MoverJogador(int playerId, int keystroke) {
 void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS], int id) {
 	//validar o scroll
 	// - Definir margens e encostar o scroll ao mapa
-	if ((x - PLAYER_LOS) < 0) x = PLAYER_LOS;
-	else if ((x + PLAYER_LOS) > LABIRINTOSIZE - 1) x = LABIRINTOSIZE - 1 - PLAYER_LOS;
-	if ((y - PLAYER_LOS) < 0) y = PLAYER_LOS;
-	else if ((y + PLAYER_LOS) > LABIRINTOSIZE - 1) y = LABIRINTOSIZE - 1 - PLAYER_LOS;
-
+	_tprintf(TEXT("POSX: %d POSY: %d\n\n"), x, y);
+	
+	/*int offset = (int)PLAYER_LOS / 2;
+	//validar o scroll
+	// - Definir margens e encostar o scroll ao mapa
+	if ((x - offset) < 0) x = offset;
+	else if ((x + offset) > LABIRINTOSIZE - 1) x = LABIRINTOSIZE - 1 - offset;
+	if ((y - offset) < 0) y = offset;
+	else if ((y + offset) > LABIRINTOSIZE - 1) y = LABIRINTOSIZE - 1 - offset;
 	//The Matrix is a system, Neo. That system is our enemy.
 	int _i = 0;
 	int _j = 0;
-	for (int i = y - PLAYER_LOS; i <= y + PLAYER_LOS; i++)
+	for (int i = y - offset; i <= y + offset; i++)
 	{
-		++_i; _j = 0;
-		for (int j = x - PLAYER_LOS; j <= x + PLAYER_LOS; j++)
+		
+		for (int j = x - offset; j <= x + offset; j++)
 		{
-			_j++;
+			
 			matriz[_i][_j] = gLabirinto.labirinto[i][j];
+			_j++;
 		}
+		_i++; 
+		_j = 0;
+	}*/
+	
+	int iniX, iniY, maxX,maxY;
+	if (x - 5 < 0)
+	{
+		iniX = 0;
+	}
+	else
+		iniX = x - 5;
+	if (x + 5 > LABIRINTOSIZE)
+	{
+		maxX = LABIRINTOSIZE;
+	}
+	else
+		maxX = x + 5;
+	if (y - 5 < 0)
+	{
+		iniY = 0;
+	}
+	else
+		iniY = y - 5;
+	if (y + 5 > LABIRINTOSIZE)
+	{
+		maxY = LABIRINTOSIZE;
+	}
+	else
+		maxY = y + 5;
+	int m=0, n= 0;
+	for (int j = iniY; j < maxY; j++)
+	{
+		for (int i = iniX; i < maxX; i++)
+		{
+			matriz[m][n] = gLabirinto.labirinto[i][j];
+			m++;
+			
+		}
+		n++;
+		m = 0;
 	}
 	
-
-
-	matriz[PLAYER_LOS/2][PLAYER_LOS/2] = id;
 }
 
 void SetEmptyMatrix(int(*matriz)[PLAYER_LOS]) {

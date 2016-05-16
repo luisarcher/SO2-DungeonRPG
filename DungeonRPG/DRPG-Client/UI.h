@@ -99,7 +99,7 @@ void MostraLOS(int(*los)[10]) {
 	{
 		for (int j = 0; j < 10; j++)
 		{
-			gotoxy(i+3, j);
+			gotoxy(i, j);
 			if (j == 9)
 			{
 				
