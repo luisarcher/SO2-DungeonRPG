@@ -32,7 +32,7 @@ int MoverJogador(int playerId, int keystroke) {
 		}
 		case KEY_DOWN:
 		{
-			if (j->y < LABIRINTOSIZE-1)
+			if (j->y < LABIRINTOSIZE-2)
 			{
 				gLabirinto.labirinto[j->x][j->y] = EMPTY;
 				j->y++;
@@ -52,7 +52,7 @@ int MoverJogador(int playerId, int keystroke) {
 		}
 		case KEY_RIGHT:
 		{
-			if (j->x < LABIRINTOSIZE - 1)
+			if (j->x < LABIRINTOSIZE - 2)
 			{
 				gLabirinto.labirinto[j->x][j->y] = EMPTY;
 				j->x++;
@@ -72,7 +72,9 @@ int MoverJogador(int playerId, int keystroke) {
 void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS], int id) {
 	//validar o scroll
 	// - Definir margens e encostar o scroll ao mapa
+	SetEmptyMatrix(matriz);
 	_tprintf(TEXT("POSX: %d POSY: %d\n\n"), x, y);
+	
 	
 	/*int offset = (int)PLAYER_LOS / 2;
 	//validar o scroll
@@ -122,6 +124,7 @@ void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS], int id) {
 	}
 	else
 		maxY = y + 5;
+
 	int m=0, n= 0;
 	for (int i = iniY; i < maxY; i++)
 	{
