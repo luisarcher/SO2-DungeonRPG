@@ -21,6 +21,7 @@ void gotoxy(int x, int y) {
 	coord.X = x;
 	coord.Y = y;
 	SetConsoleCursorPosition(hStdout, coord);
+	
 }
 
 void clrscr() {
@@ -41,6 +42,8 @@ void clrscr() {
 		startCoords,
 		&dummy);
 	gotoxy(0, 0);
+	
+	
 }
 
 void MenuInicial(int op) {
@@ -161,18 +164,19 @@ void MostraLOS(int(*los)[10]) {
 }
 
 void MenuEscape(int op) {
-	system("cls");
-	//gotoxy(5, 5);
+	clrscr();
+	
 	switch (op) {
 	case 0:
+		
 		_tprintf(TEXT(" >> Resumir\n\n"));
 		//_tprintf(TEXT("    Informacao\n\n"));
 		_tprintf(TEXT("    Sair"));
 		break;
 	case 1:
-		_tprintf(TEXT("    Jogar\n\n"));
+		_tprintf(TEXT("  Resumir\n\n"));
 		//_tprintf(TEXT("    Informacao\n\n"));
-		_tprintf(TEXT(" >> Sair"));
+		_tprintf(TEXT(" >>  Sair"));
 		break;
 	
 	}

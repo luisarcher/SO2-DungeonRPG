@@ -108,23 +108,24 @@ DWORD WINAPI LerBroadcast(LPVOID param) {
 					{
 						//tcout << resp.matriz[i][j];
 						//system("cls");
-						
+
 						MostraLOS(resp.matriz);
 					}
 				}
 		}
-		
-		if (resp.msg != TEXT('\0')) {
+		else if (resp.msg[0] != TEXT('\0')) {
 			tcout << TEXT("[CLIENTE] Recebi ") << n << TEXT(" bytes: \'") << resp.msg << TEXT("\'... (ReadFile)\n");
 		}
-		tcout << TEXT("\n\n>>\n");
+		/*else
+			break;*/
+		//tcout << TEXT("\n\n>>\n");
 	}
 	return 0;
 }
 
 //enviar escape e mostrar menu escape
 
-void enviaTecla(int k, HANDLE pipe) {
+void enviaTecla(int k, HANDLE pipe, HANDLE hThread) {
 	ClientRequest req;
 	int kp, seta = 0;
 	switch (k)
@@ -170,16 +171,27 @@ void enviaTecla(int k, HANDLE pipe) {
 		break;
 	}
 	case 7:
+
 		iniciado = false;
+		
+		clrscr();
+		seta = 0;
+
+		gotoxy(0, 0);
+		MenuEscape(seta);
+
+		//AQUI LUIS
 		while (iniciado == false)
 		{
+
+
 			kp = Getch();
 			switch (kp)
 			{
 			case 1:
 				if (seta == 0)
 				{
-					seta = 2;
+					seta = 1;
 					MenuEscape(seta);
 				}
 				else
@@ -200,13 +212,27 @@ void enviaTecla(int k, HANDLE pipe) {
 					MenuEscape(seta);
 				}
 				break;
+			case 6:
+				if (seta == 0)
+				{
+							
+					iniciado = true;
+					//hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LerBroadcast, (LPVOID)hPipeJogo, 0, NULL);
+				}
+				else if(seta == 1)
+				{
+					MenuInicial(0);
+				}
+				//break;
 			default:
 				//nope
 				break;
 			}
+
+
+		}
 			
 		
-		}
 		break;
 	
 	case 5:
@@ -334,7 +360,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 				{
 					clrscr();
 					k = Getch();
-					enviaTecla(k,hPipe);
+					enviaTecla(k,hPipe,hThread);
 				}
 				//system("pause");
 			}
