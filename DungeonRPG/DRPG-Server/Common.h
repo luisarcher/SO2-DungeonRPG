@@ -41,9 +41,12 @@
 	//pedras 50(quant), 500+ , ex 503 -> 3 pedras numa posição
 	#define EMPTY -1
 	#define PLAYER_STONE_CAP 15
+	#define HP_BASE 100
+	#define LENTIDAO_BASE 7
 	#define PLAYER_START_INDEX 0
 	#define PLAYER_END_INDEX 19
 
+	#define FOG_OF_WAR -2
 	#define STONEWALL 20
 	// ... vários tipos (chamar tijolo, stonewall, agua, erva, etc?)?
 

@@ -4,14 +4,16 @@
 #include "Server.h"
 
 
-void NovoJogador(Jogador *j) {
+void NovoJogador(Jogador *j, int id) {
 	_tcscpy(j->nome, "guest");
-	j->x = 0;
-	j->y = 0;
-	j->hp = 100;
-	j->id = 0;
+	j->hp = HP_BASE;
+	j->lentidao = LENTIDAO_BASE;
+	j->id = id;
 	j->nStones = 0;
 	j->stoneAutoHit = TRUE;
+
+	//Define x e y do jogador (pos vazia) e regista-o no labirinto
+	SetPlayerInRandomPosition(j);
 }
 
 int MoverJogador(int playerId, int keystroke) {
@@ -24,9 +26,9 @@ int MoverJogador(int playerId, int keystroke) {
 		{
 			if (j->y > 1)
 			{
-				gLabirinto.labirinto[j->x][j->y] = EMPTY;
+				gLabirinto.labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (gLabirinto.labirinto[j->y][j->x] / 100) : EMPTY);
 				j->y--;
-				gLabirinto.labirinto[j->x][j->y] = playerId;
+				gLabirinto.labirinto[j->y][j->x] = playerId;
 			}
 			break;
 		}
@@ -34,9 +36,9 @@ int MoverJogador(int playerId, int keystroke) {
 		{
 			if (j->y < LABIRINTOSIZE-2)
 			{
-				gLabirinto.labirinto[j->x][j->y] = EMPTY;
+				gLabirinto.labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (gLabirinto.labirinto[j->y][j->x] / 100) : EMPTY);
 				j->y++;
-				gLabirinto.labirinto[j->x][j->y] = playerId;
+				gLabirinto.labirinto[j->y][j->x] = playerId;
 			}
 			break;
 		}
@@ -44,9 +46,9 @@ int MoverJogador(int playerId, int keystroke) {
 		{
 			if (j->x > 1)
 			{
-				gLabirinto.labirinto[j->x][j->y] = EMPTY;
+				gLabirinto.labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (gLabirinto.labirinto[j->y][j->x] / 100) : EMPTY);
 				j->x--;
-				gLabirinto.labirinto[j->x][j->y] = playerId;
+				gLabirinto.labirinto[j->y][j->x] = playerId;
 			}
 			break;
 		}
@@ -54,9 +56,9 @@ int MoverJogador(int playerId, int keystroke) {
 		{
 			if (j->x < LABIRINTOSIZE - 2)
 			{
-				gLabirinto.labirinto[j->x][j->y] = EMPTY;
+				gLabirinto.labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (gLabirinto.labirinto[j->y][j->x] / 100) : EMPTY);
 				j->x++;
-				gLabirinto.labirinto[j->x][j->y] = playerId;
+				gLabirinto.labirinto[j->y][j->x] = playerId;
 			}
 			break;
 		}
@@ -69,35 +71,11 @@ int MoverJogador(int playerId, int keystroke) {
 	return 0;
 }
 
-void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS], int id) {
+void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS]) {
 	//validar o scroll
 	// - Definir margens e encostar o scroll ao mapa
 	SetEmptyMatrix(matriz);
-	_tprintf(TEXT("POSX: %d POSY: %d\n\n"), x, y);
-	
-	
-	/*int offset = (int)PLAYER_LOS / 2;
-	//validar o scroll
-	// - Definir margens e encostar o scroll ao mapa
-	if ((x - offset) < 0) x = offset;
-	else if ((x + offset) > LABIRINTOSIZE - 1) x = LABIRINTOSIZE - 1 - offset;
-	if ((y - offset) < 0) y = offset;
-	else if ((y + offset) > LABIRINTOSIZE - 1) y = LABIRINTOSIZE - 1 - offset;
-	//The Matrix is a system, Neo. That system is our enemy.
-	int _i = 0;
-	int _j = 0;
-	for (int i = y - offset; i <= y + offset; i++)
-	{
-		
-		for (int j = x - offset; j <= x + offset; j++)
-		{
-			
-			matriz[_i][_j] = gLabirinto.labirinto[i][j];
-			_j++;
-		}
-		_i++; 
-		_j = 0;
-	}*/
+	//_tprintf(TEXT("POSX: %d POSY: %d\n\n"), x, y);
 	
 	int iniX, iniY, maxX,maxY;
 	if (x - 5 < 0)
@@ -124,29 +102,25 @@ void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS], int id) {
 	}
 	else
 		maxY = y + 5;
-
 	int m=0, n= 0;
 	for (int i = iniY; i < maxY; i++)
 	{
 		for (int j = iniX; j < maxX; j++)
 		{
-			matriz[m][n] = gLabirinto.labirinto[j][i];
+			matriz[m][n] = gLabirinto.labirinto[i][j];
 			m++;
-			
 		}
 		n++;
 		m = 0;
 	}
-	for (int i = 0; i < 10; i++)
+	/*for (int i = 0; i < 10; i++)
 	{
-
 		for (int j = 0; j < 10; j++)
 		{
 			_tprintf(TEXT("%d"), matriz[j][i]);
 		}
 		_tprintf(TEXT("\n"));
-	}
-	
+	}*/
 }
 
 void SetEmptyMatrix(int(*matriz)[PLAYER_LOS]) {
@@ -154,7 +128,34 @@ void SetEmptyMatrix(int(*matriz)[PLAYER_LOS]) {
 	{
 		for (int j = 0; j < PLAYER_LOS; j++)
 		{
-			matriz[i][j] = EMPTY;
+			matriz[i][j] = FOG_OF_WAR;
 		}
 	}
 }
+
+void SetPlayerInRandomPosition(Jogador * p) {
+	int x, y;
+	do {
+		srand(time(NULL));
+		x = (rand() % LABIRINTOSIZE);
+		srand(time(NULL));
+		y = (rand() % LABIRINTOSIZE);
+	} while (!gLabirinto.labirinto[y][x] == EMPTY);
+
+	p->x = x;
+	p->y = y;
+	gLabirinto.labirinto[y][x] = p->id;
+}
+
+BOOL hasPlayerIn(int x, int y) {
+	return gLabirinto.labirinto[y][x] >= PLAYER_START_INDEX
+		&& gLabirinto.labirinto[y][x] <= PLAYER_END_INDEX;
+}
+
+BOOL hasMonsterAndPlayerIn(int x, int y) {
+	return gLabirinto.labirinto[y][x] > 1000;
+}
+
+//Collect items em mover
+//verificar se >1000 (monstros)
+//ler git
