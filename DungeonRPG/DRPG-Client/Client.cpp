@@ -126,6 +126,7 @@ DWORD WINAPI LerBroadcast(LPVOID param) {
 
 void enviaTecla(int k, HANDLE pipe) {
 	ClientRequest req;
+	int kp, seta = 0;
 	switch (k)
 	{
 	case 1:
@@ -168,6 +169,49 @@ void enviaTecla(int k, HANDLE pipe) {
 		//LerMensagem(pipe);
 		break;
 	}
+	case 7:
+		iniciado = false;
+		while (iniciado == false)
+		{
+			kp = Getch();
+			switch (kp)
+			{
+			case 1:
+				if (seta == 0)
+				{
+					seta = 2;
+					MenuEscape(seta);
+				}
+				else
+				{
+					seta--;
+					MenuEscape(seta);
+				}
+				break;
+			case 2:
+				if (seta == 1)
+				{
+					seta = 0;
+					MenuEscape(seta);
+				}
+				else
+				{
+					seta++;
+					MenuEscape(seta);
+				}
+				break;
+			default:
+				//nope
+				break;
+			}
+			
+		
+		}
+		break;
+	
+	case 5:
+		//apanha pedras
+		break;
 	default:
 		break;
 	}
@@ -279,7 +323,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 				EscreveMensagem(hPipe, req);
 				//Lê o "iniciaste"
 				LerMensagem(hPipe);
-				
+				system("pause");
 				/*entre estas funções é preciso esperar pelo setup dos players*/
 				//Broadcast da posiçao
 				hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LerBroadcast, (LPVOID)hPipeJogo, 0, NULL);
