@@ -40,20 +40,25 @@
 	//monstros 51~99
 	//pedras 50(quant), 500+ , ex 503 -> 3 pedras numa posição
 	#define EMPTY -1
-	#define PLAYER_STONE_CAP 15
-	#define HP_BASE 100
-	#define LENTIDAO_BASE 7
+	#define FOG_OF_WAR -2
+
 	#define PLAYER_START_INDEX 0
 	#define PLAYER_END_INDEX 19
+		#define PLAYER_STONE_CAP 15
+		#define HP_BASE 100
+		#define LENTIDAO_BASE 7
 
-	#define FOG_OF_WAR -2
-	#define STONEWALL 20
-	// ... vários tipos (chamar tijolo, stonewall, agua, erva, etc?)?
+	#define WALL_START_INDEX 20
+		#define STONEWALL 20
+	#define WALL_END_INDEX 29
 
-	#define VITAMINA	30	//+1 HP (Up to 200% base hp (200))
-	#define ORANGE_BULL 31	//+3 HP (Up to 200% base hp (200))
-	#define REB_CAFEINA 32	//-2 Lentidão (1min, não stackam)
-	#define PEDRAS 500		//+1 ataque quando usada
+	//items
+	#define ITEM_START_INDEX 30
+		#define VITAMINA	30	//+1 HP (Up to 200% base hp (200))
+		#define ORANGE_BULL 31	//+3 HP (Up to 200% base hp (200))
+		#define REB_CAFEINA 32	//-2 Lentidão (1min, não stackam)
+		#define PEDRAS 500		//+1 ataque quando usada
+	#define ITEM_END_INDEX 49
 
 // ---  Game Globals
 extern BOOL fim;

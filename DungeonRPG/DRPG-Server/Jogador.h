@@ -24,9 +24,12 @@ void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS]);
 void SetEmptyMatrix(int(*matriz)[PLAYER_LOS]);
 
 void SetPlayerInRandomPosition(Jogador * p);
+void AskPlayerToCollectItems(Jogador * p);
 
 BOOL hasPlayerIn(int x, int y);
 BOOL hasMonsterAndPlayerIn(int x, int y);
+BOOL hasObjectIn(int x, int y);
+BOOL hasWallIn(int x, int y);
 
 extern Jogador gClients[MAX_CLIENTS];
 #endif
