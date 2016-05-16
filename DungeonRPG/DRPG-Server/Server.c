@@ -40,7 +40,7 @@ DWORD WINAPI RecebeClientes(LPVOID param) {
 
 		//Atende o cliente que se ligou
 		gClients[totalConnections].hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)AtendeCliente, (LPVOID)totalConnections, 0, &n);
-		NovoJogador(&gClients[totalConnections]); //prepara os dados do jogador
+		NovoJogador(&gClients[totalConnections],totalConnections); //prepara os dados do jogador
 		totalConnections++;
 	}
 	//DesligarNamedPipes(); //depois de fim //VERIFICAR!!
@@ -90,8 +90,6 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 				start = TRUE;
 				_tcscpy(resposta.msg, TEXT("Começaste um novo jogo!"));
 				ret = WriteFile(hPipeCliente, &resposta, sizeof(ServerResponse), &n, NULL);
-				gClients[(int)param].x = 10;
-				gClients[(int)param].y = 10;
 				//broadcast -> Isto tem de levar um WaitFor
 				_tcscat(broadcastMessage, TEXT("Novo jogo iniciado por: "));
 				_tcscat(broadcastMessage, gClients[(int)param].nome);
