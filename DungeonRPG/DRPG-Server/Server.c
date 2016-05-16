@@ -90,10 +90,12 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 				start = TRUE;
 				_tcscpy(resposta.msg, TEXT("Começaste um novo jogo!"));
 				ret = WriteFile(hPipeCliente, &resposta, sizeof(ServerResponse), &n, NULL);
-
-				//broadcast
+				gClients[(int)param].x = 10;
+				gClients[(int)param].y = 10;
+				//broadcast -> Isto tem de levar um WaitFor
 				_tcscat(broadcastMessage, TEXT("Novo jogo iniciado por: "));
 				_tcscat(broadcastMessage, gClients[(int)param].nome);
+				//WaitForMultipleObjects()
 				break;
 
 			case QUITGAME:
@@ -168,7 +170,8 @@ DWORD WINAPI ActualizaClientes(LPVOID param) {
 				if (gClients[i].hp > 0) {
 
 					if (!start) SetEmptyMatrix(&resposta.matriz); //security
-					else UpdatePlayerLOS(gClients[i].x, gClients[i].y, &resposta.matriz);
+					else UpdatePlayerLOS(gClients[i].x, gClients[i].y, &resposta.matriz, i);
+
 
 					if (!WriteFile(gClients[i].hPipeJogo, &resposta, sizeof(ServerResponse), &n, NULL)) {
 						_tperror(TEXT("[ERRO] Escrever no pipe... (WriteFile)\n"));

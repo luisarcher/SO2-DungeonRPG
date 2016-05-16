@@ -12,48 +12,48 @@ void NovoJogador(Jogador *j) {
 }
 
 int MoverJogador(int playerId, int keystroke) {
-	Jogador j = gClients[playerId];
+	Jogador *j = &gClients[playerId];
 	//if(gLabirinto.labirinto[j.x][j.y] > 1000)
 	//existe um monstro na mesma posição que o jogador
 
 	switch (keystroke) {
 		case KEY_UP:
 		{
-			if (j.x > 1)
+			if (j->x > 1)
 			{
-				gLabirinto.labirinto[j.x][j.y] = EMPTY;
-				j.x--;
-				gLabirinto.labirinto[j.x][j.y] = playerId;
+				gLabirinto.labirinto[j->x][j->y] = EMPTY;
+				j->x--;
+				gLabirinto.labirinto[j->x][j->y] = playerId;
 			}
 			break;
 		}
 		case KEY_DOWN:
 		{
-			if (j.x < 68)
+			if (j->x < 68)
 			{
-				gLabirinto.labirinto[j.x][j.y] = EMPTY;
-				j.x++;
-				gLabirinto.labirinto[j.x][j.y] = playerId;
+				gLabirinto.labirinto[j->x][j->y] = EMPTY;
+				j->x++;
+				gLabirinto.labirinto[j->x][j->y] = playerId;
 			}
 			break;
 		}
 		case KEY_LEFT:
 		{
-			if (j.y > 1)
+			if (j->y > 1)
 			{
-				gLabirinto.labirinto[j.x][j.y] = EMPTY;
-				j.y--;
-				gLabirinto.labirinto[j.x][j.y] = playerId;
+				gLabirinto.labirinto[j->x][j->y] = EMPTY;
+				j->y--;
+				gLabirinto.labirinto[j->x][j->y] = playerId;
 			}
 			break;
 		}
 		case KEY_RIGHT:
 		{
-			if (j.y < 68)
+			if (j->y < 68)
 			{
-				gLabirinto.labirinto[j.x][j.y] = EMPTY;
-				j.y++;
-				gLabirinto.labirinto[j.x][j.y] = playerId;
+				gLabirinto.labirinto[j->x][j->y] = EMPTY;
+				j->y++;
+				gLabirinto.labirinto[j->x][j->y] = playerId;
 			}
 			break;
 		}
@@ -66,7 +66,7 @@ int MoverJogador(int playerId, int keystroke) {
 	return 0;
 }
 
-void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS]) {
+void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS], int id) {
 	//validar o scroll
 	// - Definir margens e encostar o scroll ao mapa
 	if ((x - PLAYER_LOS) < 0) x = PLAYER_LOS;
@@ -86,6 +86,8 @@ void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS]) {
 			matriz[_i][_j] = gLabirinto.labirinto[i][j];
 		}
 	}
+	
+	matriz[PLAYER_LOS/2][PLAYER_LOS/2] = id;
 }
 
 void SetEmptyMatrix(int(*matriz)[PLAYER_LOS]) {

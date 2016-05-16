@@ -24,5 +24,8 @@ using namespace std;
 #endif
 
 #define PIPE_NAME TEXT("\\\\.\\pipe\\DRPG")
+#define PIPE_NAME_JOGO TEXT("\\\\.\\pipe\\DRPG-Jogo")
+
+
 
 DWORD WINAPI EscrevePipe(LPVOID param);

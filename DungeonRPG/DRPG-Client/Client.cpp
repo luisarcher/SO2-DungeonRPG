@@ -13,6 +13,9 @@
 #define BUFFERSIZE 256
 
 #define PLAYER_LOS 10
+
+bool iniciado;
+
 typedef struct CLIENTREQUEST {
 	int command;
 	TCHAR msg[BUFFERSIZE];
@@ -78,9 +81,99 @@ DWORD WINAPI EsperaComando(LPVOID param) {
 		req.command = (int)SETNAME;
 		EscreveMensagem(pipe, req);
 		LerMensagem(pipe);
+		
 	}
 	return 0;
 }
+
+
+DWORD WINAPI LerBroadcast(LPVOID param) {
+	HANDLE pipe = (HANDLE)param;
+	BOOL ret;
+	ServerResponse resp;
+	DWORD n;
+
+	while (1)
+	{
+		
+
+		ret = ReadFile(pipe, &resp, sizeof(ServerResponse), &n, NULL);
+		//buf[n / sizeof(TCHAR)] = '\0';
+		if (iniciado == true)
+		{
+			if (ret || n)
+				for (int i = 0; i < 10; i++)
+				{
+					for (int j = 0; j < 10; j++)
+					{
+						//tcout << resp.matriz[i][j];
+						//system("cls");
+						MostraLOS(resp.matriz);
+					}
+				}
+		}
+		
+		if (resp.msg != TEXT('\0')) {
+			tcout << TEXT("[CLIENTE] Recebi ") << n << TEXT(" bytes: \'") << resp.msg << TEXT("\'... (ReadFile)\n");
+		}
+		tcout << TEXT("\n\n>>\n");
+	}
+	return 0;
+}
+
+//enviar escape e mostrar menu escape
+
+void enviaTecla(int k, HANDLE pipe) {
+	ClientRequest req;
+	switch (k)
+	{
+	case 1:
+	{
+		//_fgetts(req.msg, 256, stdin);
+		memset(req.msg, '\0', sizeof(TCHAR));
+		_tcscpy(req.msg, TEXT("UP\n"));
+		req.command = (int)MOVEUP;
+		EscreveMensagem(pipe, req);
+		//LerMensagem(pipe);
+		break;
+	}
+	case 2:
+	{
+		//_fgetts(req.msg, 256, stdin);
+		memset(req.msg, '\0', sizeof(TCHAR));
+		_tcscpy(req.msg, TEXT("Down\n"));
+		req.command = (int)MOVEDOWN;
+		EscreveMensagem(pipe, req);
+		//LerMensagem(pipe);
+		break;
+	}
+	case 3:
+	{
+		//_fgetts(req.msg, 256, stdin);
+		memset(req.msg, '\0', sizeof(TCHAR));
+		_tcscpy(req.msg, TEXT("Left\n"));
+		req.command = (int)MOVELEFT;
+		EscreveMensagem(pipe, req);
+		//LerMensagem(pipe);
+		break;
+	}
+	case 4:
+	{
+		//_fgetts(req.msg, 256, stdin);
+		memset(req.msg, '\0', sizeof(TCHAR));
+		_tcscpy(req.msg, TEXT("Right\n"));
+		req.command = (int)MOVERIGHT;
+		EscreveMensagem(pipe, req);
+		//LerMensagem(pipe);
+		break;
+	}
+	default:
+		break;
+	}
+
+}
+
+
 
 #ifdef UNICODE 
 #define tcout wcout
@@ -96,9 +189,9 @@ DWORD WINAPI EsperaComando(LPVOID param) {
 
 int _tmain(int argc, LPTSTR argv[]) {
 	TCHAR buf[256];
-	HANDLE hPipe;
+	HANDLE hPipe,hPipeJogo;
 	//int i = 0;
-	BOOL iniciado = FALSE;
+	//BOOL iniciado = FALSE;
 	BOOL ret;
 	DWORD n;
 	HANDLE hThread;
@@ -107,7 +200,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	_setmode(_fileno(stdin), _O_WTEXT);
 	_setmode(_fileno(stdout), _O_WTEXT);
 #endif
-
+	iniciado = false;
 	//Ligar ao pipe (PIPE_NAME)
 	tcout << TEXT("[CLIENTE]Esperar pelo pipe \'") << PIPE_NAME << TEXT("\'(WaitNamedPipe)\n");
 	if (!WaitNamedPipe(PIPE_NAME, NMPWAIT_WAIT_FOREVER)) {
@@ -123,18 +216,99 @@ int _tmain(int argc, LPTSTR argv[]) {
 		exit(-1);
 	}
 
-	//hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)EscrevePipe, (LPVOID)hPipe, 0, NULL);
+	tcout << TEXT("[CLIENTE] Ligação ao servidor... (CreateFile)\n");
+	if ((hPipeJogo = CreateFile(PIPE_NAME_JOGO, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL)) == NULL) {
+		tcerr << TEXT("[ERRO] Ligar ao pipe \'") << PIPE_NAME_JOGO << TEXT("\'... (CreateFile)\n");
+		system("pause");
+		exit(-1);
+	}
 
 	tcout << TEXT("[CLIENTE]Liguei-me...\n");
-	iniciado = TRUE;
 	
-	hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)EsperaComando, (LPVOID)hPipe, 0, NULL);
+	
+	//hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)EsperaComando, (LPVOID)hPipe, 0, NULL);
 
-	WaitForSingleObject(hThread, INFINITE);
-	CloseHandle(hPipe);
+	//WaitForSingleObject(hThread, INFINITE);
 
-	Sleep(200);
-	system("pause");
+	
+	int kp, seta = 0;
+	MenuInicial(seta);
+	while (iniciado = TRUE)
+	{
+		
+		kp = Getch();
+		switch (kp)
+		{
+		case 1:
+			if (seta == 0)
+			{
+				seta = 2;
+				MenuInicial(seta);
+			}
+			else
+			{
+				seta--;
+				MenuInicial(seta);
+			}
+			break;
+		case 2:
+			if (seta == 2)
+			{
+				seta = 0;
+				MenuInicial(seta);
+			}
+			else
+			{
+				seta++;
+				MenuInicial(seta);
+			}
+			break;
+		case 6:
+			//caso 1: posiciona o jogador no server, pede LOS mostra HUD
+			
+			
+			if (seta == 0)
+			{
+				int k = 0;
+				
+				ClientRequest req;
+				req.command = 601;
+				_tcscpy(req.msg, TEXT("Inicia..\n"));
+				//envia o codigo de inicio
+				EscreveMensagem(hPipe, req);
+				//Lê o "iniciaste"
+				LerMensagem(hPipe);
+				/*entre estas funções é preciso esperar pelo setup dos players*/
+				//Broadcast da posiçao
+				hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LerBroadcast, (LPVOID)hPipeJogo, 0, NULL);
+				
+				//envia movimentos agora
+				//HANDLE hMove = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Movimento, (LPVOID)hPipeJogo, 0, NULL);
+				while (1)
+				{
+					
+					k = Getch();
+					enviaTecla(k,hPipe);
+				}
+				//system("pause");
+			}
+			else if (seta == 1)
+			{
+				system("pause");
+			}
+			else
+				//sai do jogo
+				//CloseHandle(hPipe);
+				break;
+			break;
+		default:
+			break;
+		}
+	}
+
+	//CloseHandle(hPipe);
+
+	
 	return 0;
 }
 
