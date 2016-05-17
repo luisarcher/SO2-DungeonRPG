@@ -45,8 +45,8 @@
 	#define PLAYER_START_INDEX 0
 	#define PLAYER_END_INDEX 19
 		#define PLAYER_STONE_CAP 15
-		#define HP_BASE 100
-		#define LENTIDAO_BASE 7
+		#define HP_BASE 10
+		#define LENTIDAO_BASE 5
 
 	#define WALL_START_INDEX 20
 		#define STONEWALL 20
@@ -64,5 +64,7 @@
 extern BOOL fim;
 extern BOOL start;
 extern int totalConnections;
+
+extern HANDLE mutexLabirinto;
 
 #endif

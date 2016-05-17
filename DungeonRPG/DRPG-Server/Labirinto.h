@@ -4,15 +4,13 @@
 #include "Jogador.h"
 
 typedef struct LABIRINTO Labirinto;
-
 struct LABIRINTO {
 	int labirinto[LABIRINTOSIZE][LABIRINTOSIZE];
 	boolean init;
 };
 
 Labirinto NovoLabirinto();
-
-void posicionaJogador(Jogador *j, Labirinto *l);
+Labirinto LerLabirinto();
 
 extern Labirinto gLabirinto;
 #endif

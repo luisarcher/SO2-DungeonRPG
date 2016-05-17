@@ -11,6 +11,10 @@ struct JOGADOR {
 	int hp;
 	int nStones;
 	int lentidao;
+
+	int lentidaoCounter;
+	int atkCounter;
+
 	BOOL stoneAutoHit;
 	HANDLE hPipe;
 	HANDLE hPipeJogo;
@@ -18,18 +22,22 @@ struct JOGADOR {
 	TCHAR resposta[BUFFERSIZE]; //Resposta que será dada ao cliente no próximo envio
 };
 
-void NovoJogador(Jogador * j, int id);
+void NovoJogador(int id);
 int MoverJogador(int playerId, int keystroke);
 void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS]);
 void SetEmptyMatrix(int(*matriz)[PLAYER_LOS]);
 
 void SetPlayerInRandomPosition(Jogador * p);
 void AskPlayerToCollectItems(Jogador * p);
+void RecoverPlayerStamina(Jogador * p);
+void AttackClosePlayers(Jogador * p);
+BOOL UseStone(Jogador * p);
 
 BOOL hasPlayerIn(int x, int y);
 BOOL hasMonsterAndPlayerIn(int x, int y);
 BOOL hasObjectIn(int x, int y);
 BOOL hasWallIn(int x, int y);
+BOOL hasStamina(Jogador p);
 
 extern Jogador gClients[MAX_CLIENTS];
 #endif
