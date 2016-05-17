@@ -16,7 +16,9 @@ void NovoJogador(int id) {
 	j->atkCounter = 0;
 
 	//Define x e y do jogador (pos vazia) e regista-o no labirinto
+	WaitForSingleObject(mutexLabirinto, INFINITE);
 	SetPlayerInRandomPosition(j);
+	ReleaseMutex(mutexLabirinto);
 }
 
 int MoverJogador(int playerId, int keystroke) {
@@ -24,6 +26,7 @@ int MoverJogador(int playerId, int keystroke) {
 
 	if (!hasStamina(*j)) return;
 
+	WaitForSingleObject(mutexLabirinto, INFINITE);
 	switch (keystroke) {
 		case KEY_UP:
 		{
@@ -74,6 +77,7 @@ int MoverJogador(int playerId, int keystroke) {
 	if (hasObjectIn(j->x, j->y)) AskPlayerToCollectItems(j);
 	// Update matrix after collected items
 	gLabirinto.labirinto[j->y][j->x] = playerId;
+	ReleaseMutex(mutexLabirinto);
 	// Player is now "tired" and recovering stamina
 	j->lentidaoCounter = j->lentidao; //player is able to move on 0
 	return 0;

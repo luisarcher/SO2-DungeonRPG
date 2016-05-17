@@ -3,6 +3,7 @@
 #include "Labirinto.h"
 
 Labirinto gLabirinto; //Isto vai para memória partilhada com os monstros (META2)
+HANDLE mutexLabirinto;
 
 int _tmain(int argc, LPTSTR argv[]) {
 	HANDLE hThreadL;
@@ -14,6 +15,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	_setmode(_fileno(stderr), _O_WTEXT);
 #endif
 
+	mutexLabirinto = CreateMutex(NULL, FALSE, TEXT("Labirinto ocupado"));
 	//gLabirinto = NovoLabirinto();
 	gLabirinto = LerLabirinto(TEXT("jogo.txt"));
 
@@ -21,9 +23,6 @@ int _tmain(int argc, LPTSTR argv[]) {
 	hThreadL = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecebeClientes, NULL, 0, NULL);
 	hThreadE = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ActualizaClientes, NULL, 0, NULL);
 
-	while (fim == FALSE) {
-		_tscanf("%d", &fim);
-	}
 	//fim = TRUE; //define quando a thread deve terminar
 
 	//Esperar a thread RecebeClientes terminar e fecha o handle

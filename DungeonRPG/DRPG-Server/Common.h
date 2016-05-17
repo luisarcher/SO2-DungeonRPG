@@ -65,4 +65,6 @@ extern BOOL fim;
 extern BOOL start;
 extern int totalConnections;
 
+extern HANDLE mutexLabirinto;
+
 #endif

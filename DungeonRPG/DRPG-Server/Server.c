@@ -195,8 +195,10 @@ DWORD WINAPI ActualizaClientes(LPVOID param) {
 					}
 
 					//Player Activity //Mutex
+					WaitForSingleObject(mutexLabirinto, INFINITE);
 					RecoverPlayerStamina(&gClients[i]);
 					AttackClosePlayers(&gClients[i]);
+					ReleaseMutex(mutexLabirinto);
 
 				}
 			}//fim for
