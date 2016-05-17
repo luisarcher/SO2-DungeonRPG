@@ -31,6 +31,7 @@ DWORD WINAPI AtendeCliente(LPVOID param);
 DWORD WINAPI ActualizaClientes(LPVOID param);
 
 void DesligarNamedPipes();
+void DesligarThreadsDeCliente();
 
 extern TCHAR broadcastMessage[BUFFERSIZE];
 #endif

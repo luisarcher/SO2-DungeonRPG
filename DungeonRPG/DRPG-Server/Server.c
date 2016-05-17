@@ -38,9 +38,9 @@ DWORD WINAPI RecebeClientes(LPVOID param) {
 			exit(-1);
 		}
 
+		NovoJogador(totalConnections); //prepara os dados do jogador
 		//Atende o cliente que se ligou
 		gClients[totalConnections].hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)AtendeCliente, (LPVOID)totalConnections, 0, &n);
-		NovoJogador(&gClients[totalConnections],totalConnections); //prepara os dados do jogador
 		totalConnections++;
 	}
 	//DesligarNamedPipes(); //depois de fim //VERIFICAR!!
@@ -136,9 +136,15 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 			exit(-1);
 		}
 	} while (pedido.command != QUITGAME);
+
 	DisconnectNamedPipe(hPipeCliente);
+	DisconnectNamedPipe(gClients[(int)param].hPipeJogo);
 	CloseHandle(hPipeCliente);
-	_tprintf(TEXT("[SERVIDOR] Cliente [%d] desligou-se!\n"), (int)hPipeCliente);
+	CloseHandle(gClients[(int)param].hPipeJogo);
+
+	_tprintf(TEXT("[SERVIDOR] Cliente [%d] desligou-se!\n"), gClients[(int)param].id);
+	gClients[(int)param].hp = 0;
+	//deixa cair pedras
 	return 0;
 }
 
@@ -151,12 +157,25 @@ void DesligarNamedPipes() {
 	}
 }
 
+void DesligarThreadsDeCliente() {
+	for (int i = 0; i < totalConnections; i++) {
+		CloseHandle(gClients[i].hThread);
+	}
+}
+
 DWORD WINAPI ActualizaClientes(LPVOID param) {
 	TCHAR buf[BUFFERSIZE];
 	DWORD n;
 	ServerResponse resposta;
+
+	int activePlayers = 0;
+
 	while (!fim) {
-		if (totalConnections > 0) {
+		for (size_t i = 0; i < totalConnections; i++)
+			if (gClients[i].hp > 0) ++activePlayers;
+		
+		if (totalConnections > 0 && activePlayers > 0) {
+			activePlayers = 0;
 			//prepara a "string" de resposta
 			memset(resposta.msg, TEXT('\0'), sizeof(TCHAR));
 			if (broadcastMessage != TEXT('\0')) {
@@ -167,19 +186,23 @@ DWORD WINAPI ActualizaClientes(LPVOID param) {
 			for (int i = 0; i < totalConnections; i++) {
 				if (gClients[i].hp > 0) {
 
+					//Envia a matriz para os jogadores
 					if (!start) SetEmptyMatrix(&resposta.matriz); //security
 					else UpdatePlayerLOS(gClients[i].x, gClients[i].y, &resposta.matriz, i);
-
-
 					if (!WriteFile(gClients[i].hPipeJogo, &resposta, sizeof(ServerResponse), &n, NULL)) {
-						_tperror(TEXT("[ERRO] Escrever no pipe... (WriteFile)\n"));
-						exit(-1);
+						_tprintf(TEXT("[ERRO] Ao escrever no pipe do cliente %d:%s\n"), gClients[i].id, gClients[i].nome);
+						gClients[i].hp = 0;
 					}
+
+					//Player Activity //Mutex
+					RecoverPlayerStamina(&gClients[i]);
+					AttackClosePlayers(&gClients[i]);
+
 				}
 			}//fim for
-			//Sleep(3000);
-			Sleep(1000/15); //15 instantes por segundo
 			_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), n, totalConnections);
 		}
+		Sleep(1000);
+		//Sleep(1000 / 15); //15 instantes por segundo
 	}
 }

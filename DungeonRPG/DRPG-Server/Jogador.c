@@ -3,13 +3,17 @@
 #include "Common.h"
 #include "Server.h"
 
-void NovoJogador(Jogador *j, int id) {
+void NovoJogador(int id) {
+	Jogador * j = &gClients[id];
 	_tcscpy(j->nome, "guest");
-	j->hp = HP_BASE;
-	j->lentidao = LENTIDAO_BASE;
+	j->hp = (int)HP_BASE;
+	j->lentidao = (int)LENTIDAO_BASE;
 	j->id = id;
 	j->nStones = 0;
 	j->stoneAutoHit = TRUE;
+
+	j->lentidaoCounter = 0;
+	j->atkCounter = 0;
 
 	//Define x e y do jogador (pos vazia) e regista-o no labirinto
 	SetPlayerInRandomPosition(j);
@@ -17,8 +21,8 @@ void NovoJogador(Jogador *j, int id) {
 
 int MoverJogador(int playerId, int keystroke) {
 	Jogador *j = &gClients[playerId];
-	//if(gLabirinto.labirinto[j.x][j.y] > 1000)
-	//existe um monstro na mesma posição que o jogador
+
+	if (!hasStamina(*j)) return;
 
 	switch (keystroke) {
 		case KEY_UP:
@@ -27,6 +31,7 @@ int MoverJogador(int playerId, int keystroke) {
 			{
 				gLabirinto.labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (gLabirinto.labirinto[j->y][j->x] / 100) : EMPTY);
 				if (!hasWallIn(j->x, j->y - 1) && !hasPlayerIn(j->x, j->y - 1)) j->y--;
+				_tprintf(TEXT("Moving up...\n"));
 			}
 			break;
 		}
@@ -36,6 +41,7 @@ int MoverJogador(int playerId, int keystroke) {
 			{
 				gLabirinto.labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (gLabirinto.labirinto[j->y][j->x] / 100) : EMPTY);
 				if (!hasWallIn(j->x, j->y + 1) && !hasPlayerIn(j->x, j->y + 1))j->y++;
+				_tprintf(TEXT("Moving down...\n"));
 			}
 			break;
 		}
@@ -44,7 +50,8 @@ int MoverJogador(int playerId, int keystroke) {
 			if (j->x > 1)
 			{
 				gLabirinto.labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (gLabirinto.labirinto[j->y][j->x] / 100) : EMPTY);
-				if (!hasWallIn(j->x - 1, j->y) && !hasPlayerIn(j->x - 1, j->y)) j->y--; j->x--;
+				if (!hasWallIn(j->x - 1, j->y) && !hasPlayerIn(j->x - 1, j->y)) j->x--;
+				_tprintf(TEXT("Moving left...\n"));
 			}
 			break;
 		}
@@ -54,6 +61,7 @@ int MoverJogador(int playerId, int keystroke) {
 			{
 				gLabirinto.labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (gLabirinto.labirinto[j->y][j->x] / 100) : EMPTY);
 				if (!hasWallIn(j->x + 1, j->y) && !hasPlayerIn(j->x + 1, j->y)) j->x++;
+				_tprintf(TEXT("Moving right...\n"));
 			}
 			break;
 		}
@@ -62,10 +70,12 @@ int MoverJogador(int playerId, int keystroke) {
 			_tprintf(TEXT("[SERVER] Não foi possível movimentar o jogador!"));
 			break;
 		}
-		if (hasObjectIn(j->x, j->y)) AskPlayerToCollectItems(j);
-		//Update matrix after collected items
-		gLabirinto.labirinto[j->y][j->x] = playerId;
 	}
+	//if (hasObjectIn(j->x, j->y)) AskPlayerToCollectItems(j);
+	// Update matrix after collected items
+	gLabirinto.labirinto[j->y][j->x] = playerId;
+	// Player is now "tired" and recovering stamina
+	//j->lentidaoCounter = j->lentidao; //player is able to move on 0
 	return 0;
 }
 
@@ -73,7 +83,7 @@ void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS]) {
 	//validar o scroll
 	// - Definir margens e encostar o scroll ao mapa
 	SetEmptyMatrix(matriz);
-	//_tprintf(TEXT("POSX: %d POSY: %d\n\n"), x, y);
+	_tprintf(TEXT("POSX: %d POSY: %d\n\n"), x, y);
 	
 	int iniX, iniY, maxX,maxY;
 
@@ -111,7 +121,6 @@ void SetPlayerInRandomPosition(Jogador * p) {
 	do {
 		srand(time(NULL));
 		x = (rand() % LABIRINTOSIZE);
-		srand(time(NULL));
 		y = (rand() % LABIRINTOSIZE);
 	} while (!gLabirinto.labirinto[y][x] == EMPTY);
 
@@ -141,6 +150,40 @@ BOOL hasWallIn(int x, int y) {
 		&& gLabirinto.labirinto[y][x] <= WALL_END_INDEX;
 }
 
+BOOL hasStamina(Jogador p) {
+	return (p.lentidaoCounter == 0);
+}
+
+void RecoverPlayerStamina(Jogador * p) {
+	if (p->lentidaoCounter > 0)
+		--p->lentidaoCounter;
+	if (p->atkCounter > 0)
+		--p->atkCounter;
+}
+
+void AttackClosePlayers(Jogador * p) {
+	for (size_t i = (p->y - 1); i <= (p->y + 1); i++)
+	{
+		for (size_t j = (p->x - 1); j <= (p->x + 1); j++)
+		{
+			if (i == p->y && j == p->x) continue;
+			if (hasPlayerIn(j, i) && gClients[gLabirinto.labirinto[i][j]].hp > 0) {
+				gClients[gLabirinto.labirinto[i][j]].hp -= (UseStone(p) ? 2 : 1);
+				p->atkCounter = (int)LENTIDAO_BASE;
+				return;
+			}
+		}
+	}
+}
+
+BOOL UseStone(Jogador * p) {
+	if (p->stoneAutoHit == TRUE && p->nStones > 0) {
+		--p->nStones;
+		return TRUE;
+	}
+	return FALSE;
+}
+
 void AskPlayerToCollectItems(Jogador * p) {
 	int nPedras = 0;
 	/*
@@ -159,7 +202,7 @@ void AskPlayerToCollectItems(Jogador * p) {
 		if ((p->hp + 1) <= (int)HP_BASE * 2) p->hp += 3;
 		break;
 	case REB_CAFEINA:
-		p->lentidao -= 2; //Efeito só deve de durar por 1 min (does not stack)
+		p->lentidao = (int)LENTIDAO_BASE - 2; //Efeito só deve de durar por 1 min (does not stack)
 		break;
 	default:
 		if ((nPedras = gLabirinto.labirinto[p->x][p->y]) > PEDRAS){
