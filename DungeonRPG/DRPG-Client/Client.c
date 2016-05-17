@@ -49,25 +49,6 @@ void LerMensagem(HANDLE pipe) {
 	
 }
 
-DWORD WINAPI EsperaComando(LPVOID param) {
-	HANDLE pipe = (HANDLE)param;
-	TCHAR buf[256];
-	DWORD n;
-	BOOL ret;
-	ClientRequest req;
-	ServerResponse resp;
-	while (1) {
-		memset(req.msg, '\0', sizeof(TCHAR));
-		_tprintf(TEXT("[CLIENTE] Frase: "));
-		_fgetts(req.msg, 256, stdin);
-		req.command = (int)SETNAME;
-		EscreveMensagem(pipe, req);
-		LerMensagem(pipe);
-		
-	}
-	return 0;
-}
-
 
 DWORD WINAPI LerBroadcast(LPVOID param) {
 	HANDLE pipe = (HANDLE)param;
