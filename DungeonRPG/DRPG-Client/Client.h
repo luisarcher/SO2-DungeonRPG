@@ -2,16 +2,19 @@
 #define CLIENT_H_INCLUDED
 
 #define _CRT_SECURE_NO_WARNINGS
-//ya
+
+
+
+
+
+
+
 #include <windows.h>
 #include <tchar.h>
 #include <io.h>
 #include <fcntl.h>
 #include <stdio.h>
-
 #include "UI.h"
-
-
 
 #define SETNAME		600
 #define STARTGAME	601
@@ -22,7 +25,6 @@
 #define MOVERIGHT	677
 #define SWITCH_STONE_AUTOHIT 650
 #define BUFFERSIZE 256
-
 #define PLAYER_LOS 10
 
 #define PIPE_NAME TEXT("\\\\.\\pipe\\DRPG")
@@ -39,13 +41,9 @@ typedef struct SERVERRESPONSE {
 	TCHAR msg[BUFFERSIZE];
 } ServerResponse;
 
-
-//DWORD WINAPI EscrevePipe(LPVOID param);
-
 void enviaTecla(int k, HANDLE pipe, HANDLE hThread);
 
 DWORD WINAPI LerBroadcast(LPVOID param);
-DWORD WINAPI EsperaComando(LPVOID param);
 
 void LerMensagem(HANDLE pipe);
 void EscreveMensagem(HANDLE pipe, ClientRequest req);
