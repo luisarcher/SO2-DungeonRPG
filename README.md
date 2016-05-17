@@ -9,14 +9,17 @@ Como representar um player e monstro na mesma posição?
 
 As threads que alteram dados do mapa precisam de MutEx
 
-tempo
-
 fechar a thread respectiva ao cliente quando ele se desliga
 
 Jogador deixa cair as pedras
 
 criar distribuidor de items
 
-combate
-
 alterar a estruta de resposta do server para uma string
+
+verificador dos hp < 0, termina a thread
+
+criar novo objecto chamado crate
+
+função para desligar server
+

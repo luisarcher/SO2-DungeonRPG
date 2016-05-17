@@ -71,11 +71,11 @@ int MoverJogador(int playerId, int keystroke) {
 			break;
 		}
 	}
-	//if (hasObjectIn(j->x, j->y)) AskPlayerToCollectItems(j);
+	if (hasObjectIn(j->x, j->y)) AskPlayerToCollectItems(j);
 	// Update matrix after collected items
 	gLabirinto.labirinto[j->y][j->x] = playerId;
 	// Player is now "tired" and recovering stamina
-	//j->lentidaoCounter = j->lentidao; //player is able to move on 0
+	j->lentidaoCounter = j->lentidao; //player is able to move on 0
 	return 0;
 }
 

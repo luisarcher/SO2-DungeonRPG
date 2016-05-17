@@ -20,9 +20,30 @@ Labirinto NovoLabirinto() {
 	return l;
 }
 
-void posicionaJogador(Jogador *j, Labirinto *l)
-{
-	j->x = 10;
-	j->y = 10;
-	l->labirinto[j->x][j->y] = 2;
+Labirinto LerLabirinto() {
+	Labirinto l;
+	FILE *f;
+	int n = 0, i = 0, j = 0;
+
+	if ((f = fopen("jogo.txt", "r")) == NULL) {
+		_tprintf(TEXT("[ERRO] Ao ler o ficheiro!"));
+		system("pause");
+		exit(-1);
+	}
+
+	while (fscanf(f, "%d,", &n) != EOF)
+	{
+		l.labirinto[i][j] = n;
+		if (j == LABIRINTOSIZE - 1)
+		{
+			j = 0;
+			i++;
+		}
+		else
+		{
+			j++;
+		}
+	}
+	fclose(f);
+	return l;
 }

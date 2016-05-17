@@ -14,7 +14,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 	_setmode(_fileno(stderr), _O_WTEXT);
 #endif
 
-	gLabirinto = NovoLabirinto();
+	//gLabirinto = NovoLabirinto();
+	gLabirinto = LerLabirinto(TEXT("jogo.txt"));
 
 	//Invocar a thread que inscreve novos clientes
 	hThreadL = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecebeClientes, NULL, 0, NULL);
