@@ -19,7 +19,7 @@ struct JOGADOR {
 	HANDLE hPipe;
 	HANDLE hPipeJogo;
 	HANDLE hThread;
-	TCHAR resposta[BUFFERSIZE]; //Resposta que será dada ao cliente no próximo envio
+	TCHAR resposta[BUFFERSIZE];
 };
 
 void NovoJogador(int id);
