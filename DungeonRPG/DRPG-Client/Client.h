@@ -2,7 +2,7 @@
 #define CLIENT_H_INCLUDED
 
 #define _CRT_SECURE_NO_WARNINGS
-
+//ya
 #include <windows.h>
 #include <tchar.h>
 #include <io.h>
