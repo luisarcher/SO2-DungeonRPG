@@ -370,5 +370,3 @@ int _tmain(int argc, LPTSTR argv[]) {
 	exit(0);
 }
 
-
-//2315
