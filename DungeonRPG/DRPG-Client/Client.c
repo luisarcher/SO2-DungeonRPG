@@ -1,31 +1,10 @@
-#pragma once
-#define _CRT_SECURE_NO_WARNINGS
 #include "Client.h"
 
-//id msg
-#define SETNAME		600
-#define STARTGAME	601
-#define QUITGAME	604
-#define MOVEUP		672
-#define MOVEDOWN	680
-#define MOVELEFT	675
-#define MOVERIGHT	677
-#define SWITCH_STONE_AUTOHIT 650
-#define BUFFERSIZE 256
 
-#define PLAYER_LOS 10
 
-bool iniciado;
 
-typedef struct CLIENTREQUEST {
-	int command;
-	TCHAR msg[BUFFERSIZE];
-} ClientRequest;
+BOOL iniciado = FALSE;
 
-typedef struct SERVERRESPONSE {
-	int matriz[PLAYER_LOS][PLAYER_LOS];
-	TCHAR msg[BUFFERSIZE];
-} ServerResponse;
 
 
 void EscreveMensagem(HANDLE pipe, ClientRequest req) {
@@ -48,7 +27,7 @@ void EscreveMensagem(HANDLE pipe, ClientRequest req) {
 		_tprintf(TEXT("Erro"));
 	}
 	else
-		tcout << TEXT("[CLIENTE]Escrevi...\n"); 
+		_tprintf(TEXT("[CLIENTE]Escrevi...\n")); 
 
 
 
@@ -62,10 +41,12 @@ void LerMensagem(HANDLE pipe) {
 	DWORD n;
 	
 	ret = ReadFile(pipe, &resp, sizeof(ServerResponse), &n, NULL);
-	//buf[n / sizeof(TCHAR)] = '\0';
-	/*if (!ret || !n)
-		break;*/
-	tcout << TEXT("[CLIENTE] Recebi ") << n << TEXT(" bytes: \'") << resp.msg << TEXT("\'... (ReadFile)\n");
+	//_tprintf(TEXT("[CLIENTE] %s", resp.msg));
+	resp.msg[n / sizeof(TCHAR)] = '\0';
+	//if (ret || n)
+	_tprintf(TEXT("[CLIENTE] Recebi %d bytes: \'%s\'... (ReadFile)\n"), n, resp.msg);
+	//tcout << TEXT("[CLIENTE] Recebi ") << n << TEXT(" bytes: \'") << resp.msg << TEXT("\'... (ReadFile)\n");
+	
 }
 
 DWORD WINAPI EsperaComando(LPVOID param) {
@@ -100,26 +81,16 @@ DWORD WINAPI LerBroadcast(LPVOID param) {
 
 		ret = ReadFile(pipe, &resp, sizeof(ServerResponse), &n, NULL);
 		//buf[n / sizeof(TCHAR)] = '\0';
-		if (iniciado == true)
+		if (iniciado == TRUE)
 		{
 			if (ret || n)
-				for (int i = 0; i < 10; i++)
-				{
-					for (int j = 0; j < 10; j++)
-					{
-						//tcout << resp.matriz[i][j];
-						//system("cls");
-
-						MostraLOS(resp.matriz);
-					}
-				}
+				MostraLOS(resp.matriz);
 		}
 		else if (resp.msg[0] != TEXT('\0')) {
-			tcout << TEXT("[CLIENTE] Recebi ") << n << TEXT(" bytes: \'") << resp.msg << TEXT("\'... (ReadFile)\n");
+			_tprintf(TEXT("[CLIENTE] Recebi %d bytes: \'%s\'... (ReadFile)\n"), n, resp.msg);
+			//_tprintf(TEXT("[CLIENTE] Recebi ") << n << TEXT(" bytes: \'") << resp.msg << TEXT("\'... (ReadFile)\n"));
 		}
-		/*else
-			break;*/
-		//tcout << TEXT("\n\n>>\n");
+		
 	}
 	return 0;
 }
@@ -173,7 +144,7 @@ void enviaTecla(int k, HANDLE pipe, HANDLE hThread) {
 	}
 	case 7://escape
 	{
-		iniciado = false;
+		iniciado = FALSE;
 
 		clrscr();
 		seta = 0;
@@ -182,7 +153,7 @@ void enviaTecla(int k, HANDLE pipe, HANDLE hThread) {
 		MenuEscape(seta);
 
 
-		while (iniciado == false)
+		while (iniciado == FALSE)
 		{
 
 
@@ -217,7 +188,7 @@ void enviaTecla(int k, HANDLE pipe, HANDLE hThread) {
 				if (seta == 0)
 				{
 
-					iniciado = true;
+					iniciado = TRUE;
 
 				}
 				else if (seta == 1)
@@ -253,17 +224,7 @@ void enviaTecla(int k, HANDLE pipe, HANDLE hThread) {
 
 
 
-#ifdef UNICODE 
-#define tcout wcout
-#define tcin wcin
-#define tcerr wcerr
-#define tstring wstring
-#else
-#define tcout cout
-#define tcin cin
-#define tcerr cerr
-#define tstring string
-#endif
+
 
 int _tmain(int argc, LPTSTR argv[]) {
 	TCHAR buf[256];
@@ -274,34 +235,47 @@ int _tmain(int argc, LPTSTR argv[]) {
 	DWORD n;
 	HANDLE hThread;
 	ClientRequest req;
-#ifdef UNICODE 
+
+
+#ifdef UNICODE
 	_setmode(_fileno(stdin), _O_WTEXT);
 	_setmode(_fileno(stdout), _O_WTEXT);
+	_setmode(_fileno(stderr), _O_WTEXT);
 #endif
-	iniciado = false;
+
+	//iniciado = FALSE;
 	//Ligar ao pipe (PIPE_NAME)
-	tcout << TEXT("[CLIENTE]Esperar pelo pipe \'") << PIPE_NAME << TEXT("\'(WaitNamedPipe)\n");
+	
+	_tprintf(TEXT("[CLIENTE]Esperar pelo pipe %s(WaitNamedPipe)\n"), PIPE_NAME);
+	//_tprintf(TEXT("[CLIENTE]Esperar pelo pipe (WaitNamedPipe)\n"));
+
+	//tcout << TEXT("[CLIENTE]Esperar pelo pipe \'") << PIPE_NAME << TEXT("\'(WaitNamedPipe)\n");
 	if (!WaitNamedPipe(PIPE_NAME, NMPWAIT_WAIT_FOREVER)) {
-		tcout << TEXT("[ERRO] Ligar ao pipe \'") << PIPE_NAME << TEXT("\'... (WaitNamedPipe)\n");
+		_tprintf(TEXT("[ERRO] Ligar ao pipe \'%s\'... (WaitNamedPipe)\n"), PIPE_NAME);
+		//_tprintf(TEXT("[ERRO] Ligar ao pipe ... (WaitNamedPipe)\n"));
+		//tcout << TEXT("[ERRO] Ligar ao pipe \'") << PIPE_NAME << TEXT("\'... (WaitNamedPipe)\n");
 		system("pause");
 		exit(-1);
 	}
-
-	tcout << TEXT("[CLIENTE] Ligação ao servidor... (CreateFile)\n");
+	_tprintf(TEXT("[CLIENTE] Ligação ao servidor... (CreateFile)\n"));
+	//tcout << TEXT("[CLIENTE] Ligação ao servidor... (CreateFile)\n");
 	if ((hPipe = CreateFile(PIPE_NAME, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL)) == NULL) {
-		tcerr << TEXT("[ERRO] Ligar ao pipe \'") << PIPE_NAME << TEXT("\'... (CreateFile)\n");
+		//tcerr << TEXT("[ERRO] Ligar ao pipe \'") << PIPE_NAME << TEXT("\'... (CreateFile)\n");
+		_tprintf(TEXT("[ERRO] Ligar ao pipe \'%s\'... (WaitNamedPipe)\n"), PIPE_NAME);
 		system("pause");
 		exit(-1);
 	}
-
-	tcout << TEXT("[CLIENTE] Ligação ao servidor... (CreateFile)\n");
+	_tprintf(TEXT("[CLIENTE] Ligação ao servidor PIPE BROADCAST... (CreateFile)\n"));
+	//tcout << TEXT("[CLIENTE] Ligação ao servidor... (CreateFile)\n");
 	if ((hPipeJogo = CreateFile(PIPE_NAME_JOGO, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL)) == NULL) {
-		tcerr << TEXT("[ERRO] Ligar ao pipe \'") << PIPE_NAME_JOGO << TEXT("\'... (CreateFile)\n");
+		_tprintf(TEXT("[ERRO] Ligar ao pipe \'%s\'... (WaitNamedPipe)\n"), PIPE_NAME_JOGO);
+		//tcerr << TEXT("[ERRO] Ligar ao pipe \'") << PIPE_NAME_JOGO << TEXT("\'... (CreateFile)\n");
 		system("pause");
 		exit(-1);
 	}
 
-	tcout << TEXT("[CLIENTE]Liguei-me...\n");
+	_tprintf(TEXT("[CLIENTE]Liguei-me...\n"));
+	//tcout << TEXT("[CLIENTE]Liguei-me...\n");
 	
 	
 	//hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)EsperaComando, (LPVOID)hPipe, 0, NULL);
@@ -351,7 +325,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 				
 				ClientRequest req;
 				req.command = 601;
-				_tcscpy(req.msg, TEXT("Inicia..\n"));
+				_tcscpy(req.msg, TEXT("Inicia.."));
 				//envia o codigo de inicio
 				EscreveMensagem(hPipe, req);
 				//Lê o "iniciaste"
@@ -393,7 +367,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	//CloseHandle(hPipe);
 
 	
-	return 0;
+	exit(0);
 }
 
 

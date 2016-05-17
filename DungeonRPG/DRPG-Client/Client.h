@@ -1,31 +1,53 @@
-#pragma once
+#ifndef CLIENT_H_INCLUDED
+#define CLIENT_H_INCLUDED
+
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <windows.h>
 #include <tchar.h>
 #include <io.h>
 #include <fcntl.h>
-#include <iostream> //se vai ser em C, excluir esta lib
 #include <stdio.h>
-#include <string>
+
 #include "UI.h"
 
-using namespace std;
 
-//Permitir que o mesmo código possa funcionar para ASCII ou UNICODE
-#ifdef UNICODE 
-#define tcout wcout
-#define tcin wcin
-#define tcerr wcerr
-#define tstring wstring
-#else
-#define tcout cout
-#define tcin cin
-#define tcerr cerr
-#define tstring string
-#endif
+
+#define SETNAME		600
+#define STARTGAME	601
+#define QUITGAME	604
+#define MOVEUP		672
+#define MOVEDOWN	680
+#define MOVELEFT	675
+#define MOVERIGHT	677
+#define SWITCH_STONE_AUTOHIT 650
+#define BUFFERSIZE 256
+
+#define PLAYER_LOS 10
 
 #define PIPE_NAME TEXT("\\\\.\\pipe\\DRPG")
 #define PIPE_NAME_JOGO TEXT("\\\\.\\pipe\\DRPG-Jogo")
 
 
+typedef struct CLIENTREQUEST {
+	int command;
+	TCHAR msg[BUFFERSIZE];
+} ClientRequest;
 
-DWORD WINAPI EscrevePipe(LPVOID param);
+typedef struct SERVERRESPONSE {
+	int matriz[PLAYER_LOS][PLAYER_LOS];
+	TCHAR msg[BUFFERSIZE];
+} ServerResponse;
+
+
+//DWORD WINAPI EscrevePipe(LPVOID param);
+
+void enviaTecla(int k, HANDLE pipe, HANDLE hThread);
+
+DWORD WINAPI LerBroadcast(LPVOID param);
+DWORD WINAPI EsperaComando(LPVOID param);
+
+void LerMensagem(HANDLE pipe);
+void EscreveMensagem(HANDLE pipe, ClientRequest req);
+
+#endif
