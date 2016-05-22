@@ -1,4 +1,5 @@
 #include "UI.h"
+#include "Client.h"
 
 /*void MenuInicial()
 {
@@ -10,7 +11,6 @@ void gotoxy(int x, int y) {
 	coord.X = x;
 	coord.Y = y;
 	SetConsoleCursorPosition(hStdout, coord);
-
 }
 
 void clrscr() {
@@ -59,7 +59,7 @@ void MenuInicial(int op) {
 	}
 }
 
-char Getch() {
+int Getch() {
 	INPUT_RECORD irInputRecord;
 	DWORD dwEventsRead;
 	CHAR cChar;
@@ -81,7 +81,8 @@ char Getch() {
 			if (irInputRecord.Event.KeyEvent.wVirtualKeyCode == VK_SPACE) return KEY_SPACE;
 			if (irInputRecord.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) return KEY_ENTER;
 			if (irInputRecord.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE) return KEY_ESCAPE;
-			return cChar;
+			//return cChar;
+			return EOF;
 		}
 
 	return EOF;

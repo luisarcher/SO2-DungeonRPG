@@ -47,39 +47,41 @@ DWORD WINAPI RecebeClientes(LPVOID param) {
 	return 0;
 }
 
+DWORD WINAPI GameTimer(LPVOID param){
+	Sleep(1000/15);
+}
+
 DWORD WINAPI AtendeCliente(LPVOID param) {
 	//ide buscar o handle do cliente que está no array global
 	HANDLE hPipeCliente = gClients[(int)param].hPipe;
 
-	TCHAR buf[256];
+	TCHAR buf[BUFFERSIZE];
+	TCHAR respostaServidor[BUFFERSIZE];
 	DWORD n;
 	BOOL ret;
 
 	ClientRequest pedido;
-	ServerResponse resposta;
 
 	do {
 		ret = ReadFile(hPipeCliente, &pedido, sizeof(ClientRequest), &n, NULL);
 		if (!ret || !n) break;
 		_tprintf(TEXT("[Server] Recebi %d bytes: \'%s\'... (ReadFile)\n"),n,pedido.msg);
-		memset(resposta.msg, '\0', sizeof(TCHAR)); //prepara a "string" de resposta
-		memset(gClients[(int)param].resposta, '\0', sizeof(TCHAR));
+		memset(respostaServidor, '\0', sizeof(TCHAR) * BUFFERSIZE); //prepara a "string" de resposta
+		_tcscpy(respostaServidor, TEXT(" "));
 		if (!start) {
 			switch (pedido.command)
 			{
 			case GAMESTATUS:
 				//swprintf(resposta.msg, "%d", totalConnections); //Clientes Ligados
-				_tcscpy(resposta.msg, TEXT("Estatísticas dados pré-jogo...\n"));
+				_tcscpy(respostaServidor, TEXT("Estatísticas dados pré-jogo...\n"));
 				_swprintf(buf, TEXT("%d"), totalConnections);
-				_tcscat(resposta.msg, TEXT("Total de jogadores ligados: "));
-				_tcscat(resposta.msg, buf);
-				ret = WriteFile(hPipeCliente, &resposta, sizeof(ServerResponse), &n, NULL);
+				_tcscat(respostaServidor, TEXT("Total de jogadores ligados: "));
+				_tcscat(respostaServidor, buf);
 				break;
 			case SETNAME:
 				_tcscpy(gClients[(int)param].nome, pedido.msg);
-				_tcscpy(resposta.msg, TEXT("Estás registado como: "));
-				_tcscat(resposta.msg, pedido.msg);
-				ret = WriteFile(hPipeCliente, &resposta, sizeof(ServerResponse), &n, NULL);
+				_tcscpy(respostaServidor, TEXT("Estás registado como: "));
+				_tcscat(respostaServidor, pedido.msg);
 
 				//Broadcast
 				_tcscat(broadcastMessage, TEXT("Novo Cliente Ligado: "));
@@ -88,12 +90,11 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 
 			case STARTGAME:
 				start = TRUE;
-				_tcscpy(resposta.msg, TEXT("Começaste um novo jogo!"));
-				ret = WriteFile(hPipeCliente, &resposta, sizeof(ServerResponse), &n, NULL);
-				//broadcast -> Isto tem de levar um WaitFor
+				_tcscpy(respostaServidor, TEXT("Começaste um novo jogo!"));
+
+				//Broadcast
 				_tcscat(broadcastMessage, TEXT("Novo jogo iniciado por: "));
 				_tcscat(broadcastMessage, gClients[(int)param].nome);
-				//WaitForMultipleObjects()
 				break;
 
 			case QUITGAME:
@@ -105,25 +106,25 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 		}
 		else { //O jogo está a decorrer
 			if (pedido.command == MOVEUP || pedido.command == MOVEDOWN
-				|| pedido.command == MOVELEFT || pedido.command == MOVERIGHT)
-				MoverJogador((int)param,(pedido.command - 600));
+				|| pedido.command == MOVELEFT || pedido.command == MOVERIGHT) {
+				MoverJogador((int)param, (pedido.command - 600));
+				_tcscpy(respostaServidor, TEXT("A mover..."));
+			}
 			else {
 				switch (pedido.command)
 				{
 				case GAMESTATUS:
-					_tcscpy(resposta.msg, TEXT("Estatísticas de jogo a decorrer"));
-					ret = WriteFile(hPipeCliente, &resposta, sizeof(ServerResponse), &n, NULL);
+					_tcscpy(respostaServidor, TEXT("Estatísticas de jogo a decorrer"));
 					break;
 				case SWITCH_STONE_AUTOHIT:
 					if (gClients[(int)param].stoneAutoHit) {
 						gClients[(int)param].stoneAutoHit = FALSE;
-						_tcscpy(resposta.msg, TEXT("Stone AutoHit: Desligado!"));
+						_tcscpy(respostaServidor, TEXT("Stone AutoHit: Desligado!"));
 					}
 					else {
 						gClients[(int)param].stoneAutoHit = TRUE;
-						_tcscpy(resposta.msg, TEXT("Stone AutoHit: Ligado!"));
+						_tcscpy(respostaServidor, TEXT("Stone AutoHit: Ligado!"));
 					}
-					ret = WriteFile(hPipeCliente, &resposta, sizeof(ServerResponse), &n, NULL);
 					break;
 
 				case QUITGAME:
@@ -131,8 +132,10 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 				}
 			} //fimif - mover
 		} //fimif - start
-		if (!ret) {
-			_tperror(TEXT("[ERRO] Escrever no pipe... (WriteFile)\n"));
+		//Entrega a resposta final ao cliente
+		_tprintf(TEXT("[Server] A responder com %d bytes: \'%s\' ao cliente [%d] (ReadFile)\n"), n, respostaServidor, (int)param);
+		if (!WriteFile(hPipeCliente, respostaServidor, sizeof(TCHAR) * BUFFERSIZE, &n, NULL)) {
+			_tperror(TEXT("[ERRO] Responder ao cliente... (WriteFile)\n"));
 			exit(-1);
 		}
 	} while (pedido.command != QUITGAME);
@@ -188,23 +191,24 @@ DWORD WINAPI ActualizaClientes(LPVOID param) {
 
 					//Envia a matriz para os jogadores
 					if (!start) SetEmptyMatrix(&resposta.matriz); //security
-					else UpdatePlayerLOS(gClients[i].x, gClients[i].y, &resposta.matriz, i);
+					else UpdatePlayerLOS(gClients[i].x, gClients[i].y, &resposta.matriz);
 					if (!WriteFile(gClients[i].hPipeJogo, &resposta, sizeof(ServerResponse), &n, NULL)) {
 						_tprintf(TEXT("[ERRO] Ao escrever no pipe do cliente %d:%s\n"), gClients[i].id, gClients[i].nome);
 						gClients[i].hp = 0;
 					}
 
-					//Player Activity //Mutex
-					WaitForSingleObject(mutexLabirinto, INFINITE);
+					//Player Activity
 					RecoverPlayerStamina(&gClients[i]);
+					//WaitForSingleObject(mutexLabirinto, INFINITE);
 					AttackClosePlayers(&gClients[i]);
-					ReleaseMutex(mutexLabirinto);
+					//ReleaseMutex(mutexLabirinto);
 
 				}
 			}//fim for
-			_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), n, totalConnections);
+			_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), n, activePlayers);
 		}
 		//Sleep(1000);
 		Sleep(1000 / 15); //15 instantes por segundo
 	}
+	return 0;
 }

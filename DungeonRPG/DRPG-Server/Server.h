@@ -29,6 +29,7 @@ typedef struct {
 DWORD WINAPI RecebeClientes(LPVOID param);
 DWORD WINAPI AtendeCliente(LPVOID param);
 DWORD WINAPI ActualizaClientes(LPVOID param);
+DWORD WINAPI GameTimer(LPVOID param);
 
 void DesligarNamedPipes();
 void DesligarThreadsDeCliente();

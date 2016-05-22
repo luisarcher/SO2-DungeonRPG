@@ -5,7 +5,7 @@
 
 void NovoJogador(int id) {
 	Jogador * j = &gClients[id];
-	_tcscpy(j->nome, "guest");
+	_tcscpy(j->nome, TEXT("guest"));
 	j->hp = (int)HP_BASE;
 	j->lentidao = (int)LENTIDAO_BASE;
 	j->id = id;
@@ -16,9 +16,9 @@ void NovoJogador(int id) {
 	j->atkCounter = 0;
 
 	//Define x e y do jogador (pos vazia) e regista-o no labirinto
-	WaitForSingleObject(mutexLabirinto, INFINITE);
+	//WaitForSingleObject(mutexLabirinto, INFINITE);
 	SetPlayerInRandomPosition(j);
-	ReleaseMutex(mutexLabirinto);
+	//ReleaseMutex(mutexLabirinto);
 }
 
 int MoverJogador(int playerId, int keystroke) {
