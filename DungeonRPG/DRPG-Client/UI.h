@@ -1,5 +1,4 @@
 #pragma once
-#include "Client.h"
 
 #define KEY_UP 1
 #define KEY_DOWN 2
@@ -10,10 +9,9 @@
 #define KEY_ESCAPE 7
 #define EMPTY -1
 
-
 void MenuEscape(int op);
 void MostraLOS(int(*los)[10]);
-char Getch();
+int Getch();
 void MenuInicial(int op);
 void clrscr();
 void gotoxy(int x, int y);

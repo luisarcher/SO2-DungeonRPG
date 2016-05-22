@@ -1,54 +1,26 @@
 #include "Client.h"
 
-
-
-
 BOOL iniciado = FALSE;
-
-
+BOOL fim = FALSE;
 
 void EscreveMensagem(HANDLE pipe, ClientRequest req) {
 	DWORD n;
-	BOOL ret;
-	TCHAR buf[256];
-
-	
-
-	/*_tprintf(TEXT("[CLIENTE] Nome: "));
-	_fgetts(req.msg, 256, stdin);*/
-
-	//_tcscpy(req.msg, TEXT("rebeca")); //nome
-	//_tcscpy(req.msg, '\0');
-
-
-	
-
 	if (!WriteFile(pipe, &req, sizeof(ClientRequest), &n, NULL)) {
-		_tprintf(TEXT("Erro"));
+		_tprintf(TEXT("[CLIENTE] Erro ao enviar mensagem ao servidor!\n"));
 	}
 	else
 		_tprintf(TEXT("[CLIENTE]Escrevi...\n")); 
-
-
-
-	
-	
 }
 
 void LerMensagem(HANDLE pipe) {
-	BOOL ret;
-	ServerResponse resp;
+	TCHAR buf[BUFFERSIZE];
 	DWORD n;
 	
-	ret = ReadFile(pipe, &resp, sizeof(ServerResponse), &n, NULL);
-	//_tprintf(TEXT("[CLIENTE] %s", resp.msg));
-	resp.msg[n / sizeof(TCHAR)] = '\0';
-	//if (ret || n)
-	_tprintf(TEXT("[CLIENTE] Recebi %d bytes: \'%s\'... (ReadFile)\n"), n, resp.msg);
-	//tcout << TEXT("[CLIENTE] Recebi ") << n << TEXT(" bytes: \'") << resp.msg << TEXT("\'... (ReadFile)\n");
-	
+	if (!ReadFile(pipe, buf, sizeof(TCHAR) * BUFFERSIZE, &n, NULL)) {
+		_tperror(TEXT("[CLIENTE] Erro ao ler mensagem do servidor!\n"));
+	}
+	_tprintf(TEXT("[CLIENTE] Recebi %d bytes: \'%s\'... (ReadFile)\n"), n, buf);
 }
-
 
 DWORD WINAPI LerBroadcast(LPVOID param) {
 	HANDLE pipe = (HANDLE)param;
@@ -58,10 +30,7 @@ DWORD WINAPI LerBroadcast(LPVOID param) {
 	clrscr();
 	while (1)
 	{
-		
-
 		ret = ReadFile(pipe, &resp, sizeof(ServerResponse), &n, NULL);
-		//buf[n / sizeof(TCHAR)] = '\0';
 		if (iniciado == TRUE)
 		{
 			if (ret || n)
@@ -71,39 +40,36 @@ DWORD WINAPI LerBroadcast(LPVOID param) {
 			_tprintf(TEXT("[CLIENTE] Recebi %d bytes: \'%s\'... (ReadFile)\n"), n, resp.msg);
 			//_tprintf(TEXT("[CLIENTE] Recebi ") << n << TEXT(" bytes: \'") << resp.msg << TEXT("\'... (ReadFile)\n"));
 		}
-		
 	}
 	return 0;
 }
 
-//enviar escape e mostrar menu escape
-
-void enviaTecla(int k, HANDLE pipe, HANDLE hThread) {
+void enviaTecla(int k, HANDLE pipe) {
 	ClientRequest req;
 	int kp, seta = 0;
 	switch (k)
 	{
-	case 1:
+	case KEY_UP:
 	{
 		//_fgetts(req.msg, 256, stdin);
-		memset(req.msg, '\0', sizeof(TCHAR));
+		//memset(req.msg, '\0', sizeof(TCHAR) * BUFFERSIZE);
 		_tcscpy(req.msg, TEXT("UP\n"));
 		req.command = (int)MOVEUP;
 		EscreveMensagem(pipe, req);
 		//LerMensagem(pipe);
 		break;
 	}
-	case 2:
+	case KEY_DOWN:
 	{
 		//_fgetts(req.msg, 256, stdin);
-		memset(req.msg, '\0', sizeof(TCHAR));
+		//memset(req.msg, '\0', sizeof(TCHAR));
 		_tcscpy(req.msg, TEXT("Down\n"));
 		req.command = (int)MOVEDOWN;
 		EscreveMensagem(pipe, req);
 		//LerMensagem(pipe);
 		break;
 	}
-	case 3:
+	case KEY_LEFT:
 	{
 		//_fgetts(req.msg, 256, stdin);
 		memset(req.msg, '\0', sizeof(TCHAR));
@@ -113,7 +79,7 @@ void enviaTecla(int k, HANDLE pipe, HANDLE hThread) {
 		//LerMensagem(pipe);
 		break;
 	}
-	case 4:
+	case KEY_RIGHT:
 	{
 		//_fgetts(req.msg, 256, stdin);
 		memset(req.msg, '\0', sizeof(TCHAR));
@@ -123,7 +89,7 @@ void enviaTecla(int k, HANDLE pipe, HANDLE hThread) {
 		//LerMensagem(pipe);
 		break;
 	}
-	case 7://escape
+	case KEY_ESCAPE:
 	{
 		iniciado = FALSE;
 
@@ -133,15 +99,12 @@ void enviaTecla(int k, HANDLE pipe, HANDLE hThread) {
 		gotoxy(0, 0);
 		MenuEscape(seta);
 
-
 		while (iniciado == FALSE)
 		{
-
-
 			kp = Getch();
 			switch (kp)
 			{
-			case 1:
+			case KEY_UP:
 				if (seta == 0)
 				{
 					seta = 1;
@@ -153,7 +116,7 @@ void enviaTecla(int k, HANDLE pipe, HANDLE hThread) {
 					MenuEscape(seta);
 				}
 				break;
-			case 2:
+			case KEY_DOWN:
 				if (seta == 1)
 				{
 					seta = 0;
@@ -165,12 +128,10 @@ void enviaTecla(int k, HANDLE pipe, HANDLE hThread) {
 					MenuEscape(seta);
 				}
 				break;
-			case 6://enter
+			case KEY_ENTER:
 				if (seta == 0)
 				{
-
 					iniciado = TRUE;
-
 				}
 				else if (seta == 1)
 				{
@@ -181,14 +142,10 @@ void enviaTecla(int k, HANDLE pipe, HANDLE hThread) {
 				//nope
 				break;
 			}
-
-
 		}
-
-
 		break;
 	}
-	case 5:
+	case KEY_SPACE:
 	{
 		memset(req.msg, '\0', sizeof(TCHAR));
 		_tcscpy(req.msg, TEXT("Activa Pedras\n"));
@@ -203,20 +160,10 @@ void enviaTecla(int k, HANDLE pipe, HANDLE hThread) {
 
 }
 
-
-
-
-
 int _tmain(int argc, LPTSTR argv[]) {
-	TCHAR buf[256];
 	HANDLE hPipe,hPipeJogo;
-	//int i = 0;
-	//BOOL iniciado = FALSE;
-	BOOL ret;
-	DWORD n;
 	HANDLE hThread;
 	ClientRequest req;
-
 
 #ifdef UNICODE
 	_setmode(_fileno(stdin), _O_WTEXT);
@@ -263,16 +210,15 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	//WaitForSingleObject(hThread, INFINITE);
 
-	
-	int kp, seta = 0;
+	int kp = 0;		//keypress
+	int seta = 0;	//Posicionamento da seta no ecran
 	MenuInicial(seta);
-	while (iniciado = TRUE)
+	while(!fim)
 	{
-		
 		kp = Getch();
 		switch (kp)
 		{
-		case 1:
+		case KEY_UP:
 			if (seta == 0)
 			{
 				seta = 2;
@@ -284,7 +230,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 				MenuInicial(seta);
 			}
 			break;
-		case 2:
+		case KEY_DOWN:
 			if (seta == 2)
 			{
 				seta = 0;
@@ -296,47 +242,51 @@ int _tmain(int argc, LPTSTR argv[]) {
 				MenuInicial(seta);
 			}
 			break;
-		case 6:
+		case KEY_ENTER:
 			//caso 1: posiciona o jogador no server, pede LOS mostra HUD
-			
 			
 			if (seta == 0)
 			{
-				int k = 0;
 				
-				ClientRequest req;
-				req.command = 601;
-				_tcscpy(req.msg, TEXT("Inicia.."));
+				iniciado = TRUE;
+				req.command = STARTGAME;
+				_tcscpy(req.msg, TEXT("Inicia..."));
 				//envia o codigo de inicio
 				EscreveMensagem(hPipe, req);
 				//Lê o "iniciaste"
 				LerMensagem(hPipe);
 				system("pause");
+
 				/*entre estas funções é preciso esperar pelo setup dos players*/
 				//Broadcast da posiçao
-				hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LerBroadcast, (LPVOID)hPipeJogo, 0, NULL);
+				//hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LerBroadcast, (LPVOID)hPipeJogo, 0, NULL);
 				
 				//envia movimentos agora
 				//HANDLE hMove = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)Movimento, (LPVOID)hPipeJogo, 0, NULL);
+				int k = 0;
 				while (1)
 				{
-					clrscr();
-					k = Getch();
-					enviaTecla(k,hPipe,hThread);
+					//clrscr();
+					do {
+						k = Getch();
+					} while (k < 1);
+
+					enviaTecla(k,hPipe);
+					LerMensagem(hPipe);
 				}
 				//system("pause");
 			}
 			else if (seta == 1)
 			{
-				memset(req.msg, '\0', sizeof(TCHAR));
-				_tprintf(TEXT("[CLIENTE] Frase: "));
-				_fgetts(req.msg, 256, stdin);
+				memset(req.msg, '\0', sizeof(TCHAR) * BUFFERSIZE);
+				_tprintf(TEXT("[CLIENTE] Nome: "));
+				_fgetts(req.msg, BUFFERSIZE, stdin);
 				req.command = (int)SETNAME;
 				EscreveMensagem(hPipe, req);
 				LerMensagem(hPipe);
 			}
 			else
-				//sai do jogo
+				fim = TRUE;
 				//CloseHandle(hPipe);
 				break;
 			break;
@@ -344,10 +294,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 			break;
 		}
 	}
-
 	//CloseHandle(hPipe);
-
-	
 	exit(0);
 }
 

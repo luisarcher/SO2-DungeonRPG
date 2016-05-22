@@ -3,12 +3,6 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
-
-
-
-
-
-
 #include <windows.h>
 #include <tchar.h>
 #include <io.h>
@@ -41,7 +35,7 @@ typedef struct SERVERRESPONSE {
 	TCHAR msg[BUFFERSIZE];
 } ServerResponse;
 
-void enviaTecla(int k, HANDLE pipe, HANDLE hThread);
+void enviaTecla(int k, HANDLE pipe);
 
 DWORD WINAPI LerBroadcast(LPVOID param);
 
