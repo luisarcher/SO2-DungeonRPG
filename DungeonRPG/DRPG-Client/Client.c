@@ -7,6 +7,8 @@ void EscreveMensagem(HANDLE pipe, ClientRequest req) {
 	DWORD n;
 	if (!WriteFile(pipe, &req, sizeof(ClientRequest), &n, NULL)) {
 		_tprintf(TEXT("[CLIENTE] Erro ao enviar mensagem ao servidor!\n"));
+		System("pause");
+		Exit(-1);
 	}
 	else
 		_tprintf(TEXT("[CLIENTE]Escrevi...\n")); 
@@ -18,6 +20,8 @@ void LerMensagem(HANDLE pipe) {
 	
 	if (!ReadFile(pipe, buf, sizeof(TCHAR) * BUFFERSIZE, &n, NULL)) {
 		_tperror(TEXT("[CLIENTE] Erro ao ler mensagem do servidor!\n"));
+		System("pause");
+		Exit(-1);
 	}
 	_tprintf(TEXT("[CLIENTE] Recebi %d bytes: \'%s\'... (ReadFile)\n"), n, buf);
 }

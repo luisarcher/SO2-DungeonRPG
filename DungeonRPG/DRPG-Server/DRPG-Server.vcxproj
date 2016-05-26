@@ -110,7 +110,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Common.c" />
     <ClCompile Include="Jogador.c" />
     <ClCompile Include="Labirinto.c" />
     <ClCompile Include="main.c" />

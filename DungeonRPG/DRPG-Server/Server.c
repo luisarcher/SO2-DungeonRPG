@@ -8,19 +8,29 @@ DWORD WINAPI RecebeClientes(LPVOID param) {
 	DWORD n;
 	while (!fim && totalConnections < MAX_CLIENTS) {
 
-		//Pipe para tratar pedidos
+		//PIPE TO HANDLE REQUESTS
 		_tprintf(TEXT("[SERVER] Vou passar à criação de uma cópia do pipe '%s' ... \n"), PIPE_NAME);
-		if ((gClients[totalConnections].hPipe = CreateNamedPipe(PIPE_NAME, PIPE_ACCESS_DUPLEX, PIPE_WAIT | PIPE_TYPE_MESSAGE
-			| PIPE_READMODE_MESSAGE, MAX_CLIENTS, BUFFERSIZE * sizeof(TCHAR), BUFFERSIZE * sizeof(TCHAR),
+		if ((gClients[totalConnections].hPipe = CreateNamedPipe(
+			PIPE_NAME, 
+			PIPE_ACCESS_DUPLEX, 
+			PIPE_WAIT | PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE, 
+			MAX_CLIENTS, 
+			BUFFERSIZE * sizeof(TCHAR), 
+			BUFFERSIZE * sizeof(TCHAR),
 			1000, NULL)) == INVALID_HANDLE_VALUE){
 			_tperror(TEXT("Erro ao criar named pipe!"));
 			exit(-1);
 		}
 
-		//Pipe para jogo
+		//PIPE FOR SENDING GAME BOARD
 		_tprintf(TEXT("[SERVER] Vou passar à criação de uma cópia do pipe '%s' ... \n"), PIPE_NAME_JOGO);
-		if ((gClients[totalConnections].hPipeJogo = CreateNamedPipe(PIPE_NAME_JOGO, PIPE_ACCESS_OUTBOUND, PIPE_WAIT | PIPE_TYPE_MESSAGE
-			| PIPE_READMODE_MESSAGE, MAX_CLIENTS, sizeof(ServerResponse), sizeof(ServerResponse),
+		if ((gClients[totalConnections].hPipeJogo = CreateNamedPipe(
+			PIPE_NAME_JOGO, 
+			PIPE_ACCESS_OUTBOUND, 
+			PIPE_WAIT | PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE, 
+			MAX_CLIENTS, 
+			sizeof(ServerResponse), 
+			sizeof(ServerResponse),
 			1000, NULL)) == INVALID_HANDLE_VALUE) {
 			_tperror(TEXT("Erro ao criar named pipe para o jogo!"));
 			exit(-1);
@@ -48,7 +58,10 @@ DWORD WINAPI RecebeClientes(LPVOID param) {
 }
 
 DWORD WINAPI GameTimer(LPVOID param){
-	Sleep(1000/15);
+	ResetEvent(ghGameInstanceEvent);	//Reseta o evento para o estado inicial
+	Sleep(1800);
+	//Sleep(1000/15);						//Passa um instante de jogo
+	SetEvent(ghGameInstanceEvent);		//Sinaliza o evento
 }
 
 DWORD WINAPI AtendeCliente(LPVOID param) {
@@ -153,6 +166,7 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 	_tprintf(TEXT("[SERVIDOR] Cliente [%d] desligou-se!\n"), gClients[(int)param].id);
 	gClients[(int)param].hp = 0;
 	//deixa cair pedras
+	printf("Thread %d exiting\n", GetCurrentThreadId());
 	return 0;
 }
 
@@ -171,21 +185,23 @@ void DesligarThreadsDeCliente() {
 	}
 }
 
+int activePlayers() {
+	int nPlayers = 0;
+	for (size_t i = 0; i < totalConnections; i++)
+		if (gClients[i].hp > 0) ++nPlayers;
+	return nPlayers;
+}
+
 DWORD WINAPI ActualizaClientes(LPVOID param) {
 	TCHAR buf[BUFFERSIZE];
 	DWORD n;
 	ServerResponse resposta;
 
-	int activePlayers = 0;
-
 	while (!fim) {
-		for (size_t i = 0; i < totalConnections; i++)
-			if (gClients[i].hp > 0) ++activePlayers;
 		
-		if (totalConnections > 0 && activePlayers > 0) {
-			activePlayers = 0;
+		if (totalConnections > 0 && activePlayers() > 0) {
 			//prepara a "string" de resposta
-			memset(resposta.msg, TEXT('\0'), sizeof(TCHAR));
+			memset(resposta.msg, TEXT('\0'), sizeof(TCHAR) * BUFFERSIZE);
 			if (broadcastMessage != TEXT('\0')) {
 				_tcscpy(resposta.msg, broadcastMessage);
 				memset(broadcastMessage, TEXT('\0'), sizeof(TCHAR));
@@ -212,8 +228,7 @@ DWORD WINAPI ActualizaClientes(LPVOID param) {
 			}//fim for
 			_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), n, activePlayers);
 		}
-		//Sleep(1000);
-		Sleep(1000 / 15); //15 instantes por segundo
 	}
+	printf("Thread %d exiting\n", GetCurrentThreadId());
 	return 0;
 }

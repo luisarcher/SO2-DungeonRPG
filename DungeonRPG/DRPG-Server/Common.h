@@ -62,9 +62,10 @@
 
 // ---  Game Globals
 extern BOOL fim;
-extern BOOL start;
+extern BOOL start;		//game start
 extern int totalConnections;
 
 extern HANDLE mutexLabirinto;
+extern HANDLE ghGameInstanceEvent;
 
 #endif
