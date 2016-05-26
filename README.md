@@ -27,9 +27,9 @@ DLL
 
 ### Monstros:
 
-Mostro Distraído - Anda aleatóriamente pelo labirinto, lentidão 3
+Mostro Distraído - Anda aleatóriamente pelo labirinto, lentidão 3, agressive = 0;
 
-Mostro Bully (Agressivo) - Tem LOS(mesmo do player?) para detectar jogador, quando detectar, move-se na direcção dele, caso contrário, anda aleatóriamente.
+Mostro Bully (Agressivo) - Tem LOS(mesmo do player?) para detectar jogador, quando detectar, move-se na direcção dele, caso contrário, anda aleatóriamente. Lentidão 7, agressivo = 1;
 
 Algoritmo aleatório: O monstro anda N posições numa direcção (N é recebido por argumento da função main), depois de N passos, tem 75% de mudar de direcção, (Sortear as 4 posições a 25% cada).
 
