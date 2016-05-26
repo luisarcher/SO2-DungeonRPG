@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Monster.cpp" />
+    <ClCompile Include="Monster.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Monster.h" />
