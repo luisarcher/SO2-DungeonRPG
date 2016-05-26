@@ -21,12 +21,22 @@ void NovoJogador(int id) {
 	//ReleaseMutex(mutexLabirinto);
 }
 
-int MoverJogador(int playerId, int keystroke) {
+void DesligarJogador(Jogador * j) {
+	j->hp = 0;
+	//deixa cair pedras ...
+	DisconnectNamedPipe(j->hPipe);
+	DisconnectNamedPipe(j->hPipeJogo);
+	CloseHandle(j->hPipe);
+	CloseHandle(j->hPipeJogo);
+	_tprintf(TEXT("[SERVIDOR] Cliente [%d] desligou-se!\n"), j->id);
+}
+
+void MoverJogador(int playerId, int keystroke) {
 	Jogador *j = &gClients[playerId];
 
 	if (!hasStamina(*j)) return;
 
-	WaitForSingleObject(mutexLabirinto, INFINITE);
+	WaitForSingleObject(gMutexLabirinto, INFINITE);
 	switch (keystroke) {
 		case KEY_UP:
 		{
@@ -77,10 +87,9 @@ int MoverJogador(int playerId, int keystroke) {
 	if (hasObjectIn(j->x, j->y)) AskPlayerToCollectItems(j);
 	// Update matrix after collected items
 	gLabirinto.labirinto[j->y][j->x] = playerId;
-	ReleaseMutex(mutexLabirinto);
+	ReleaseMutex(gMutexLabirinto);
 	// Player is now "tired" and recovering stamina
 	j->lentidaoCounter = j->lentidao; //player is able to move on 0
-	return 0;
 }
 
 void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS]) {
@@ -102,15 +111,12 @@ void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS]) {
 	else maxY = y + 5;
 
 	int m=0, n= 0;
-	for (int i = iniY; i < maxY; i++)
+	for (int i = iniY; i < maxY; i++, n++, m=0)
 	{
-		for (int j = iniX; j < maxX; j++)
+		for (int j = iniX; j < maxX; j++, m++)
 		{
 			matriz[m][n] = gLabirinto.labirinto[i][j];
-			m++;
 		}
-		n++;
-		m = 0;
 	}
 }
 
@@ -166,9 +172,9 @@ void RecoverPlayerStamina(Jogador * p) {
 }
 
 void AttackClosePlayers(Jogador * p) {
-	for (size_t i = (p->y - 1); i <= (p->y + 1); i++)
+	for (int i = (p->y - 1); i <= (p->y + 1); i++)
 	{
-		for (size_t j = (p->x - 1); j <= (p->x + 1); j++)
+		for (int j = (p->x - 1); j <= (p->x + 1); j++)
 		{
 			if (i == p->y && j == p->x) continue;
 			if (hasPlayerIn(j, i) && gClients[gLabirinto.labirinto[i][j]].hp > 0) {
@@ -195,7 +201,7 @@ void AskPlayerToCollectItems(Jogador * p) {
 	* mas que o movimento ainda não tenha sido registado na matriz global
 	* para ele poder obter o objecto.
 	* Depois de apanhado, a posição do objecto na matriz,
-	* é sobreposta com o id do utilizador.
+	* deve de ser sobreposta com o id do utilizador.
 	*/
 	switch (gLabirinto.labirinto[p->x][p->y])
 	{

@@ -30,10 +30,10 @@ DWORD WINAPI RecebeClientes(LPVOID param);		//Listen
 DWORD WINAPI AtendeCliente(LPVOID param);
 DWORD WINAPI ActualizaClientes(LPVOID param);
 DWORD WINAPI GameTimer(LPVOID param);
+DWORD WINAPI GameEvents(LPVOID param);
 
 int activePlayers();
 
-void DesligarNamedPipes();
 void DesligarThreadsDeCliente();
 
 extern TCHAR broadcastMessage[BUFFERSIZE];

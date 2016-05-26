@@ -22,6 +22,7 @@
 #endif
 
 // ---  Game Constants
+#define GAME_INSTANCE_TIME 1000 ///15
 #define MAX_CLIENTS 10
 #define BUFFERSIZE 256
 #define PLAYER_LOS 10	//player line of sight
@@ -65,7 +66,8 @@ extern BOOL fim;
 extern BOOL start;		//game start
 extern int totalConnections;
 
-extern HANDLE mutexLabirinto;
+extern HANDLE gMutexLabirinto;
 extern HANDLE ghGameInstanceEvent;
+extern HANDLE ghUpdateGameClientEvent;
 
 #endif

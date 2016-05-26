@@ -58,12 +58,29 @@ DWORD WINAPI RecebeClientes(LPVOID param) {
 }
 
 DWORD WINAPI GameTimer(LPVOID param){
-	ResetEvent(ghGameInstanceEvent);	//Reseta o evento para o estado inicial
-	Sleep(1800);
-	//Sleep(1000/15);						//Passa um instante de jogo
-	SetEvent(ghGameInstanceEvent);		//Sinaliza o evento
+	while (!fim) {
+		ResetEvent(ghGameInstanceEvent);	//Reseta o evento para o estado inicial
+		Sleep(GAME_INSTANCE_TIME);						//Passa um instante de jogo
+		SetEvent(ghGameInstanceEvent);		//Sinaliza o evento
+	}
+	return 0;
 }
 
+DWORD WINAPI GameEvents(LPVOID param) {
+	while (!fim) {
+		WaitForSingleObject(ghGameInstanceEvent, INFINITE);		//Espera pelo evento ser sinalizado
+		for (int i = 0; i < totalConnections; i++)
+			if (gClients[i].hp > 0) { //is active?
+				RecoverPlayerStamina(&gClients[i]);
+				AttackClosePlayers(&gClients[i]);
+			}
+		_tprintf(TEXT("+T"));
+	}
+}
+
+/**
+* Analisa o pedido do cliente e envia uma resposta.
+*/
 DWORD WINAPI AtendeCliente(LPVOID param) {
 	//ide buscar o handle do cliente que está no array global
 	HANDLE hPipeCliente = gClients[(int)param].hPipe;
@@ -158,77 +175,53 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 		}
 	} while (pedido.command != QUITGAME);
 
-	DisconnectNamedPipe(hPipeCliente);
-	DisconnectNamedPipe(gClients[(int)param].hPipeJogo);
-	CloseHandle(hPipeCliente);
-	CloseHandle(gClients[(int)param].hPipeJogo);
-
-	_tprintf(TEXT("[SERVIDOR] Cliente [%d] desligou-se!\n"), gClients[(int)param].id);
-	gClients[(int)param].hp = 0;
-	//deixa cair pedras
-	printf("Thread %d exiting\n", GetCurrentThreadId());
+	DesligarJogador(&gClients[(int)param]);
+	_tprintf(TEXT("Thread %d exiting\n"), GetCurrentThreadId());
 	return 0;
 }
 
-//Disconnect from all pipes (Provavelmente não vai ser preciso, só para as threads)
-void DesligarNamedPipes() {
-	for (int i = 0; i < totalConnections; i++) {
-		DisconnectNamedPipe(gClients[i].hPipe);
-		_tprintf(TEXT("[ESCRITOR] Vou desligar o pipe... (CloseHandle)\n"));
-		CloseHandle(gClients[i].hPipe);
-	}
-}
-
 void DesligarThreadsDeCliente() {
-	for (int i = 0; i < totalConnections; i++) {
+	for (int i = 0; i < totalConnections; i++)
 		CloseHandle(gClients[i].hThread);
-	}
 }
 
 int activePlayers() {
 	int nPlayers = 0;
-	for (size_t i = 0; i < totalConnections; i++)
+	for (int i = 0; i < totalConnections; i++)
 		if (gClients[i].hp > 0) ++nPlayers;
 	return nPlayers;
 }
 
+
 DWORD WINAPI ActualizaClientes(LPVOID param) {
-	TCHAR buf[BUFFERSIZE];
 	DWORD n;
 	ServerResponse resposta;
 
 	while (!fim) {
-		
+		WaitForSingleObject(ghUpdateGameClientEvent, INFINITE);
+
 		if (totalConnections > 0 && activePlayers() > 0) {
-			//prepara a "string" de resposta
-			memset(resposta.msg, TEXT('\0'), sizeof(TCHAR) * BUFFERSIZE);
-			if (broadcastMessage != TEXT('\0')) {
+			//Concatena a mensagem de difusão para todos os clientes
+			//memset(resposta.msg, TEXT('\0'), sizeof(TCHAR) * BUFFERSIZE);
+			//if (broadcastMessage != TEXT('\0')) {
 				_tcscpy(resposta.msg, broadcastMessage);
-				memset(broadcastMessage, TEXT('\0'), sizeof(TCHAR));
-			}
-			//Para cada cliente
+				memset(broadcastMessage, TEXT('\0'), sizeof(TCHAR) * BUFFERSIZE);
+			//}
+
+			//Actualiza o labirinto de todos os clientes activos
 			for (int i = 0; i < totalConnections; i++) {
 				if (gClients[i].hp > 0) {
-
-					//Envia a matriz para os jogadores
 					if (!start) SetEmptyMatrix(&resposta.matriz); //security
 					else UpdatePlayerLOS(gClients[i].x, gClients[i].y, &resposta.matriz);
 					if (!WriteFile(gClients[i].hPipeJogo, &resposta, sizeof(ServerResponse), &n, NULL)) {
 						_tprintf(TEXT("[ERRO] Ao escrever no pipe do cliente %d:%s\n"), gClients[i].id, gClients[i].nome);
 						gClients[i].hp = 0;
 					}
-
-					//Player Activity
-					RecoverPlayerStamina(&gClients[i]);
-					//WaitForSingleObject(mutexLabirinto, INFINITE);
-					AttackClosePlayers(&gClients[i]);
-					//ReleaseMutex(mutexLabirinto);
-
 				}
-			}//fim for
-			_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), n, activePlayers);
+			}//for ends
+			_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), (int)n, activePlayers());
 		}
 	}
-	printf("Thread %d exiting\n", GetCurrentThreadId());
+	_tprintf(TEXT("Thread %d exiting\n"), GetCurrentThreadId());
 	return 0;
 }
