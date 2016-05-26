@@ -67,7 +67,7 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 		if (!ret || !n) break;
 		_tprintf(TEXT("[Server] Recebi %d bytes: \'%s\'... (ReadFile)\n"),n,pedido.msg);
 		memset(respostaServidor, '\0', sizeof(TCHAR) * BUFFERSIZE); //prepara a "string" de resposta
-		_tcscpy(respostaServidor, TEXT(" "));
+
 		if (!start) {
 			switch (pedido.command)
 			{
@@ -89,8 +89,13 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 				break;
 
 			case STARTGAME:
-				start = TRUE;
-				_tcscpy(respostaServidor, TEXT("Começaste um novo jogo!"));
+				if (!start) {
+					start = TRUE;
+					_tcscpy(respostaServidor, TEXT("Começaste um novo jogo!"));
+				}
+				else {
+					_tcscpy(respostaServidor, TEXT("O jogo já começou!"));
+				}
 
 				//Broadcast
 				_tcscat(broadcastMessage, TEXT("Novo jogo iniciado por: "));

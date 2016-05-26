@@ -13,6 +13,8 @@ void gotoxy(int x, int y) {
 	SetConsoleCursorPosition(hStdout, coord);
 }
 
+
+
 void clrscr() {
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	const COORD startCoords = { 0, 0 };
@@ -31,8 +33,6 @@ void clrscr() {
 		startCoords,
 		&dummy);
 	gotoxy(0, 0);
-
-
 }
 
 void MenuInicial(int op) {
@@ -98,10 +98,8 @@ void MostraLOS(int(*los)[10]) {
 			gotoxy(i, j);
 			if (j == 9)
 			{
-
 				if (los[i][j] >= 20 && los[i][j] <= 29)//paredes
 				{
-
 					_tprintf(TEXT("%c\n"), 9619);
 				}
 				else if (los[i][j] == EMPTY)//chao
@@ -124,7 +122,6 @@ void MostraLOS(int(*los)[10]) {
 				{
 					_tprintf(TEXT("%c\n"), 'P');
 				}
-
 			}
 			else
 				if (los[i][j] >= 20 && los[i][j] <= 29)//paredes
@@ -161,7 +158,6 @@ void MenuEscape(int op) {
 
 	switch (op) {
 	case 0:
-
 	{
 		_tprintf(TEXT(" >> Resumir\n\n"));
 		//_tprintf(TEXT("    Informacao\n\n"));

@@ -247,7 +247,6 @@ int _tmain(int argc, LPTSTR argv[]) {
 			
 			if (seta == 0)
 			{
-				
 				iniciado = TRUE;
 				req.command = STARTGAME;
 				_tcscpy(req.msg, TEXT("Inicia..."));
@@ -255,7 +254,6 @@ int _tmain(int argc, LPTSTR argv[]) {
 				EscreveMensagem(hPipe, req);
 				//Lê o "iniciaste"
 				LerMensagem(hPipe);
-				system("pause");
 
 				/*entre estas funções é preciso esperar pelo setup dos players*/
 				//Broadcast da posiçao
@@ -269,12 +267,11 @@ int _tmain(int argc, LPTSTR argv[]) {
 					//clrscr();
 					do {
 						k = Getch();
-					} while (k < 1);
+					} while (k < KEY_UP || k > KEY_RIGHT);
 
 					enviaTecla(k,hPipe);
 					LerMensagem(hPipe);
 				}
-				//system("pause");
 			}
 			else if (seta == 1)
 			{
