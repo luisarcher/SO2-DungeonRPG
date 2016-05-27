@@ -93,7 +93,7 @@ void MostraLOS(int(*los)[10]) {
 	{
 		for (int j = 0; j < 10; j++)
 		{
-			gotoxy(i, j);
+			gotoxy(j, i);
 			
 			if (los[i][j] == STONEWALL)//paredes
 			{

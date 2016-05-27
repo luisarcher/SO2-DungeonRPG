@@ -113,7 +113,7 @@ void UpdatePlayerLOS(int x, int y, int (*matriz)[PLAYER_LOS]) {
 	{
 		for (int j = iniX; j < maxX; j++, m++)
 		{
-			matriz[m][n] = gLabirinto.labirinto[i][j];
+			matriz[n][m] = gLabirinto.labirinto[i][j];
 		}
 	}
 }
