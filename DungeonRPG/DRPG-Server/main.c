@@ -5,6 +5,7 @@
 int totalConnections = 0;
 
 Labirinto gLabirinto;
+Labirinto * shLabirinto;
 Jogador gClients[MAX_CLIENTS];
 
 BOOL start = FALSE;
@@ -19,6 +20,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	HANDLE hThreadSender;
 	HANDLE hThreadGameTime;
 	HANDLE hThreadGameEvents;
+	HANDLE hFileToMap, hMappedObj;
 
 #ifdef UNICODE 
 	_setmode(_fileno(stdin), _O_WTEXT);
@@ -42,9 +44,45 @@ int _tmain(int argc, LPTSTR argv[]) {
 		printf("Criação do Evento falhou (%d)\n", GetLastError());
 		return;
 	}
+	/*****  MEMÓRIA PARTILHADA  *****/
+	hFileToMap = CreateFile(TEXT("DungeonRPG"),
+		GENERIC_READ | GENERIC_WRITE,
+		0,
+		NULL,
+		CREATE_ALWAYS,
+		FILE_ATTRIBUTE_NORMAL,
+		NULL);
+	if (hFileToMap == INVALID_HANDLE_VALUE) {
+		_tprintf(TEXT("[Erro] Abrir ficheiros (%d)\n"), GetLastError());
+		return -1;
+	}
+
+	hMappedObj = CreateFileMapping(hFileToMap,
+		NULL,
+		PAGE_READWRITE,
+		0,
+		sizeof(Labirinto),
+		TEXT("ShLabirinto")
+	);
+	if (hMappedObj == NULL) {
+		_tprintf(TEXT("[Erro] Criar objectos mapeamentos(%d)\n"), GetLastError());
+		return -1;
+	}
+
+	shLabirinto = (Labirinto*)MapViewOfFile(hMappedObj,
+		FILE_MAP_ALL_ACCESS,
+		0,
+		0,
+		sizeof(Labirinto)
+	);
+	if (shLabirinto == NULL) {
+		_tprintf(TEXT("[Erro] Mapear para memória(%d)\n"), GetLastError());
+		return -1;
+	}
+	/*****  MEMÓRIA PARTILHADA ENDS *****/
 		
 	//gLabirinto = NovoLabirinto();
-	gLabirinto = LerLabirinto(TEXT("jogo.txt"));
+	gLabirinto = LerLabirinto();
 	DistribuirItems();
 
 	//Invocar a thread que inscreve novos clientes
@@ -69,6 +107,10 @@ int _tmain(int argc, LPTSTR argv[]) {
 	CloseHandle(gMutexLabirinto);
 	CloseHandle(ghGameInstanceEvent);
 	CloseHandle(ghUpdateGameClientEvent);
+
+	UnmapViewOfFile(shLabirinto);
+	CloseHandle(hMappedObj);
+	CloseHandle(hFileToMap);
 	exit(0);
 }
 

@@ -1,9 +1,12 @@
 #include "Server.h"
 #include "Jogador.h"
+#include "Labirinto.h"
 
 TCHAR broadcastMessage[BUFFERSIZE];
 
-//SignUp and connect clients
+/**
+*	Thread que recebe e regista os novos clientes.
+*/
 DWORD WINAPI RecebeClientes(LPVOID param) {
 	DWORD n;
 	while (!fim && totalConnections < MAX_CLIENTS) {
@@ -56,6 +59,10 @@ DWORD WINAPI RecebeClientes(LPVOID param) {
 	return 0;
 }
 
+/**
+*	Thread que faz decorrer o tempo de jogo.
+*	Sinaliza outras threads sempre que ocorre um "instante".
+*/
 DWORD WINAPI GameTimer(LPVOID param){
 	while (!fim) {
 		ResetEvent(ghGameInstanceEvent);	//Reseta o evento para o estado inicial
@@ -81,6 +88,24 @@ DWORD WINAPI GameEvents(LPVOID param) {
 			}
 	}
 	return 0;
+}
+
+/**
+*	Para cada cliente, fecha o handle da sua thread.
+*/
+void DesligarThreadsDeCliente() {
+	for (int i = 0; i < totalConnections; i++)
+		CloseHandle(gClients[i].hThread);
+}
+
+/**
+*	Devolve o número de jogadores activos.
+*/
+int activePlayers() {
+	int nPlayers = 0;
+	for (int i = 0; i < totalConnections; i++)
+		if (gClients[i].hp > 0) ++nPlayers;
+	return nPlayers;
 }
 
 /**
@@ -190,18 +215,9 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 	return 0;
 }
 
-void DesligarThreadsDeCliente() {
-	for (int i = 0; i < totalConnections; i++)
-		CloseHandle(gClients[i].hThread);
-}
-
-int activePlayers() {
-	int nPlayers = 0;
-	for (int i = 0; i < totalConnections; i++)
-		if (gClients[i].hp > 0) ++nPlayers;
-	return nPlayers;
-}
-
+/**
+*	Envia os dados de difusão a todos os clientes
+*/
 DWORD WINAPI ActualizaClientes(LPVOID param) {
 	DWORD n;
 	ServerResponse resposta;
@@ -229,8 +245,25 @@ DWORD WINAPI ActualizaClientes(LPVOID param) {
 				}
 			}//for ends
 			_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), (int)n, activePlayers());
+			
+			//_tprintf(TEXT("Shared Memory:\n"));
+			CopyGameStateToSharedMemory();
 		}
 	}
 	_tprintf(TEXT("Thread %d exiting\n"), GetCurrentThreadId());
 	return 0;
+}
+
+/**
+*	Copia dados do labirinto para a memória partilhada.
+*/
+void CopyGameStateToSharedMemory() {
+	Labirinto * l = shLabirinto;
+	for (int i = 0; i < LABIRINTOSIZE; i++)
+	{
+		for (int j = 0; j < LABIRINTOSIZE; j++)
+		{
+			l->labirinto[i][j] = gLabirinto.labirinto[i][j];
+		}
+	}
 }

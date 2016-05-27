@@ -23,6 +23,7 @@
     <ClCompile Include="Monster.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Common.h" />
     <ClInclude Include="Monster.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

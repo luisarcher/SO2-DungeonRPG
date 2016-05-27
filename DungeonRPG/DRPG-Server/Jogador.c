@@ -3,10 +3,12 @@
 #include "Common.h"
 #include "Server.h"
 
+/**
+*	Regista um novo jogador ao ligar-se.
+*/
 void NovoJogador(int id) {
 	Jogador * j = &gClients[id];
 	_tcscpy(j->nome, TEXT("guest"));
-	j->hp = (int)HP_BASE;
 	j->lentidao = (int)LENTIDAO_BASE;
 	j->id = id;
 	j->nStones = 0;
@@ -18,8 +20,15 @@ void NovoJogador(int id) {
 
 	//Define x e y do jogador (pos vazia) e regista-o no labirinto
 	SetPlayerInRandomPosition(j);
+
+	//Define se o jogador é activo ou espectador, conforme o jogo estiver começado.
+	j->hp = (!start) ? (int)HP_BASE : 0;
 }
 
+/**
+*	Define o jogador como "inactivo".
+*	Desliga e fecha os pipes do cliente.
+*/
 void DesligarJogador(Jogador * j) {
 	j->hp = 0;
 	DisconnectNamedPipe(j->hPipe);
@@ -29,6 +38,10 @@ void DesligarJogador(Jogador * j) {
 	_tprintf(TEXT("[SERVIDOR] Cliente [%d] desligou-se!\n"), j->id);
 }
 
+/**
+*	Recebe a tecla premida pelo utilizador.
+*	Move-o para a posição desejada caso possível.
+*/
 void MoverJogador(int playerId, int keystroke) {
 	Jogador *j = &gClients[playerId];
 
@@ -82,18 +95,23 @@ void MoverJogador(int playerId, int keystroke) {
 			break;
 		}
 	}
+	
 	if (hasObjectIn(j->x, j->y)) AskPlayerToCollectItems(j);
+	
 	// Update matrix after collected items
 	gLabirinto.labirinto[j->y][j->x] = playerId;
+	
 	ReleaseMutex(gMutexLabirinto);
 	// Player is now "tired" and recovering stamina
 	j->lentidaoCounter = j->lentidao; //player is able to move on 0
+	
 	_tprintf(TEXT("P[%d] -> POSX: %d POSY: %d\n\n"),playerId, j->x, j->y);
 }
 
+/**
+*	Preenche a "parte visível" pelo utilizador e valida os limites do mapa.
+*/
 void UpdatePlayerLOS(int x, int y, int (*matriz)[PLAYER_LOS]) {
-	//validar o scroll
-	// - Definir margens e encostar o scroll ao mapa
 	SetEmptyMatrix(matriz);
 	
 	int iniX, iniY, maxX, maxY;
@@ -153,6 +171,9 @@ void RecoverPlayerStamina(Jogador * p) {
 		--p->atkCounter;
 }
 
+/**
+*	Reduz um "instante" na duração dos items do jogador.
+*/
 void CheckItemDurability(Jogador * p) {
 	if (p->itemDurationCounter > 0)
 		--p->itemDurationCounter;
@@ -162,6 +183,9 @@ void CheckItemDurability(Jogador * p) {
 	}
 }
 
+/**
+*	Verifica se existe algum jogador nas proximidades, se sim, ataca-o.
+*/
 void AttackClosePlayers(Jogador * p) {
 	for (int i = (p->y - 1); i <= (p->y + 1); i++)
 	{
@@ -177,6 +201,9 @@ void AttackClosePlayers(Jogador * p) {
 	}
 }
 
+/**
+*	O jogador usa uma das suas pedras para atacar.
+*/
 BOOL UseStone(Jogador * p) {
 	if (p->stoneAutoHit == TRUE && p->nStones > 0) {
 		--p->nStones;
@@ -185,20 +212,23 @@ BOOL UseStone(Jogador * p) {
 	return FALSE;
 }
 
+/**
+*	A posição do jogador no labririnto é preenchida com o número de pedras que este possui.
+*/
 void DropStones(Jogador * p) {
 	int cellValue = (p->nStones > 0) ? (p->nStones * PEDRAS) : EMPTY;
 	gLabirinto.labirinto[p->y][p->x] = cellValue;
 }
 
+/**
+* Item que está nas cordenadas actuais do jogador,
+* mas que o movimento ainda não tenha sido registado na matriz global
+* para ele poder obter o objecto.
+* Depois de apanhado, a posição do objecto na matriz,
+* deve de ser sobreposta com o id do utilizador.
+*/
 void AskPlayerToCollectItems(Jogador * p) {
 	int nPedras = 0;
-	/*
-	* Item que está nas cordenadas actuais do jogador,
-	* mas que o movimento ainda não tenha sido registado na matriz global
-	* para ele poder obter o objecto.
-	* Depois de apanhado, a posição do objecto na matriz,
-	* deve de ser sobreposta com o id do utilizador.
-	*/
 	switch (gLabirinto.labirinto[p->x][p->y])
 	{
 	case VITAMINA:

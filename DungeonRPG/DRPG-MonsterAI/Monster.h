@@ -1,8 +1,14 @@
 #pragma once
-#include <windows.h>
-#include <tchar.h>
-#include <io.h>
-#include <fcntl.h>
-#include <stdio.h>
+#include "Common.h"
 
-//...
+#define MONSTRO_LENTIDAO_BASE 7
+#define AGRESSIVO_DEFAULT 0
+
+typedef struct {
+	int lentidao;
+	int agressivo;
+} Monstro;
+
+void InitializeSharedMemory(HANDLE * hMappedObj);
+void ReadSharedMemory();
+void CloseHandles(HANDLE * hMappedObj);

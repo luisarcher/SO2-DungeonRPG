@@ -6,7 +6,7 @@
 typedef struct LABIRINTO Labirinto;
 struct LABIRINTO {
 	int labirinto[LABIRINTOSIZE][LABIRINTOSIZE];
-	boolean init;
+	BOOL init;
 };
 
 Labirinto NovoLabirinto();
@@ -20,4 +20,5 @@ BOOL hasObjectIn(int x, int y);
 BOOL hasWallIn(int x, int y);
 
 extern Labirinto gLabirinto;
+extern Labirinto * shLabirinto;
 #endif

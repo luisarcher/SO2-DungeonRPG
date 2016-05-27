@@ -34,6 +34,7 @@ DWORD WINAPI GameEvents(LPVOID param);
 
 int activePlayers();
 
+void CopyGameStateToSharedMemory();
 void DesligarThreadsDeCliente();
 
 extern TCHAR broadcastMessage[BUFFERSIZE];
