@@ -1,6 +1,5 @@
 #pragma once
 #include "Monster.h"
-#include "Common.h"
 
 void InitializeSharedMemory(HANDLE * hMappedObj) {
 
