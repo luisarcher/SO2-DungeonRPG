@@ -134,6 +134,7 @@ void SetPlayerInRandomPosition(Jogador * p) {
 
 	p->x = x;
 	p->y = y;
+
 	gLabirinto.labirinto[y][x] = p->id;
 }
 

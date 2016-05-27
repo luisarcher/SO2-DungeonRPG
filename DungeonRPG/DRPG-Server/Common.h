@@ -59,10 +59,10 @@
 	#define ITEM_END_INDEX 49
 
 	//Item Quantity
-	#define QNT_VITAMINA (int)((int)LABIRINTOSIZE*(int)LABIRINTOSIZE) * 0.07	//7% vitaminas no mapa
-	#define QNT_ORANGE_BULL (int)((int)LABIRINTOSIZE*(int)LABIRINTOSIZE) * 0.01 //1% orangeBull no mapa
-	#define QNT_REB_CAFEINA (int)((int)LABIRINTOSIZE*(int)LABIRINTOSIZE) * 0.04 //4% rebuçadosCafeina no mapa
-	#define QNT_PEDRAS (int)((int)LABIRINTOSIZE*(int)LABIRINTOSIZE) * 0.9		//9% Pedras no mapa
+	#define QNT_VITAMINA  0.03		//3% vitaminas no mapa
+	#define QNT_ORANGE_BULL 0.005	//0.5% orangeBull no mapa
+	#define QNT_REB_CAFEINA 0.02	//2% rebuçadosCafeina no mapa
+	#define QNT_PEDRAS 0.06			//6% Pedras no mapa
 	
 	#define MONSTER_START_INDEX 51
 	#define MAX_MONSTERS 48

@@ -87,67 +87,44 @@ int Getch() {
 }
 
 void MostraLOS(int(*los)[10]) {
-	//system("cls");
+	system("cls");
 
 	for (int i = 0; i < 10; i++)
 	{
 		for (int j = 0; j < 10; j++)
 		{
 			gotoxy(i, j);
-			if (j == 9)
+			
+			if (los[i][j] == STONEWALL)//paredes
 			{
-				if (los[i][j] >= 20 && los[i][j] <= 29)//paredes
-				{
-					_tprintf(TEXT("%c\n"), 9619);
-				}
-				else if (los[i][j] == EMPTY)//chao
-				{
-					_tprintf(TEXT("%c\n"), 9617);
-				}
-				else if (los[i][j] >= 0 && los[i][j] <= 19)//players
-				{
-					_tprintf(TEXT("%c\n"), 64);
-				}
-				else if (los[i][j] >= 51 && los[i][j] <= 99)//monstros
-				{
-					_tprintf(TEXT("%c\n"), 167);
-				}
-				else if (los[i][j] >= 30 && los[i][j] <= 49)//objectos
-				{
-					_tprintf(TEXT("%c\n"), 'O');
-				}
-				else if (los[i][j] == 50)//objectos
-				{
-					_tprintf(TEXT("%c\n"), 'P');
-				}
+				_tprintf(TEXT("%c"), 9619);
 			}
-			else
-				if (los[i][j] >= 20 && los[i][j] <= 29)//paredes
-				{
-					_tprintf(TEXT("%c"), 9619);
-				}
-				else if (los[i][j] == EMPTY)//chao
-				{
-					_tprintf(TEXT("%c"), 9617);
-				}
-				else if (los[i][j] >= 0 && los[i][j] <= 19)//players
-				{
-					_tprintf(TEXT("%c"), 64);
-				}
-				else if (los[i][j] >= 51 && los[i][j] <= 99)//monstros
-				{
-					_tprintf(TEXT("%c"), 167);
-				}
-				else if (los[i][j] >= 30 && los[i][j] <= 49)//objectos
-				{
-					_tprintf(TEXT("%c"), 'O');
-				}
-				else if (los[i][j] == 50)//objectos
-				{
-					_tprintf(TEXT("%c"), 'P');
-				}
-
+			else if (los[i][j] == EMPTY)//chao
+			{
+				_tprintf(TEXT("%c"), 9617);
+			}
+			else if (los[i][j] >= 0 && los[i][j] <= 19)//players
+			{
+				_tprintf(TEXT("%c"), 64);
+			}
+			else if (los[i][j] >= 51 && los[i][j] <= 99)//monstros
+			{
+				_tprintf(TEXT("%c"), 167);
+			}
+			else if (los[i][j] >= 30 && los[i][j] <= 49)//objectos
+			{
+				//_tprintf(TEXT("%c"), 'O');
+				int item = los[i][j];
+				if (item == VITAMINA) _tprintf(TEXT("%c"), 'V');
+				if (item == ORANGE_BULL) _tprintf(TEXT("%c"), '&');
+				if (item == REB_CAFEINA) _tprintf(TEXT("%c"), '*');
+			}
+			else if (los[i][j] > PEDRAS)//objectos
+			{
+				_tprintf(TEXT("%c"), 'P');
+			}
 		}
+		_tprintf(TEXT("\n"));
 	}
 }
 

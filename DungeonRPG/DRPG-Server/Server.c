@@ -123,7 +123,6 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 
 			case STARTGAME:
 				start = TRUE;
-				DistribuirItems();
 				_tcscpy(respostaServidor, TEXT("Começaste um novo jogo!"));
 
 				//Broadcast

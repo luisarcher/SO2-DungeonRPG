@@ -78,46 +78,46 @@ void DistribuirItems() {
 	srand(time(NULL));
 
 	//Distribuir vitaminas
-	for (int i = 0; i < QNT_VITAMINA; i++)
+	for (int i = 0; i < ((LABIRINTOSIZE * LABIRINTOSIZE) * QNT_VITAMINA); i++)
 	{
 		//Obter coordenadas enquanto não encontrar uma posição vazia
 		do {
 			x = (rand() % LABIRINTOSIZE);
 			y = (rand() % LABIRINTOSIZE);
-		} while (!gLabirinto.labirinto[y][x] == EMPTY);
+		} while (!(gLabirinto.labirinto[y][x] == EMPTY));
 		gLabirinto.labirinto[y][x] = VITAMINA;
 	}
 
 	//Distribuir Orange Bull
-	for (int i = 0; i < QNT_ORANGE_BULL; i++)
+	for (int i = 0; i < ((LABIRINTOSIZE * LABIRINTOSIZE) * QNT_ORANGE_BULL); i++)
 	{
 		//Obter coordenadas enquanto não encontrar uma posição vazia
 		do {
 			x = (rand() % LABIRINTOSIZE);
 			y = (rand() % LABIRINTOSIZE);
-		} while (!gLabirinto.labirinto[y][x] == EMPTY);
+		} while (!(gLabirinto.labirinto[y][x] == EMPTY));
 		gLabirinto.labirinto[y][x] = ORANGE_BULL;
 	}
 	
 	//Distribuir Rebuçados de Cafeina
-	for (int i = 0; i < QNT_REB_CAFEINA; i++)
+	for (int i = 0; i < ((LABIRINTOSIZE * LABIRINTOSIZE) * QNT_REB_CAFEINA); i++)
 	{
 		//Obter coordenadas enquanto não encontrar uma posição vazia
 		do {
 			x = (rand() % LABIRINTOSIZE);
 			y = (rand() % LABIRINTOSIZE);
-		} while (!gLabirinto.labirinto[y][x] == EMPTY);
+		} while (!(gLabirinto.labirinto[y][x] == EMPTY));
 		gLabirinto.labirinto[y][x] = REB_CAFEINA;
 	}
 
 	//Distribuir Pedras
-	for (int i = 0; i < QNT_PEDRAS; i++)
+	for (int i = 0; i < ((LABIRINTOSIZE * LABIRINTOSIZE) * QNT_PEDRAS); i++)
 	{
 		//Obter coordenadas enquanto não encontrar uma posição vazia
 		do {
 			x = (rand() % LABIRINTOSIZE);
 			y = (rand() % LABIRINTOSIZE);
-		} while (!gLabirinto.labirinto[y][x] == EMPTY);
-		gLabirinto.labirinto[y][x] = QNT_PEDRAS;
+		} while (!(gLabirinto.labirinto[y][x] == EMPTY));
+		gLabirinto.labirinto[y][x] = (int)PEDRAS + 1;
 	}
 }

@@ -45,6 +45,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 		
 	//gLabirinto = NovoLabirinto();
 	gLabirinto = LerLabirinto(TEXT("jogo.txt"));
+	DistribuirItems();
 
 	//Invocar a thread que inscreve novos clientes
 	hThreadListener = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecebeClientes, NULL, 0, NULL);

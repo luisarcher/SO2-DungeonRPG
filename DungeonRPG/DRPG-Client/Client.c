@@ -31,7 +31,7 @@ DWORD WINAPI LerBroadcast(LPVOID param) {
 	BOOL ret;
 	ServerResponse resp;
 	DWORD n;
-	clrscr();
+
 	while (!fim)
 	{
 		ret = ReadFile(pipe, &resp, sizeof(ServerResponse), &n, NULL);
@@ -136,7 +136,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 			{
 				iniciado = TRUE;
 				req.command = STARTGAME;
-				_tcscpy(req.msg, TEXT("Inicia..."));
+				_tcscpy(req.msg, TEXT("START"));
 				//envia o codigo de inicio
 				EscreveMensagem(hPipe, req);
 				//Lê o "iniciaste"
@@ -191,7 +191,7 @@ void enviaTecla(int k, HANDLE pipe) {
 	{
 		//_fgetts(req.msg, 256, stdin);
 		//memset(req.msg, '\0', sizeof(TCHAR) * BUFFERSIZE);
-		_tcscpy(req.msg, TEXT("UP\n"));
+		_tcscpy(req.msg, TEXT("UP"));
 		req.command = (int)MOVEUP;
 		EscreveMensagem(pipe, req);
 		//LerMensagem(pipe);
@@ -201,7 +201,7 @@ void enviaTecla(int k, HANDLE pipe) {
 	{
 		//_fgetts(req.msg, 256, stdin);
 		//memset(req.msg, '\0', sizeof(TCHAR));
-		_tcscpy(req.msg, TEXT("Down\n"));
+		_tcscpy(req.msg, TEXT("Down"));
 		req.command = (int)MOVEDOWN;
 		EscreveMensagem(pipe, req);
 		//LerMensagem(pipe);
@@ -211,7 +211,7 @@ void enviaTecla(int k, HANDLE pipe) {
 	{
 		//_fgetts(req.msg, 256, stdin);
 		memset(req.msg, '\0', sizeof(TCHAR));
-		_tcscpy(req.msg, TEXT("Left\n"));
+		_tcscpy(req.msg, TEXT("Left"));
 		req.command = (int)MOVELEFT;
 		EscreveMensagem(pipe, req);
 		//LerMensagem(pipe);
@@ -221,7 +221,7 @@ void enviaTecla(int k, HANDLE pipe) {
 	{
 		//_fgetts(req.msg, 256, stdin);
 		memset(req.msg, '\0', sizeof(TCHAR));
-		_tcscpy(req.msg, TEXT("Right\n"));
+		_tcscpy(req.msg, TEXT("Right"));
 		req.command = (int)MOVERIGHT;
 		EscreveMensagem(pipe, req);
 		//LerMensagem(pipe);
