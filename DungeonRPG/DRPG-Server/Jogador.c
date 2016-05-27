@@ -16,9 +16,7 @@ void NovoJogador(int id) {
 	j->atkCounter = 0;
 
 	//Define x e y do jogador (pos vazia) e regista-o no labirinto
-	//WaitForSingleObject(mutexLabirinto, INFINITE);
 	SetPlayerInRandomPosition(j);
-	//ReleaseMutex(mutexLabirinto);
 }
 
 void DesligarJogador(Jogador * j) {
@@ -93,12 +91,12 @@ void MoverJogador(int playerId, int keystroke) {
 	_tprintf(TEXT("P[%d] -> POSX: %d POSY: %d\n\n"),playerId, j->x, j->y);
 }
 
-void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS]) {
+void UpdatePlayerLOS(int x, int y, int (*matriz)[PLAYER_LOS]) {
 	//validar o scroll
 	// - Definir margens e encostar o scroll ao mapa
 	SetEmptyMatrix(matriz);
 	
-	int iniX, iniY, maxX,maxY;
+	int iniX, iniY, maxX, maxY;
 
 	if (x - 5 < 0) iniX = 0;
 	else iniX = x - 5;
@@ -120,7 +118,7 @@ void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS]) {
 	}
 }
 
-void SetEmptyMatrix(int(*matriz)[PLAYER_LOS]) {
+void SetEmptyMatrix(int (*matriz)[PLAYER_LOS]) {
 	for (int i = 0; i < PLAYER_LOS; i++)
 		for (int j = 0; j < PLAYER_LOS; j++)
 			matriz[i][j] = FOG_OF_WAR;
@@ -137,31 +135,6 @@ void SetPlayerInRandomPosition(Jogador * p) {
 	p->x = x;
 	p->y = y;
 	gLabirinto.labirinto[y][x] = p->id;
-}
-
-BOOL hasPlayerIn(int x, int y) {
-	return gLabirinto.labirinto[y][x] >= PLAYER_START_INDEX
-		&& gLabirinto.labirinto[y][x] <= PLAYER_END_INDEX;
-}
-
-BOOL hasMonsterAndPlayerIn(int x, int y) {
-	return gLabirinto.labirinto[y][x] > 1000;
-}
-
-BOOL hasObjectIn(int x, int y) {
-	return (gLabirinto.labirinto[y][x] >= ITEM_START_INDEX
-		&& gLabirinto.labirinto[y][x] <= ITEM_END_INDEX)
-		|| (gLabirinto.labirinto[y][x] > PEDRAS //Ver common.h
-		&& gLabirinto.labirinto[y][x] < 600);
-}
-
-BOOL hasWallIn(int x, int y) {
-	return gLabirinto.labirinto[y][x] >= WALL_START_INDEX
-		&& gLabirinto.labirinto[y][x] <= WALL_END_INDEX;
-}
-
-BOOL hasStamina(Jogador p) {
-	return (p.lentidaoCounter == 0);
 }
 
 void RecoverPlayerStamina(Jogador * p) {

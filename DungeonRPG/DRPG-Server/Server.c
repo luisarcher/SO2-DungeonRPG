@@ -123,6 +123,7 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 
 			case STARTGAME:
 				start = TRUE;
+				DistribuirItems();
 				_tcscpy(respostaServidor, TEXT("Começaste um novo jogo!"));
 
 				//Broadcast
@@ -219,8 +220,8 @@ DWORD WINAPI ActualizaClientes(LPVOID param) {
 			//Actualiza o labirinto de todos os clientes activos
 			for (int i = 0; i < totalConnections; i++) {
 				if (gClients[i].hp > 0) {
-					if (!start) SetEmptyMatrix(&resposta.matriz); //security
-					else UpdatePlayerLOS(gClients[i].x, gClients[i].y, &resposta.matriz);
+					if (!start) SetEmptyMatrix(resposta.matriz); //security
+					else UpdatePlayerLOS(gClients[i].x, gClients[i].y, resposta.matriz);
 					if (!WriteFile(gClients[i].hPipeJogo, &resposta, sizeof(ServerResponse), &n, NULL)) {
 						_tprintf(TEXT("[ERRO] Ao escrever no pipe do cliente %d:%s\n"), gClients[i].id, gClients[i].nome);
 						gClients[i].hp = 0;

@@ -34,32 +34,39 @@
 #define KEY_RIGHT 77
 
 // - Ints da matriz
-	//0 - espaço vazio
-	//players 1~19
-	//paredes 20~29
-	//objectos boost 30~49
-	//monstros 51~99
-	//pedras 50(quant), 500+ , ex 503 -> 3 pedras numa posição
 	#define EMPTY -1
 	#define FOG_OF_WAR -2
 
+	//Players 0~19
 	#define PLAYER_START_INDEX 0
 	#define PLAYER_END_INDEX 19
 		#define PLAYER_STONE_CAP 15
 		#define HP_BASE 10
 		#define LENTIDAO_BASE 5
 
+	//Paredes 20~29
 	#define WALL_START_INDEX 20
 		#define STONEWALL 20
 	#define WALL_END_INDEX 29
 
-	//items
+	//Items 30~49 | 500+
 	#define ITEM_START_INDEX 30
 		#define VITAMINA	30	//+1 HP (Up to 200% base hp (200))
 		#define ORANGE_BULL 31	//+3 HP (Up to 200% base hp (200))
 		#define REB_CAFEINA 32	//-2 Lentidão (1min, não stackam)
 		#define PEDRAS 500		//+1 ataque quando usada
+			//pedras 50(quant), 500+ , ex 503 -> 3 pedras numa posição
 	#define ITEM_END_INDEX 49
+
+	//Item Quantity
+	#define QNT_VITAMINA (int)((int)LABIRINTOSIZE*(int)LABIRINTOSIZE) * 0.07	//7% vitaminas no mapa
+	#define QNT_ORANGE_BULL (int)((int)LABIRINTOSIZE*(int)LABIRINTOSIZE) * 0.01 //1% orangeBull no mapa
+	#define QNT_REB_CAFEINA (int)((int)LABIRINTOSIZE*(int)LABIRINTOSIZE) * 0.04 //4% rebuçadosCafeina no mapa
+	#define QNT_PEDRAS (int)((int)LABIRINTOSIZE*(int)LABIRINTOSIZE) * 0.9		//9% Pedras no mapa
+	
+	#define MONSTER_START_INDEX 51
+	#define MAX_MONSTERS 48
+	#define MONSTER_END_INDEX (int)((int)MONSTER_START_INDEX+(int)MAX_MONSTERS)
 
 // ---  Game Globals
 extern BOOL fim;

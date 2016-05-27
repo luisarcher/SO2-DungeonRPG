@@ -12,5 +12,12 @@ struct LABIRINTO {
 Labirinto NovoLabirinto();
 Labirinto LerLabirinto();
 
+void DistribuirItems();
+
+BOOL hasPlayerIn(int x, int y);
+BOOL hasMonsterAndPlayerIn(int x, int y);
+BOOL hasObjectIn(int x, int y);
+BOOL hasWallIn(int x, int y);
+
 extern Labirinto gLabirinto;
 #endif

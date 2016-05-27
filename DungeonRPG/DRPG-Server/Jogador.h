@@ -19,7 +19,6 @@ struct JOGADOR {
 	HANDLE hPipe;
 	HANDLE hPipeJogo;
 	HANDLE hThread;
-	TCHAR resposta[BUFFERSIZE];
 };
 
 void NovoJogador(int id);
@@ -35,10 +34,6 @@ void AttackClosePlayers(Jogador * p);
 void DropStones(Jogador * p);
 BOOL UseStone(Jogador * p);
 
-BOOL hasPlayerIn(int x, int y);
-BOOL hasMonsterAndPlayerIn(int x, int y);
-BOOL hasObjectIn(int x, int y);
-BOOL hasWallIn(int x, int y);
 BOOL hasStamina(Jogador p);
 
 extern Jogador gClients[MAX_CLIENTS];
