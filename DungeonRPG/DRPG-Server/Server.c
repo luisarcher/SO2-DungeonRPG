@@ -48,24 +48,28 @@ DWORD WINAPI RecebeClientes(LPVOID param) {
 			exit(-1);
 		}
 
-		NovoJogador(totalConnections); //prepara os dados do jogador
+		NovoJogador(totalConnections); //prepara os dados do novo jogador
 		//Atende o cliente que se ligou
 		gClients[totalConnections].hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)AtendeCliente, (LPVOID)totalConnections, 0, &n);
 		totalConnections++;
 	}
-	//DesligarNamedPipes(); //depois de fim //VERIFICAR!!
 	return 0;
 }
 
 DWORD WINAPI GameTimer(LPVOID param){
 	while (!fim) {
 		ResetEvent(ghGameInstanceEvent);	//Reseta o evento para o estado inicial
-		Sleep(GAME_INSTANCE_TIME);						//Passa um instante de jogo
+		Sleep(GAME_INSTANCE_TIME);			//Passa um instante de jogo
 		SetEvent(ghGameInstanceEvent);		//Sinaliza o evento
 	}
 	return 0;
 }
 
+/**
+* Por cada instante,
+* Recuperar 1 ponto de stamina de cada jogador.
+* Se existir algum jogador nas proximidadades, ataca-o.
+*/
 DWORD WINAPI GameEvents(LPVOID param) {
 	while (!fim) {
 		WaitForSingleObject(ghGameInstanceEvent, INFINITE);		//Espera pelo evento ser sinalizado
@@ -74,15 +78,14 @@ DWORD WINAPI GameEvents(LPVOID param) {
 				RecoverPlayerStamina(&gClients[i]);
 				AttackClosePlayers(&gClients[i]);
 			}
-		_tprintf(TEXT("+T"));
 	}
+	return 0;
 }
 
 /**
 * Analisa o pedido do cliente e envia uma resposta.
 */
 DWORD WINAPI AtendeCliente(LPVOID param) {
-	//ide buscar o handle do cliente que está no array global
 	HANDLE hPipeCliente = gClients[(int)param].hPipe;
 
 	TCHAR buf[BUFFERSIZE];
@@ -119,20 +122,15 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 				break;
 
 			case STARTGAME:
-				if (!start) {
-					start = TRUE;
-					_tcscpy(respostaServidor, TEXT("Começaste um novo jogo!"));
-				}
-				else {
-					_tcscpy(respostaServidor, TEXT("O jogo já começou!"));
-				}
+				start = TRUE;
+				_tcscpy(respostaServidor, TEXT("Começaste um novo jogo!"));
 
 				//Broadcast
 				_tcscat(broadcastMessage, TEXT("Novo jogo iniciado por: "));
 				_tcscat(broadcastMessage, gClients[(int)param].nome);
 				break;
 
-			case QUITGAME:
+			case QUITGAME:				
 				break;
 
 			default:
@@ -161,21 +159,32 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 						_tcscpy(respostaServidor, TEXT("Stone AutoHit: Ligado!"));
 					}
 					break;
+				case STARTGAME:
+					_tcscpy(respostaServidor, TEXT("O jogo já começou!"));
+					break;
 
 				case QUITGAME:
 					break;
 				}
-			} //fimif - mover
-		} //fimif - start
+			} //fim if - mover
+		} //fim if - start
 		//Entrega a resposta final ao cliente
 		_tprintf(TEXT("[Server] A responder com %d bytes: \'%s\' ao cliente [%d] (ReadFile)\n"), n, respostaServidor, (int)param);
 		if (!WriteFile(hPipeCliente, respostaServidor, sizeof(TCHAR) * BUFFERSIZE, &n, NULL)) {
 			_tperror(TEXT("[ERRO] Responder ao cliente... (WriteFile)\n"));
 			exit(-1);
 		}
+
+		SetEvent(ghUpdateGameClientEvent);		//Sinalizar evento de difusão
 	} while (pedido.command != QUITGAME);
 
+	DropStones(&gClients[(int)param]);
 	DesligarJogador(&gClients[(int)param]);
+
+	//Broadcast
+	_tcscat(broadcastMessage, gClients[(int)param].nome);
+	_tcscat(broadcastMessage, TEXT(" saiu do jogo."));
+
 	_tprintf(TEXT("Thread %d exiting\n"), GetCurrentThreadId());
 	return 0;
 }
@@ -192,7 +201,6 @@ int activePlayers() {
 	return nPlayers;
 }
 
-
 DWORD WINAPI ActualizaClientes(LPVOID param) {
 	DWORD n;
 	ServerResponse resposta;
@@ -202,11 +210,11 @@ DWORD WINAPI ActualizaClientes(LPVOID param) {
 
 		if (totalConnections > 0 && activePlayers() > 0) {
 			//Concatena a mensagem de difusão para todos os clientes
-			//memset(resposta.msg, TEXT('\0'), sizeof(TCHAR) * BUFFERSIZE);
-			//if (broadcastMessage != TEXT('\0')) {
+			memset(resposta.msg, TEXT('\0'), sizeof(TCHAR) * BUFFERSIZE);
+			if (broadcastMessage != TEXT('\0')) {
 				_tcscpy(resposta.msg, broadcastMessage);
 				memset(broadcastMessage, TEXT('\0'), sizeof(TCHAR) * BUFFERSIZE);
-			//}
+			}
 
 			//Actualiza o labirinto de todos os clientes activos
 			for (int i = 0; i < totalConnections; i++) {

@@ -18,6 +18,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	HANDLE hThreadListener;
 	HANDLE hThreadSender;
 	HANDLE hThreadGameTime;
+	HANDLE hThreadGameEvents;
 
 #ifdef UNICODE 
 	_setmode(_fileno(stdin), _O_WTEXT);
@@ -30,7 +31,14 @@ int _tmain(int argc, LPTSTR argv[]) {
 		return;
 	}
 
+	//Manual reset event
 	if ((ghGameInstanceEvent = CreateEvent(NULL,TRUE,FALSE,TEXT("Instante de Jogo"))) == NULL) {
+		printf("Criação do Evento falhou (%d)\n", GetLastError());
+		return;
+	}
+
+	//Auto-reset Event
+	if ((ghUpdateGameClientEvent = CreateEvent(NULL, FALSE, FALSE, TEXT("Actualizar Clientes"))) == NULL) {
 		printf("Criação do Evento falhou (%d)\n", GetLastError());
 		return;
 	}
@@ -40,10 +48,9 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	//Invocar a thread que inscreve novos clientes
 	hThreadListener = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecebeClientes, NULL, 0, NULL);
-	hThreadSender = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ActualizaClientes, NULL, 0, NULL);
-	hThreadGameTime = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)GameTimer, NULL, 0, NULL);
-	HANDLE PLS = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)GameEvents, NULL, 0, NULL);
-
+	hThreadSender	= CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ActualizaClientes, NULL, 0, NULL);
+	hThreadGameTime		= CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)GameTimer, NULL, 0, NULL);
+	hThreadGameEvents	= CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)GameEvents, NULL, 0, NULL);
 
 	//fim = TRUE; //define quando as threads devem terminar
 
@@ -60,6 +67,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	CloseHandle(gMutexLabirinto);
 	CloseHandle(ghGameInstanceEvent);
+	CloseHandle(ghUpdateGameClientEvent);
 	exit(0);
 }
 

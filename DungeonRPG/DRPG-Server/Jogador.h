@@ -32,6 +32,7 @@ void SetPlayerInRandomPosition(Jogador * p);
 void AskPlayerToCollectItems(Jogador * p);
 void RecoverPlayerStamina(Jogador * p);
 void AttackClosePlayers(Jogador * p);
+void DropStones(Jogador * p);
 BOOL UseStone(Jogador * p);
 
 BOOL hasPlayerIn(int x, int y);

@@ -8,6 +8,7 @@
 //Client Commands
 #define SETNAME		600
 #define STARTGAME	601
+#define JOINGAME	602
 #define QUITGAME	604
 #define GAMESTATUS	610
 #define MOVEUP		672

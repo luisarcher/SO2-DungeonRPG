@@ -90,13 +90,13 @@ void MoverJogador(int playerId, int keystroke) {
 	ReleaseMutex(gMutexLabirinto);
 	// Player is now "tired" and recovering stamina
 	j->lentidaoCounter = j->lentidao; //player is able to move on 0
+	_tprintf(TEXT("P[%d] -> POSX: %d POSY: %d\n\n"),playerId, j->x, j->y);
 }
 
 void UpdatePlayerLOS(int x, int y, int(*matriz)[PLAYER_LOS]) {
 	//validar o scroll
 	// - Definir margens e encostar o scroll ao mapa
 	SetEmptyMatrix(matriz);
-	_tprintf(TEXT("POSX: %d POSY: %d\n\n"), x, y);
 	
 	int iniX, iniY, maxX,maxY;
 
@@ -192,6 +192,11 @@ BOOL UseStone(Jogador * p) {
 		return TRUE;
 	}
 	return FALSE;
+}
+
+void DropStones(Jogador * p) {
+	int cellValue = (p->nStones > 0) ? (p->nStones * PEDRAS) : EMPTY;
+	gLabirinto.labirinto[p->y][p->x] = cellValue;
 }
 
 void AskPlayerToCollectItems(Jogador * p) {

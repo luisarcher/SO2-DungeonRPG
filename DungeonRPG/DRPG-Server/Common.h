@@ -22,7 +22,7 @@
 #endif
 
 // ---  Game Constants
-#define GAME_INSTANCE_TIME 1000 ///15
+#define GAME_INSTANCE_TIME 200 //1000/15
 #define MAX_CLIENTS 10
 #define BUFFERSIZE 256
 #define PLAYER_LOS 10	//player line of sight
