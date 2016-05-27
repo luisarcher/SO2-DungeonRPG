@@ -14,6 +14,7 @@ struct JOGADOR {
 
 	int lentidaoCounter;
 	int atkCounter;
+	int itemDurationCounter;
 
 	BOOL stoneAutoHit;
 	HANDLE hPipe;
@@ -30,10 +31,10 @@ void SetEmptyMatrix(int(*matriz)[PLAYER_LOS]);
 void SetPlayerInRandomPosition(Jogador * p);
 void AskPlayerToCollectItems(Jogador * p);
 void RecoverPlayerStamina(Jogador * p);
+void CheckItemDurability(Jogador * p);
 void AttackClosePlayers(Jogador * p);
 void DropStones(Jogador * p);
 BOOL UseStone(Jogador * p);
-
 BOOL hasStamina(Jogador p);
 
 extern Jogador gClients[MAX_CLIENTS];

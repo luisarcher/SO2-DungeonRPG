@@ -14,6 +14,7 @@ void NovoJogador(int id) {
 
 	j->lentidaoCounter = 0;
 	j->atkCounter = 0;
+	j->itemDurationCounter = 0;
 
 	//Define x e y do jogador (pos vazia) e regista-o no labirinto
 	SetPlayerInRandomPosition(j);
@@ -21,7 +22,6 @@ void NovoJogador(int id) {
 
 void DesligarJogador(Jogador * j) {
 	j->hp = 0;
-	//deixa cair pedras ...
 	DisconnectNamedPipe(j->hPipe);
 	DisconnectNamedPipe(j->hPipeJogo);
 	CloseHandle(j->hPipe);
@@ -118,31 +118,48 @@ void UpdatePlayerLOS(int x, int y, int (*matriz)[PLAYER_LOS]) {
 	}
 }
 
+/**
+*	Preenche a matriz do jogador com "novoeiro".
+*/
 void SetEmptyMatrix(int (*matriz)[PLAYER_LOS]) {
 	for (int i = 0; i < PLAYER_LOS; i++)
 		for (int j = 0; j < PLAYER_LOS; j++)
 			matriz[i][j] = FOG_OF_WAR;
 }
 
+/**
+*	Coloca o jogador numa posição aleatória no labirinto que esteja vazia.
+*/
 void SetPlayerInRandomPosition(Jogador * p) {
 	int x, y;
 	do {
 		srand(time(NULL));
 		x = (rand() % LABIRINTOSIZE);
 		y = (rand() % LABIRINTOSIZE);
-	} while (!gLabirinto.labirinto[y][x] == EMPTY);
+	} while (!(gLabirinto.labirinto[y][x] == EMPTY));
 
 	p->x = x;
 	p->y = y;
-
 	gLabirinto.labirinto[y][x] = p->id;
 }
 
+/**
+*	O jogador recupera um ponto de stamina.
+*/
 void RecoverPlayerStamina(Jogador * p) {
 	if (p->lentidaoCounter > 0)
 		--p->lentidaoCounter;
 	if (p->atkCounter > 0)
 		--p->atkCounter;
+}
+
+void CheckItemDurability(Jogador * p) {
+	if (p->itemDurationCounter > 0)
+		--p->itemDurationCounter;
+	else {
+		if (p->lentidao < LENTIDAO_BASE)
+			p->lentidao = LENTIDAO_BASE;
+	}
 }
 
 void AttackClosePlayers(Jogador * p) {
@@ -192,6 +209,7 @@ void AskPlayerToCollectItems(Jogador * p) {
 		break;
 	case REB_CAFEINA:
 		p->lentidao = (int)LENTIDAO_BASE - 2; //Efeito só deve de durar por 1 min (does not stack)
+		p->itemDurationCounter = 15 * 60; // 15 instantes por segundo * 60 segundos = 900 instantes;
 		break;
 	default:
 		if ((nPedras = gLabirinto.labirinto[p->x][p->y]) > PEDRAS){

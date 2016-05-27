@@ -3,15 +3,12 @@ Projecto Final - Sistemas Operativos 2 - Engenharia Informática
 ________________________
 
 ### Servidor:
-As threads que alteram dados do mapa precisam de MutEx
-
-criar distribuidor de items
 
 [EXTRA] criar novo objecto chamado crate que pode sair um item aleatóriamente ou armadilha
 
 [EXTRA] Colocar o servidor como serviço
 
-controlar items temporários
+Memória partilhada para os monstros
 
 ### Cliente:
 

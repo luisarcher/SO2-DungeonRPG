@@ -77,6 +77,7 @@ DWORD WINAPI GameEvents(LPVOID param) {
 			if (gClients[i].hp > 0) { //is active?
 				RecoverPlayerStamina(&gClients[i]);
 				AttackClosePlayers(&gClients[i]);
+				CheckItemDurability(&gClients[i]);
 			}
 	}
 	return 0;
