@@ -5,15 +5,11 @@ ________________________
 ### Servidor:
 As threads que alteram dados do mapa precisam de MutEx
 
-Jogador deixa cair as pedras
-
 criar distribuidor de items
 
-criar novo objecto chamado crate que pode sair um item aleatóriamente ou armadilha
+[EXTRA] criar novo objecto chamado crate que pode sair um item aleatóriamente ou armadilha
 
-Criar novo comando para aceitar "join"
-- irá ser onde são registados on novos jogadores e onde será chamada a função novo jogador
-- verifica se o jogo está a correr, senão, ignora o pedido
+[EXTRA] Colocar o servidor como serviço
 
 controlar items temporários
 
@@ -26,6 +22,8 @@ Quando conecta envia logo o comando Join para se tentar ligar
 DLL
 
 ### Monstros:
+
+Memória partilhada
 
 Mostro Distraído - Anda aleatóriamente pelo labirinto, lentidão 3, agressive = 0;
 

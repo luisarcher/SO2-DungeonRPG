@@ -130,7 +130,7 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 				_tcscat(broadcastMessage, gClients[(int)param].nome);
 				break;
 
-			case QUITGAME:				
+			case QUITGAME:
 				break;
 
 			default:
