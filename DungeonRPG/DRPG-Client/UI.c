@@ -1,10 +1,122 @@
 #include "UI.h"
-#include "Client.h"
 
-/*void MenuInicial()
-{
-	_tprintf(TEXT("teste"));
-}*/
+BOOL iniciado = FALSE;
+
+void enviaTecla(int k, HANDLE pipe) {
+	ClientRequest req;
+	int kp, seta = 0;
+	switch (k)
+	{
+	case KEY_UP:
+	{
+		//_fgetts(req.msg, 256, stdin);
+		//memset(req.msg, '\0', sizeof(TCHAR) * BUFFERSIZE);
+		_tcscpy(req.msg, TEXT("UP"));
+		req.command = (int)MOVEUP;
+		EscreveMensagem(pipe, req);
+		//LerMensagem(pipe);
+		break;
+	}
+	case KEY_DOWN:
+	{
+		//_fgetts(req.msg, 256, stdin);
+		//memset(req.msg, '\0', sizeof(TCHAR));
+		_tcscpy(req.msg, TEXT("Down"));
+		req.command = (int)MOVEDOWN;
+		EscreveMensagem(pipe, req);
+		//LerMensagem(pipe);
+		break;
+	}
+	case KEY_LEFT:
+	{
+		//_fgetts(req.msg, 256, stdin);
+		memset(req.msg, '\0', sizeof(TCHAR));
+		_tcscpy(req.msg, TEXT("Left"));
+		req.command = (int)MOVELEFT;
+		EscreveMensagem(pipe, req);
+		//LerMensagem(pipe);
+		break;
+	}
+	case KEY_RIGHT:
+	{
+		//_fgetts(req.msg, 256, stdin);
+		memset(req.msg, '\0', sizeof(TCHAR));
+		_tcscpy(req.msg, TEXT("Right"));
+		req.command = (int)MOVERIGHT;
+		EscreveMensagem(pipe, req);
+		//LerMensagem(pipe);
+		break;
+	}
+	case KEY_ESCAPE:
+	{
+		iniciado = FALSE;
+
+		clrscr();
+		seta = 0;
+
+		gotoxy(0, 0);
+		MenuEscape(seta);
+
+		while (iniciado == FALSE)
+		{
+			kp = Getch();
+			switch (kp)
+			{
+			case KEY_UP:
+				if (seta == 0)
+				{
+					seta = 1;
+					MenuEscape(seta);
+				}
+				else
+				{
+					seta--;
+					MenuEscape(seta);
+				}
+				break;
+			case KEY_DOWN:
+				if (seta == 1)
+				{
+					seta = 0;
+					MenuEscape(seta);
+				}
+				else
+				{
+					seta++;
+					MenuEscape(seta);
+				}
+				break;
+			case KEY_ENTER:
+				if (seta == 0)
+				{
+					iniciado = TRUE;
+				}
+				else if (seta == 1)
+				{
+					MenuInicial(0);
+				}
+				//break;
+			default:
+				//nope
+				break;
+			}
+		}
+		break;
+	}
+	case KEY_SPACE:
+	{
+		memset(req.msg, '\0', sizeof(TCHAR));
+		_tcscpy(req.msg, TEXT("Activa Pedras\n"));
+		req.command = (int)SWITCH_STONE_AUTOHIT;
+		EscreveMensagem(pipe, req);
+
+		break;
+	}
+	default:
+		break;
+	}
+}
+
 void gotoxy(int x, int y) {
 	COORD coord;
 	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);

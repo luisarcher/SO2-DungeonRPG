@@ -1,7 +1,15 @@
 #pragma once
+#include "Client.h"
+//Tecla premida pelo utilizador
+#define KEY_UP 1
+#define KEY_DOWN 2
+#define KEY_LEFT 3
+#define KEY_RIGHT 4
+#define KEY_SPACE 5
+#define KEY_ENTER 6
+#define KEY_ESCAPE 7
 
 #define EMPTY -1
-
 //Paredes 20~29
 #define WALL_START_INDEX 20
 #define STONEWALL 20
@@ -16,6 +24,9 @@
 //pedras 50(quant), 500+ , ex 503 -> 3 pedras numa posição
 #define ITEM_END_INDEX 49
 
+extern iniciado;
+
+void enviaTecla(int k, HANDLE pipe);
 void MenuEscape(int op);
 void MostraLOS(int(*los)[10]);
 int Getch();

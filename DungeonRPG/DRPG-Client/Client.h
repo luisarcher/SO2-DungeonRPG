@@ -9,15 +9,6 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-//Tecla premida pelo utilizador
-#define KEY_UP 1
-#define KEY_DOWN 2
-#define KEY_LEFT 3
-#define KEY_RIGHT 4
-#define KEY_SPACE 5
-#define KEY_ENTER 6
-#define KEY_ESCAPE 7
-
 //Comandos do utilizador
 #define SETNAME		600
 #define STARTGAME	601
@@ -43,13 +34,12 @@ typedef struct SERVERRESPONSE {
 	TCHAR msg[BUFFERSIZE];
 } ServerResponse;
 
-extern BOOL iniciado;
 extern BOOL fim;
-extern TCHAR broadcastMessage[BUFFERSIZE];
+extern ServerResponse resp;
 
-void enviaTecla(int k, HANDLE pipe);
+void InicializarPipes(HANDLE * hPipe, HANDLE * hPipeJogo);
 void LerMensagem(HANDLE pipe, TCHAR * serverResponse);
 void EscreveMensagem(HANDLE pipe, ClientRequest req);
-
 DWORD WINAPI LerBroadcast(LPVOID param);
+void FecharHandles(HANDLE * hPipe, HANDLE * hPipeJogo);
 #endif
