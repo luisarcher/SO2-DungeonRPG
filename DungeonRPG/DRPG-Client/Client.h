@@ -18,18 +18,20 @@
 #define MOVELEFT	675
 #define MOVERIGHT	677
 #define SWITCH_STONE_AUTOHIT 650
+
 #define BUFFERSIZE 256
 #define PLAYER_LOS 10
+
 
 #define PIPE_NAME TEXT("\\\\.\\pipe\\DRPG")
 #define PIPE_NAME_JOGO TEXT("\\\\.\\pipe\\DRPG-Jogo")
 
-typedef struct CLIENTREQUEST {
+typedef struct {
 	int command;
 	TCHAR msg[BUFFERSIZE];
 } ClientRequest;
 
-typedef struct SERVERRESPONSE {
+typedef struct {
 	int matriz[PLAYER_LOS][PLAYER_LOS];
 	TCHAR msg[BUFFERSIZE];
 } ServerResponse;
