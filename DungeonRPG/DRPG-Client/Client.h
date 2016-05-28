@@ -22,7 +22,6 @@
 #define BUFFERSIZE 256
 #define PLAYER_LOS 10
 
-
 #define PIPE_NAME TEXT("\\\\.\\pipe\\DRPG")
 #define PIPE_NAME_JOGO TEXT("\\\\.\\pipe\\DRPG-Jogo")
 
