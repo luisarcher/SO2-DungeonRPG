@@ -161,6 +161,14 @@ void SetPlayerInRandomPosition(Jogador * p) {
 	gLabirinto.labirinto[y][x] = p->id;
 }
 
+BOOL canAttack(Jogador p) {
+	return (p.atkCounter == 0);
+}
+
+BOOL hasStamina(Jogador p) {
+	return (p.lentidaoCounter == 0);
+}
+
 /**
 *	O jogador recupera um ponto de stamina.
 */
@@ -184,9 +192,12 @@ void CheckItemDurability(Jogador * p) {
 }
 
 /**
+*	Verifica se o jogador tem a possibilidade de atacar.
 *	Verifica se existe algum jogador nas proximidades, se sim, ataca-o.
 */
 void AttackClosePlayers(Jogador * p) {
+	if (!canAttack(*p)) return;
+
 	for (int i = (p->y - 1); i <= (p->y + 1); i++)
 	{
 		for (int j = (p->x - 1); j <= (p->x + 1); j++)

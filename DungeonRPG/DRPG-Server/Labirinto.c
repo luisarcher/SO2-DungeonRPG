@@ -69,10 +69,6 @@ BOOL hasWallIn(int x, int y) {
 		&& gLabirinto.labirinto[y][x] <= WALL_END_INDEX;
 }
 
-BOOL hasStamina(Jogador p) {
-	return (p.lentidaoCounter == 0);
-}
-
 void DistribuirItems() {
 	int x, y;
 	srand(time(NULL));
