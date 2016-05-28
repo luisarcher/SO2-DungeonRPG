@@ -115,7 +115,7 @@ void MostraLOS(int(*los)[10]) {
 			{
 				//_tprintf(TEXT("%c"), 'O');
 				int item = los[i][j];
-				if (item == VITAMINA) _tprintf(TEXT("%c"), 'V');
+				if (item == VITAMINA) _tprintf(TEXT("%c"), '+');
 				if (item == ORANGE_BULL) _tprintf(TEXT("%c"), '&');
 				if (item == REB_CAFEINA) _tprintf(TEXT("%c"), '*');
 			}
