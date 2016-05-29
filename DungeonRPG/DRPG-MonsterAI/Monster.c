@@ -3,7 +3,7 @@
 
 void InitializeSharedMemory(HANDLE * hMappedObj) {
 
-	hMappedObj = OpenFileMapping(FILE_MAP_ALL_ACCESS,
+	*hMappedObj = OpenFileMapping(FILE_MAP_ALL_ACCESS,
 		FALSE,
 		TEXT("ShLabirinto"));
 	if (hMappedObj == NULL) {
@@ -12,7 +12,7 @@ void InitializeSharedMemory(HANDLE * hMappedObj) {
 		return -1;
 	}
 
-	shLabirinto = (Labirinto*)MapViewOfFile(hMappedObj,
+	shLabirinto = (Labirinto*)MapViewOfFile(*hMappedObj,
 		FILE_MAP_ALL_ACCESS,
 		0,
 		0,

@@ -85,7 +85,6 @@ int _tmain(int argc, LPTSTR argv[]) {
 	gLabirinto = LerLabirinto();
 	DistribuirItems();
 
-	//Invocar a thread que inscreve novos clientes
 	hThreadListener = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecebeClientes, NULL, 0, NULL);
 	hThreadSender	= CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ActualizaClientes, NULL, 0, NULL);
 	hThreadGameTime		= CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)GameTimer, NULL, 0, NULL);

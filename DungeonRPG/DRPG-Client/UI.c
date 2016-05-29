@@ -192,10 +192,10 @@ int Getch() {
 			if (irInputRecord.Event.KeyEvent.wVirtualKeyCode == VK_RETURN) return KEY_ENTER;
 			if (irInputRecord.Event.KeyEvent.wVirtualKeyCode == VK_ESCAPE) return KEY_ESCAPE;
 			//return cChar;
-			return EOF;
+			return -1;
 		}
 
-	return EOF;
+	return -1;
 }
 
 void MostraLOS(int(*los)[10]) {

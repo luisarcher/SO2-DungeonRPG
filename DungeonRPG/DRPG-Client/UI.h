@@ -1,5 +1,6 @@
 #pragma once
-#include "Client.h"
+#include "lib/ClientDLL.h"
+
 //Tecla premida pelo utilizador
 #define KEY_UP 1
 #define KEY_DOWN 2

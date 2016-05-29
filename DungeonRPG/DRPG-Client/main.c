@@ -1,4 +1,3 @@
-#include "Client.h"
 #include "UI.h"
 
 int _tmain(int argc, LPTSTR argv[]) {
