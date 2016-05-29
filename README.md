@@ -4,23 +4,21 @@ ________________________
 
 ### Servidor:
 
+//Finished
+
 [EXTRA] criar novo objecto chamado crate que pode sair um item aleatóriamente ou armadilha
 
 [EXTRA] Colocar o servidor como serviço
 
-Memória partilhada para os monstros
+[IMPORTANTE] Sincronizar jogadores e monstros
 
 ### Cliente:
 
-Toda a Ui
-
-Quando conecta envia logo o comando Join para se tentar ligar
-
-DLL
+//Finished
 
 ### Monstros:
 
-Memória partilhada
+[feito]Memória partilhada
 
 Mostro Distraído - Anda aleatóriamente pelo labirinto, lentidão 3, agressive = 0;
 
@@ -37,6 +35,8 @@ Quando atingem 160% dividem-se, lançam um novo monstro (criam um novo processo)
 Primeiros monstros lançados pelo servidor
 
 Têm de ter a capacidade de lançar um processo(monstro)
+
+Usar mutex entre processos para sincronizar os monstros
 
 
 
