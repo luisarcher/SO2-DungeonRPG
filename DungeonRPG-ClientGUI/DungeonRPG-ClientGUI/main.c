@@ -31,15 +31,19 @@
 // do Windows API e os tipos usados na programação Windows
 #include <windows.h>
 #include <tchar.h>
+#include "resource.h"
 // Pré-declaração da função WndProc (a que executa os procedimentos da janela por
 // "callback") 
 LRESULT CALLBACK TrataEventos(HWND, UINT, WPARAM, LPARAM);
+LRESULT CALLBACK DlgBox1Proc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam);
 
 // Nome da classe da janela (para programas de uma só janela, normalmente este 
 // nome é igual ao do próprio programa)
 // "szprogName" é usado mais abaixo na definição das propriedades 
 // da classe da janela
 TCHAR *szProgName = TEXT("Base");
+
+HINSTANCE hInstGLOBAL;
 
 // ============================================================================
 // FUNÇÂO DE INÍCIO DO PROGRAMA: WinMain()
@@ -57,13 +61,13 @@ TCHAR *szProgName = TEXT("Base");
 //				ShowWindow()
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst,
-	LPSTR lpCmdLine, int nCmdShow) {
+		LPSTR lpCmdLine, int nCmdShow) {
 	HWND hWnd;			// hWnd é o handler da janela, gerado mais abaixo 
 						// por CreateWindow()
 	MSG lpMsg;			// MSG é uma estrutura definida no Windows para as mensagens
 	WNDCLASSEX wcApp;	// WNDCLASSEX é uma estrutura cujos membros servem para 
 						// definir as características da classe da janela
-
+	hInstGLOBAL = hInst;
 						// ============================================================================
 						// 1. Definição das características da janela "wcApp" 
 						//    (Valores dos elementos da estrutura "wcApp" do tipo WNDCLASSEX)
@@ -104,7 +108,7 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst,
 
 
 
-	wcApp.lpszMenuName = NULL;						// Classe do menu que a janela pode ter
+	wcApp.lpszMenuName = IDR_MENU1;						// Classe do menu que a janela pode ter
 													// (NULL = não tem menu)
 	wcApp.cbClsExtra = 0;							// Livre, para uso particular
 	wcApp.cbWndExtra = 0;							// Livre, para uso particular
@@ -121,7 +125,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst,
 															   // ============================================================================
 	if (!RegisterClassEx(&wcApp))
 		return(0);
-
 
 	// ============================================================================
 	// 3. Criar a janela
@@ -208,6 +211,8 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst,
 	DispatchMessage(&lpMsg);
 	}
 	}*/
+
+
 	// ============================================================================
 	// 6. Fim do programa
 	// ============================================================================
@@ -245,6 +250,7 @@ LRESULT CALLBACK TrataEventos(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lPara
 	static int x = 0, y = 0;
 	static int xi = 0, xf = 0, yi = 0, yf = 0;
 	static TCHAR letra[200] = TEXT("texto");
+	TCHAR pal[100];
 	PAINTSTRUCT p;
 	switch (messg) {
 	case WM_PAINT:
@@ -254,6 +260,12 @@ LRESULT CALLBACK TrataEventos(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lPara
 		Ellipse(hdc, xi, yi, xf, yf);
 		//ReleaseDC(hWnd,hdc);
 		EndPaint(hWnd, &p);
+		break;
+	case WM_COMMAND:
+		if (wParam == ID_FICHEIRO_REGISTAR) {
+			//MessageBox(hWnd, TEXT("Frase"), TEXT("Title"), MB_OK);
+			DialogBox(hInstGLOBAL, MAKEINTRESOURCE(IDD_dlgMain), hWnd, DlgBox1Proc);
+		}
 		break;
 	case WM_DESTROY:	// Destruir a janela e terminar o programa
 						// "PostQuitMessage(Exit Status)"		
@@ -369,3 +381,38 @@ Picture Control
 
 */
 
+LRESULT CALLBACK DlgBox1Proc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam) {
+	TCHAR pal[100];
+	int i;
+	switch (messg)
+	{
+		
+	case WM_INITDIALOG:
+		SetDlgItemText(hWnd, IDC_txtIpServ, TEXT("127.0.0.1"));
+		SendDlgItemMessage(hWnd, IDC_lbxPlayers, LB_ADDSTRING, 0, TEXT("Luís"));
+		MessageBox(hWnd,TEXT("init"), TEXT("init"), MB_OK);
+		return TRUE;
+
+	case WM_COMMAND:
+		if (wParam == IDOK) {
+			GetDlgItemText(GetModuleHandle(NULL), IDC_txtLogin, pal, 100);
+			MessageBox(GetModuleHandle(NULL), pal, TEXT("Lido"), MB_OK);
+			return TRUE;
+		}
+
+		if (LOWORD(wParam) == IDOK && HIWORD(wParam) == LBN_DBLCLK) {
+			//Buscar Item Selecionado
+			i = SendDlgItemMessage(hWnd, IDC_lbxPlayers, LB_GETCURSEL, 0, 0);
+		}
+	
+		if (wParam == IDCANCEL) {
+			EndDialog(hWnd, 0);
+	
+		}
+		return TRUE;
+	case WM_CLOSE:
+		EndDialog(hWnd, 0);
+		return TRUE;
+	}
+	return FALSE;
+}
