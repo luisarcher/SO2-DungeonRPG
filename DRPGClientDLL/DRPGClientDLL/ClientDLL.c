@@ -3,22 +3,35 @@
 ServerResponse resp;
 BOOL fim = FALSE;
 
-void InicializarPipes(HANDLE * hPipe, HANDLE * hPipeJogo) {
-	_tprintf(TEXT("[CLIENTE]Esperar pelo pipe %s(WaitNamedPipe)\n"), PIPE_NAME);
-	if (!WaitNamedPipe(PIPE_NAME, NMPWAIT_WAIT_FOREVER)) {
-		_tprintf(TEXT("[ERRO] Ligar ao pipe \'%s\'... (WaitNamedPipe)\n"), PIPE_NAME);
+void InicializarPipes(HANDLE * hPipe, HANDLE * hPipeJogo, TCHAR * ipServ) {
+	TCHAR pipeName[BUFFERSIZE] = TEXT("\\\\");
+	TCHAR pipeNameJogo[BUFFERSIZE] = TEXT("\\\\");
+	if (ipServ == NULL) {
+		_tcscat(pipeName, TEXT("."));
+		_tcscpy(pipeName, TEXT("."));
+	}
+	else {
+		_tcscat(pipeName, ipServ);
+		_tcscat(pipeNameJogo, ipServ);
+	}
+	_tcscat(pipeName, PIPE_NAME_SUFFIX);
+	_tcscat(pipeNameJogo, PIPE_NAME_JOGO_SUFFIX);
+
+	_tprintf(TEXT("[CLIENTE]Esperar pelo pipe %s(WaitNamedPipe)\n"), pipeName);
+	if (!WaitNamedPipe(pipeName, NMPWAIT_WAIT_FOREVER)) {
+		_tprintf(TEXT("[ERRO] Ligar ao pipe \'%s\'... (WaitNamedPipe)\n"), pipeName);
 		system("pause");
 		exit(-1);
 	}
 	_tprintf(TEXT("[CLIENTE] Ligação ao servidor... (CreateFile)\n"));
-	if ((*hPipe = CreateFile(PIPE_NAME, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL)) == NULL) {
-		_tprintf(TEXT("[ERRO] Ligar ao pipe \'%s\'... (WaitNamedPipe)\n"), PIPE_NAME);
+	if ((*hPipe = CreateFile(pipeName, GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL)) == NULL) {
+		_tprintf(TEXT("[ERRO] Ligar ao pipe \'%s\'... (WaitNamedPipe)\n"), pipeName);
 		system("pause");
 		exit(-1);
 	}
 	_tprintf(TEXT("[CLIENTE] Ligação ao servidor PIPE BROADCAST... (CreateFile)\n"));
-	if ((*hPipeJogo = CreateFile(PIPE_NAME_JOGO, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL)) == NULL) {
-		_tprintf(TEXT("[ERRO] Ligar ao pipe \'%s\'... (WaitNamedPipe)\n"), PIPE_NAME_JOGO);
+	if ((*hPipeJogo = CreateFile(pipeNameJogo, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL)) == NULL) {
+		_tprintf(TEXT("[ERRO] Ligar ao pipe \'%s\'... (WaitNamedPipe)\n"), pipeNameJogo);
 		system("pause");
 		exit(-1);
 	}
