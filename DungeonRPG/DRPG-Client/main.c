@@ -12,7 +12,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	_setmode(_fileno(stderr), _O_WTEXT);
 #endif
 
-	InicializarPipes(&hPipe, &hPipeJogo);
+	InicializarPipes(&hPipe, &hPipeJogo, NULL);
 
 	int kp = 0;		//keypress
 	int seta = 0;	//Posicionamento da seta no ecran

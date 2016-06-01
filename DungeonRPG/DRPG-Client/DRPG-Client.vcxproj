@@ -119,7 +119,6 @@
     <ClCompile Include="UI.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Client.h" />
     <ClInclude Include="UI.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

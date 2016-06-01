@@ -1,6 +1,6 @@
-#ifndef CLIENT_H_INCLUDED
-#define CLIENT_H_INCLUDED
-
+#pragma once
+#ifndef CLIENT_H
+#define CLIENT_H
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <windows.h>
@@ -37,8 +37,11 @@
 #define BUFFERSIZE 256
 #define PLAYER_LOS 10
 
-#define PIPE_NAME TEXT("\\\\.\\pipe\\DRPG")
-#define PIPE_NAME_JOGO TEXT("\\\\.\\pipe\\DRPG-Jogo")
+//#define PIPE_NAME TEXT("\\\\.\\pipe\\DRPG")
+//#define PIPE_NAME_JOGO TEXT("\\\\.\\pipe\\DRPG-Jogo")
+
+#define PIPE_NAME_SUFFIX TEXT("\\pipe\\DRPG")
+#define PIPE_NAME_JOGO_SUFFIX TEXT("\\pipe\\DRPG-Jogo")
 
 typedef struct {
 	int command;
@@ -53,7 +56,7 @@ typedef struct {
 extern DLL_IMP_API BOOL fim;
 extern DLL_IMP_API ServerResponse resp;
 
-DLL_IMP_API void InicializarPipes(HANDLE * hPipe, HANDLE * hPipeJogo);
+DLL_IMP_API void InicializarPipes(HANDLE * hPipe, HANDLE * hPipeJogo, TCHAR * ipServ);
 DLL_IMP_API void LerMensagem(HANDLE pipe, TCHAR * serverResponse);
 DLL_IMP_API void EscreveMensagem(HANDLE pipe, ClientRequest req);
 DLL_IMP_API DWORD WINAPI LerBroadcast(LPVOID param);
