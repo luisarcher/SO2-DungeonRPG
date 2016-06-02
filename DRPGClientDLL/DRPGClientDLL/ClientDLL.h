@@ -56,9 +56,9 @@ typedef struct {
 extern DLL_IMP_API BOOL fim;
 extern DLL_IMP_API ServerResponse resp;
 
-DLL_IMP_API void InicializarPipes(HANDLE * hPipe, HANDLE * hPipeJogo, TCHAR * ipServ);
-DLL_IMP_API void LerMensagem(HANDLE pipe, TCHAR * serverResponse);
-DLL_IMP_API void EscreveMensagem(HANDLE pipe, ClientRequest req);
+DLL_IMP_API int InicializarPipes(HANDLE * hPipe, HANDLE * hPipeJogo, TCHAR * ipServ);
+DLL_IMP_API DWORD LerMensagem(HANDLE pipe, TCHAR * serverResponse);
+DLL_IMP_API DWORD EscreveMensagem(HANDLE pipe, ClientRequest req);
 DLL_IMP_API DWORD WINAPI LerBroadcast(LPVOID param);
 DLL_IMP_API void FecharHandles(HANDLE * hPipe, HANDLE * hPipeJogo);
 
