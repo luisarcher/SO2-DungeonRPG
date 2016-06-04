@@ -6,7 +6,7 @@ BOOL fim = FALSE;
 
 int _tmain(int argc, LPTSTR argv[]) {
 	HANDLE hMappedObj;
-
+	Monstro m = NovoMonstroBully();
 #ifdef UNICODE 
 	_setmode(_fileno(stdin), _O_WTEXT);
 	_setmode(_fileno(stdout), _O_WTEXT);
@@ -17,8 +17,20 @@ int _tmain(int argc, LPTSTR argv[]) {
 	
 	_tprintf(TEXT("Vou ler o estado do labirinto...\n"));
 	system("pause");
-	shLabirinto->labirinto[1][1] = 51;
-	ReadSharedMemory();
+	m.posX = 1;
+	m.posY = 2;
+	
+	shLabirinto->labirinto[m.posY][m.posX] = m.tipo;
+	
+	while (TRUE) { 
+		
+		ReadSharedMemory(); 
+		
+		system("pause");
+		
+
+		MoveMonstro(shLabirinto, m.direcao, &m);
+	}
 
 	CloseHandles(&hMappedObj);
 }
