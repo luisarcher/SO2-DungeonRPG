@@ -53,7 +53,7 @@ void MoverJogador(int playerId, int keystroke) {
 		{
 			if (j->y > 1)
 			{
-				gLabirinto.labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (gLabirinto.labirinto[j->y][j->x] / 100) : EMPTY);
+				shLabirinto->labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shLabirinto->labirinto[j->y][j->x] / 100) : EMPTY);
 				if (!hasWallIn(j->x, j->y - 1) && !hasPlayerIn(j->x, j->y - 1)) j->y--;
 				_tprintf(TEXT("Moving up...\n"));
 			}
@@ -63,7 +63,7 @@ void MoverJogador(int playerId, int keystroke) {
 		{
 			if (j->y < LABIRINTOSIZE-2)
 			{
-				gLabirinto.labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (gLabirinto.labirinto[j->y][j->x] / 100) : EMPTY);
+				shLabirinto->labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shLabirinto->labirinto[j->y][j->x] / 100) : EMPTY);
 				if (!hasWallIn(j->x, j->y + 1) && !hasPlayerIn(j->x, j->y + 1))j->y++;
 				_tprintf(TEXT("Moving down...\n"));
 			}
@@ -73,7 +73,7 @@ void MoverJogador(int playerId, int keystroke) {
 		{
 			if (j->x > 1)
 			{
-				gLabirinto.labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (gLabirinto.labirinto[j->y][j->x] / 100) : EMPTY);
+				shLabirinto->labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shLabirinto->labirinto[j->y][j->x] / 100) : EMPTY);
 				if (!hasWallIn(j->x - 1, j->y) && !hasPlayerIn(j->x - 1, j->y)) j->x--;
 				_tprintf(TEXT("Moving left...\n"));
 			}
@@ -83,7 +83,7 @@ void MoverJogador(int playerId, int keystroke) {
 		{
 			if (j->x < LABIRINTOSIZE - 2)
 			{
-				gLabirinto.labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (gLabirinto.labirinto[j->y][j->x] / 100) : EMPTY);
+				shLabirinto->labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shLabirinto->labirinto[j->y][j->x] / 100) : EMPTY);
 				if (!hasWallIn(j->x + 1, j->y) && !hasPlayerIn(j->x + 1, j->y)) j->x++;
 				_tprintf(TEXT("Moving right...\n"));
 			}
@@ -99,7 +99,7 @@ void MoverJogador(int playerId, int keystroke) {
 	if (hasObjectIn(j->x, j->y)) AskPlayerToCollectItems(j);
 	
 	// Update matrix after collected items
-	gLabirinto.labirinto[j->y][j->x] = playerId;
+	shLabirinto->labirinto[j->y][j->x] = playerId;
 	
 	ReleaseMutex(gMutexLabirinto);
 	// Player is now "tired" and recovering stamina
@@ -131,7 +131,7 @@ void UpdatePlayerLOS(int x, int y, int (*matriz)[PLAYER_LOS]) {
 	{
 		for (int j = iniX; j < maxX; j++, m++)
 		{
-			matriz[n][m] = gLabirinto.labirinto[i][j];
+			matriz[n][m] = shLabirinto->labirinto[i][j];
 		}
 	}
 }
@@ -154,11 +154,11 @@ void SetPlayerInRandomPosition(Jogador * p) {
 		srand(time(NULL));
 		x = (rand() % LABIRINTOSIZE);
 		y = (rand() % LABIRINTOSIZE);
-	} while (!(gLabirinto.labirinto[y][x] == EMPTY));
+	} while (!(shLabirinto->labirinto[y][x] == EMPTY));
 
 	p->x = x;
 	p->y = y;
-	gLabirinto.labirinto[y][x] = p->id;
+	shLabirinto->labirinto[y][x] = p->id;
 }
 
 BOOL canAttack(Jogador p) {
@@ -203,8 +203,8 @@ void AttackClosePlayers(Jogador * p) {
 		for (int j = (p->x - 1); j <= (p->x + 1); j++)
 		{
 			if (i == p->y && j == p->x) continue;
-			if (hasPlayerIn(j, i) && gClients[gLabirinto.labirinto[i][j]].hp > 0) {
-				gClients[gLabirinto.labirinto[i][j]].hp -= (UseStone(p) ? 2 : 1);
+			if (hasPlayerIn(j, i) && gClients[shLabirinto->labirinto[i][j]].hp > 0) {
+				gClients[shLabirinto->labirinto[i][j]].hp -= (UseStone(p) ? 2 : 1);
 				p->atkCounter = (int)LENTIDAO_BASE;
 				return;
 			}
@@ -228,7 +228,7 @@ BOOL UseStone(Jogador * p) {
 */
 void DropStones(Jogador * p) {
 	int cellValue = (p->nStones > 0) ? (p->nStones * PEDRAS) : EMPTY;
-	gLabirinto.labirinto[p->y][p->x] = cellValue;
+	shLabirinto->labirinto[p->y][p->x] = cellValue;
 }
 
 /**
@@ -240,7 +240,7 @@ void DropStones(Jogador * p) {
 */
 void AskPlayerToCollectItems(Jogador * p) {
 	int nPedras = 0;
-	switch (gLabirinto.labirinto[p->x][p->y])
+	switch (shLabirinto->labirinto[p->x][p->y])
 	{
 	case VITAMINA:
 		if ((p->hp + 1) <= (int)HP_BASE * 2) p->hp++;
@@ -253,7 +253,7 @@ void AskPlayerToCollectItems(Jogador * p) {
 		p->itemDurationCounter = 15 * 60; // 15 instantes por segundo * 60 segundos = 900 instantes;
 		break;
 	default:
-		if ((nPedras = gLabirinto.labirinto[p->x][p->y]) > PEDRAS){
+		if ((nPedras = shLabirinto->labirinto[p->x][p->y]) > PEDRAS){
 			nPedras -= (int)PEDRAS;
 			if (p->nStones + nPedras <= (int)PLAYER_STONE_CAP) p->nStones += nPedras;
 		}

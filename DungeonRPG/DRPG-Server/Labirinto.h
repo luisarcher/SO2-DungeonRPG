@@ -19,6 +19,6 @@ BOOL hasMonsterAndPlayerIn(int x, int y);
 BOOL hasObjectIn(int x, int y);
 BOOL hasWallIn(int x, int y);
 
-extern Labirinto gLabirinto;
+//extern Labirinto gLabirinto;
 extern Labirinto * shLabirinto;
 #endif

@@ -17,6 +17,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	
 	_tprintf(TEXT("Vou ler o estado do labirinto...\n"));
 	system("pause");
+	shLabirinto->labirinto[1][1] = 51;
 	ReadSharedMemory();
 
 	CloseHandles(&hMappedObj);

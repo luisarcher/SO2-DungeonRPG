@@ -49,24 +49,24 @@ Labirinto LerLabirinto() {
 }
 
 BOOL hasPlayerIn(int x, int y) {
-	return gLabirinto.labirinto[y][x] >= PLAYER_START_INDEX
-		&& gLabirinto.labirinto[y][x] <= PLAYER_END_INDEX;
+	return shLabirinto->labirinto[y][x] >= PLAYER_START_INDEX
+		&& shLabirinto->labirinto[y][x] <= PLAYER_END_INDEX;
 }
 
 BOOL hasMonsterAndPlayerIn(int x, int y) {
-	return gLabirinto.labirinto[y][x] > 1000;
+	return shLabirinto->labirinto[y][x] > 1000;
 }
 
 BOOL hasObjectIn(int x, int y) {
-	return (gLabirinto.labirinto[y][x] >= ITEM_START_INDEX
-		&& gLabirinto.labirinto[y][x] <= ITEM_END_INDEX)
-		|| (gLabirinto.labirinto[y][x] > PEDRAS //Ver common.h
-			&& gLabirinto.labirinto[y][x] < 600);
+	return (shLabirinto->labirinto[y][x] >= ITEM_START_INDEX
+		&& shLabirinto->labirinto[y][x] <= ITEM_END_INDEX)
+		|| (shLabirinto->labirinto[y][x] > PEDRAS //Ver common.h
+			&& shLabirinto->labirinto[y][x] < 600);
 }
 
 BOOL hasWallIn(int x, int y) {
-	return gLabirinto.labirinto[y][x] >= WALL_START_INDEX
-		&& gLabirinto.labirinto[y][x] <= WALL_END_INDEX;
+	return shLabirinto->labirinto[y][x] >= WALL_START_INDEX
+		&& shLabirinto->labirinto[y][x] <= WALL_END_INDEX;
 }
 
 void DistribuirItems() {
@@ -80,8 +80,8 @@ void DistribuirItems() {
 		do {
 			x = (rand() % LABIRINTOSIZE);
 			y = (rand() % LABIRINTOSIZE);
-		} while (!(gLabirinto.labirinto[y][x] == EMPTY));
-		gLabirinto.labirinto[y][x] = VITAMINA;
+		} while (!(shLabirinto->labirinto[y][x] == EMPTY));
+		shLabirinto->labirinto[y][x] = VITAMINA;
 	}
 
 	//Distribuir Orange Bull
@@ -91,8 +91,8 @@ void DistribuirItems() {
 		do {
 			x = (rand() % LABIRINTOSIZE);
 			y = (rand() % LABIRINTOSIZE);
-		} while (!(gLabirinto.labirinto[y][x] == EMPTY));
-		gLabirinto.labirinto[y][x] = ORANGE_BULL;
+		} while (!(shLabirinto->labirinto[y][x] == EMPTY));
+		shLabirinto->labirinto[y][x] = ORANGE_BULL;
 	}
 	
 	//Distribuir Rebuçados de Cafeina
@@ -102,8 +102,8 @@ void DistribuirItems() {
 		do {
 			x = (rand() % LABIRINTOSIZE);
 			y = (rand() % LABIRINTOSIZE);
-		} while (!(gLabirinto.labirinto[y][x] == EMPTY));
-		gLabirinto.labirinto[y][x] = REB_CAFEINA;
+		} while (!(shLabirinto->labirinto[y][x] == EMPTY));
+		shLabirinto->labirinto[y][x] = REB_CAFEINA;
 	}
 
 	//Distribuir Pedras
@@ -113,7 +113,7 @@ void DistribuirItems() {
 		do {
 			x = (rand() % LABIRINTOSIZE);
 			y = (rand() % LABIRINTOSIZE);
-		} while (!(gLabirinto.labirinto[y][x] == EMPTY));
-		gLabirinto.labirinto[y][x] = (int)PEDRAS + 1;
+		} while (!(shLabirinto->labirinto[y][x] == EMPTY));
+		shLabirinto->labirinto[y][x] = (int)PEDRAS + 1;
 	}
 }

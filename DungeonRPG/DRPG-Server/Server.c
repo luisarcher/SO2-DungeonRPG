@@ -247,7 +247,7 @@ DWORD WINAPI ActualizaClientes(LPVOID param) {
 			_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), (int)n, activePlayers());
 			
 			//_tprintf(TEXT("Shared Memory:\n"));
-			CopyGameStateToSharedMemory();
+			//CopyGameStateToSharedMemory();
 		}
 	}
 	_tprintf(TEXT("Thread %d exiting\n"), GetCurrentThreadId());
@@ -257,7 +257,7 @@ DWORD WINAPI ActualizaClientes(LPVOID param) {
 /**
 *	Copia dados do labirinto para a memória partilhada.
 */
-void CopyGameStateToSharedMemory() {
+/*void CopyGameStateToSharedMemory() {
 	Labirinto * l = shLabirinto;
 	for (int i = 0; i < LABIRINTOSIZE; i++)
 	{
@@ -266,4 +266,4 @@ void CopyGameStateToSharedMemory() {
 			l->labirinto[i][j] = gLabirinto.labirinto[i][j];
 		}
 	}
-}
+}*/

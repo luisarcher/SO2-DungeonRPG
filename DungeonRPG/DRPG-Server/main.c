@@ -4,7 +4,7 @@
 
 int totalConnections = 0;
 
-Labirinto gLabirinto;
+//Labirinto gLabirinto;
 Labirinto * shLabirinto;
 Jogador gClients[MAX_CLIENTS];
 
@@ -82,7 +82,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	/*****  MEMÓRIA PARTILHADA ENDS *****/
 		
 	//gLabirinto = NovoLabirinto();
-	gLabirinto = LerLabirinto();
+	*shLabirinto = LerLabirinto();
 	DistribuirItems();
 
 	hThreadListener = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecebeClientes, NULL, 0, NULL);
