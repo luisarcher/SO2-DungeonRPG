@@ -213,6 +213,15 @@ void AttackClosePlayers(Jogador * p) {
 }
 
 /**
+*	Verifica se existe algum monstro na mesma casa do jogador,
+*	caso se verifique, o jogador é atacado.
+*/
+void CheckForThreats(Jogador* p) {
+	if (shLabirinto->labirinto[p->y][p->x] > 1000)
+		--p->hp;
+}
+
+/**
 *	O jogador usa uma das suas pedras para atacar.
 */
 BOOL UseStone(Jogador * p) {

@@ -33,6 +33,7 @@ void AskPlayerToCollectItems(Jogador * p);
 void RecoverPlayerStamina(Jogador * p);
 void CheckItemDurability(Jogador * p);
 void AttackClosePlayers(Jogador * p);
+void CheckForThreats(Jogador* p);
 void DropStones(Jogador * p);
 BOOL UseStone(Jogador * p);
 BOOL hasStamina(Jogador p);

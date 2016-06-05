@@ -85,6 +85,7 @@ DWORD WINAPI GameEvents(LPVOID param) {
 				RecoverPlayerStamina(&gClients[i]);
 				AttackClosePlayers(&gClients[i]);
 				CheckItemDurability(&gClients[i]);
+				CheckForThreats(&gClients[i]);
 			}
 	}
 	return 0;
