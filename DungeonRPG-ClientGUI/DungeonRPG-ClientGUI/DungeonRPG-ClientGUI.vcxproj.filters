@@ -29,4 +29,9 @@
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Library Include="lib\DRPGClientDLL.lib">
+      <Filter>Resource Files</Filter>
+    </Library>
+  </ItemGroup>
 </Project>

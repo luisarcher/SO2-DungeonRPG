@@ -11,7 +11,7 @@
 *.userprefs
 
 # Build results
-[Dd]ebug/
+#[Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
@@ -210,3 +210,4 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+/DungeonRPG-ClientGUI/DungeonRPG-ClientGUI/Debug/DungeonR.99B2C4B7.tlog

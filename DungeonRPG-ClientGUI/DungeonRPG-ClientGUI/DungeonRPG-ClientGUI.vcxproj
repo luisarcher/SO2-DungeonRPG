@@ -150,6 +150,9 @@
   <ItemGroup>
     <ResourceCompile Include="DungeonRPG-ClientGUI.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <Library Include="lib\DRPGClientDLL.lib" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

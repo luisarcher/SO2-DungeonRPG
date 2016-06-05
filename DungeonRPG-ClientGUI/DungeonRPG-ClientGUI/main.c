@@ -1,73 +1,32 @@
-/* ===================================================== */
-/* BASE.C                                                */
-/* Programa base (esqueleto) para aplicações Windows     */
-/* ===================================================== */
-// Cria uma janela de nome "Janela Principal" e pinta fundo
-// de branco
-
-// Modelo para programas Windows:
-//  Composto por 2 funções: 
-//	   WinMain() = Ponto de entrada dos programas windows
-//			1) Define, cria e mostra a janela
-//			2) Loop de recepção de mensagens provenientes do Windows
-//     WinProc() = Processamentos da janela (pode ter outro nome)
-//			1) É chamada pelo Windows (callback) 
-//			2) Executa código em função da mensagem recebida
-
-//	   WinMain()
-//	1. Definir características de uma classe de janela
-//  2. Registar a classe no Windows NT
-//  3. Criar uma janela dessa classe
-//  4. Mostrar a janela
-//  5. Iniciar a execução do loop de mensagens
-//    
-//     WinProc()
-//  1. Switch em função da mensagem recebida do Windows
-
-// ============================================================================
-// Início do programa
-// ============================================================================
-// Este header tem de se incluir sempre porque define os protótipos das funções 
-// do Windows API e os tipos usados na programação Windows
 #include <windows.h>
 #include <tchar.h>
 #include "resource.h"
-// Pré-declaração da função WndProc (a que executa os procedimentos da janela por
-// "callback") 
+#include "lib\ClientDLL.h"
+
 LRESULT CALLBACK TrataEventos(HWND, UINT, WPARAM, LPARAM);
 LRESULT CALLBACK DlgBox1Proc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam);
 
-// Nome da classe da janela (para programas de uma só janela, normalmente este 
-// nome é igual ao do próprio programa)
-// "szprogName" é usado mais abaixo na definição das propriedades 
-// da classe da janela
+//Nome da classe da janela
 TCHAR *szProgName = TEXT("Base");
 
-HINSTANCE hInstGLOBAL;
+HINSTANCE ghInstance;
+
+//Handlers para pipes
+HANDLE hPipe;
+HANDLE hPipeJogo;
 
 // ============================================================================
 // FUNÇÂO DE INÍCIO DO PROGRAMA: WinMain()
 // ============================================================================
-// Em Windows, o programa começa sempre a sua execução na função WinMain()
-// que desempenha o papel da função main() do C em modo consola
-// WINAPI indica o "tipo da função" (WINAPI para todas as declaradas nos headers
-// do Windows e CALLBACK para as funções de processamento da janela)
-// Parâmetros:
-//   hInst: Gerado pelo Windows, é o handle (número) da instância deste programa 
-//   hPrevInst: Gerado pelo Windows, é sempre NULL para o NT (era usado no Windows 3.1)
-//   lpCmdLine: Gerado pelo Windows, é um ponteiro para uma string terminada por 0
-//              destinada a conter parâmetros para o programa 
-//   nCmdShow:  Parâmetro que especifica o modo de exibição da janela (usado em  
-//				ShowWindow()
-
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst,
 		LPSTR lpCmdLine, int nCmdShow) {
+
 	HWND hWnd;			// hWnd é o handler da janela, gerado mais abaixo 
 						// por CreateWindow()
 	MSG lpMsg;			// MSG é uma estrutura definida no Windows para as mensagens
 	WNDCLASSEX wcApp;	// WNDCLASSEX é uma estrutura cujos membros servem para 
 						// definir as características da classe da janela
-	hInstGLOBAL = hInst;
+	ghInstance = hInst;
 						// ============================================================================
 						// 1. Definição das características da janela "wcApp" 
 						//    (Valores dos elementos da estrutura "wcApp" do tipo WNDCLASSEX)
@@ -196,26 +155,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst,
 											// da janela, CALLBACK TrataEventos (mais 
 											// abaixo)
 	}
-	/*
-	//É mais SEGURO o seguinte ciclo de recepção de mensagens, para saber se houve um erro
-	BOOL bRet;
-	while( (bRet = GetMessage( &lpMsg, NULL, 0, 0 )) != 0)
-	{
-	if (bRet == -1)
-	{
-	// handle the error and possibly exit
-	}
-	else
-	{
-	TranslateMessage(&lpMsg);
-	DispatchMessage(&lpMsg);
-	}
-	}*/
-
-
-	// ============================================================================
-	// 6. Fim do programa
-	// ============================================================================
 	return((int)lpMsg.wParam);		// Retorna-se sempre o parâmetro "wParam" da
 									// estrutura "lpMsg"
 }
@@ -264,7 +203,7 @@ LRESULT CALLBACK TrataEventos(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lPara
 	case WM_COMMAND:
 		if (wParam == ID_FICHEIRO_REGISTAR) {
 			//MessageBox(hWnd, TEXT("Frase"), TEXT("Title"), MB_OK);
-			DialogBox(hInstGLOBAL, MAKEINTRESOURCE(IDD_dlgMain), hWnd, DlgBox1Proc);
+			DialogBox(ghInstance, MAKEINTRESOURCE(IDD_dlgMain), hWnd, DlgBox1Proc);
 		}
 		break;
 	case WM_DESTROY:	// Destruir a janela e terminar o programa
@@ -275,58 +214,29 @@ LRESULT CALLBACK TrataEventos(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lPara
 	case WM_LBUTTONDBLCLK:	//DOUBLECLICK
 		x = LOWORD(lParam);
 		y = HIWORD(lParam);
-		InvalidateRect(hWnd, NULL, 1);	//CHAMAR O WM_PAINT
-										/*
-										// ^ Optimizar ^
-										hdc = GetDC(hWnd);
-										TextOut(hdc,x,y,letra,_tcslen(letra));
-										ReleaseDC(hWnd,hdc);*/
+		InvalidateRect(hWnd, NULL, 1);
 		break;
 
-	case WM_LBUTTONDOWN:				//LEFT BTN DOWN | ON MOUSE LEFT BTN DOWN
+	case WM_LBUTTONDOWN:
 		xi = LOWORD(lParam);
 		yi = HIWORD(lParam);
 		break;
-	case WM_LBUTTONUP:					//LEFT BTN UP | ON MOUSE LEFT BTN UP
+	case WM_LBUTTONUP:
 		xf = LOWORD(lParam);
 		yf = HIWORD(lParam);
-		InvalidateRect(hWnd, NULL, 1);	//CHAMAR O WM_PAINT
-										/*
-										Gerar um WM_PAINT:
-										IvalidateRect(...)
-										.letf = x-20;
-										.top ...
-										.right
-										.bottom = y + 20;
-										*/
-
-										// ^ Optimizar código, evitar repetições
-										/*
-										hdc = GetDC(hWnd);
-										TextOut(hdc,xi,yi,TEXT("Figura"),6);
-										Ellipse(hdc, xi, yi, xf, yf);
-
-										ReleaseDC(hWnd, hdc);*/
+		InvalidateRect(hWnd, NULL, 1);
 		break;
 
-	case WM_KEYDOWN:						//QUANDO CARREGA NUMA TECLA
+	case WM_KEYDOWN:
 		switch (wParam)
 		{
-		case VK_DOWN:						//SE FOR TECLA PARA BAIXO
+		case VK_DOWN:
 			y++;
-			InvalidateRect(hWnd, NULL, 1);	//CHAMAR O WM_PAINT
-
-											/*hdc = GetDC(hWnd);
-											TextOut(hdc,x,y,letra,_tcslen(letra));
-											ReleaseDC(hWnd,hdc);*/
+			InvalidateRect(hWnd, NULL, 1);
 			break;
-		case VK_UP:							//SETA PARA CIMA
+		case VK_UP:
 			y--;
-			InvalidateRect(hWnd, NULL, 1);	//CHAMAR O WM_PAINT
-
-											/*hdc = GetDC(hWnd);
-											TextOut(hdc, x, y, letra, _tcslen(letra));
-											ReleaseDC(hWnd, hdc);*/
+			InvalidateRect(hWnd, NULL, 1);
 			break;
 		default:
 			break;
@@ -341,62 +251,36 @@ LRESULT CALLBACK TrataEventos(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lPara
 	return(0);
 }
 
-/* ### NOTAS ###*/
-/*refrescar a janela ao:
-minimizar
-maximizar
-arrastar de maneira a que a janela vá além dos limites do desktop
-
-WM_PAINT
-ultima posição da palavra
-ultima figura geométrica
-
-____________________
-
-
-Quando se cria um recurso, além do .bmp também é criado:
-
-resource.h -> ID DE TODOS OS RECURSOS CRIADOS
-NO EDITOR DE RECURSOS
-
-resource.rc ->	SCRIPT QUE DEFINE TODOS OS RECURSOS CRIADOS
-
-! NÃO SE DEVE DE EDITAR DIRECTAMENTE !
-
-DIALOG BOX
-Edit Control
--> Caixa de texto
-
-Static text
-->Etiquetas
-
-Button
-->Butão
-
-List Box
--> Lista de palavras
-
-Picture Control
--> Imagem a aparecer na caixa de diálogo
-
-*/
-
 LRESULT CALLBACK DlgBox1Proc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam) {
-	TCHAR pal[100];
+	TCHAR buf[100];
 	int i;
+	TCHAR _i[5];
 	switch (messg)
 	{
 		
 	case WM_INITDIALOG:
 		SetDlgItemText(hWnd, IDC_txtIpServ, TEXT("127.0.0.1"));
 		SendDlgItemMessage(hWnd, IDC_lbxPlayers, LB_ADDSTRING, 0, TEXT("Luís"));
-		MessageBox(hWnd,TEXT("init"), TEXT("init"), MB_OK);
 		return TRUE;
 
 	case WM_COMMAND:
+		if (wParam == IDC_btnCheckConn) {
+			GetDlgItemText(hWnd, IDC_txtIpServ, buf, 100);
+			i = InicializarPipes(&hPipe, &hPipeJogo, buf);
+			if (i < 0) {
+				MessageBox(hWnd, TEXT("Ligado"), TEXT("Ligação Estabelecida ao servidor!"), MB_OK);
+			}
+			else {
+				_tcscpy(buf, TEXT("Não foi possível ligar ao servidor! Erro: "));
+				_stprintf(_i, TEXT("%d"), i);
+				_tcscat(buf, _i);
+				MessageBox(hWnd, buf, TEXT("Não ligado"), MB_OK);
+			}
+			return TRUE;
+		}
 		if (wParam == IDOK) {
-			GetDlgItemText(GetModuleHandle(NULL), IDC_txtLogin, pal, 100);
-			MessageBox(GetModuleHandle(NULL), pal, TEXT("Lido"), MB_OK);
+			GetDlgItemText(GetModuleHandle(NULL), IDC_txtLogin, buf, 100);
+			MessageBox(GetModuleHandle(NULL), buf, TEXT("Lido"), MB_OK);
 			return TRUE;
 		}
 
@@ -407,7 +291,6 @@ LRESULT CALLBACK DlgBox1Proc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam
 	
 		if (wParam == IDCANCEL) {
 			EndDialog(hWnd, 0);
-	
 		}
 		return TRUE;
 	case WM_CLOSE:
