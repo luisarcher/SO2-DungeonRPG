@@ -22,7 +22,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	system("pause");
 	m.posX = 1;
 	m.posY = 2;
-	
+	escondeCursor();
 	shLabirinto->labirinto[m.posY][m.posX] = m.tipo;
 	
 	while (!fim) { 

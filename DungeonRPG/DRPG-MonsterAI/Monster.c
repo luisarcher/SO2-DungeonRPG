@@ -141,7 +141,7 @@ void ReadSharedMemory() {
 			for (int j = 0; j < LABIRINTOSIZE; j++)
 			{
 				int c = shLabirinto->labirinto[i][j];
-
+				gotoxy(j, i);
 				if (c >= WALL_START_INDEX && c <= WALL_END_INDEX)
 				{
 					_tprintf(TEXT("%c"), 9619);
@@ -177,4 +177,24 @@ void ReadSharedMemory() {
 void CloseHandles(HANDLE * hMappedObj) {
 	UnmapViewOfFile(shLabirinto);
 	CloseHandle(*hMappedObj);
+}
+
+
+void gotoxy(int x, int y) {
+	COORD coord;
+	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+	coord.X = x;
+	coord.Y = y;
+	SetConsoleCursorPosition(hStdout, coord);
+}
+
+
+void escondeCursor() {
+	CONSOLE_CURSOR_INFO cci;
+	HANDLE hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
+
+	cci.bVisible = FALSE;				// Desativa a visibilidade do cursor [TRUE/FALSE]
+	cci.dwSize = 20;					// Define a altura do cursor [1-100]
+
+	SetConsoleCursorInfo(hStdout, &cci);	// Aplica as definições anteriores
 }

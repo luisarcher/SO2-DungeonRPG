@@ -35,3 +35,6 @@ int MudaDirecao(int anterior);
 void InitializeSharedMemory(HANDLE * hMappedObj);
 void ReadSharedMemory();
 void CloseHandles(HANDLE * hMappedObj);
+
+void gotoxy(int x, int y);
+void escondeCursor();
