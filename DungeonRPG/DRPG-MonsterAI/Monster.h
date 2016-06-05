@@ -31,6 +31,8 @@ void MoveMonstro(Labirinto *shLab, int d, Monstro *m);
 
 int MudaDirecao(int anterior);
 
+void CheckForThreats(Monstro *m);
+
 /*Memoria partilhada*/
 void InitializeSharedMemory(HANDLE * hMappedObj);
 void ReadSharedMemory();
@@ -38,3 +40,5 @@ void CloseHandles(HANDLE * hMappedObj);
 
 void gotoxy(int x, int y);
 void escondeCursor();
+
+BOOL hasPlayerIn(int x, int y);

@@ -20,8 +20,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 	
 	_tprintf(TEXT("Vou ler o estado do labirinto...\n"));
 	system("pause");
-	m.posX = 1;
-	m.posY = 2;
+	m.posX = 15;
+	m.posY = 1;
 	escondeCursor();
 	shLabirinto->labirinto[m.posY][m.posX] = m.tipo;
 	
@@ -34,6 +34,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 		
 
 		MoveMonstro(shLabirinto, m.direcao, &m);
+		CheckForThreats(&m);
 	}
 
 	CloseHandles(&hMappedObj);

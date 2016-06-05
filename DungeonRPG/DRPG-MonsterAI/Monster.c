@@ -36,7 +36,13 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 		if ((m->posY - 1) >= 1 && !(shLab->labirinto[m->posY-1][m->posX] >= WALL_START_INDEX && shLab->labirinto[m->posY-1][m->posX] <= WALL_END_INDEX)) {
 			shLab->labirinto[m->posY][m->posX] = EMPTY;
 			m->posY = m->posY - 1;
-			shLab->labirinto[m->posY][m->posX] = m->tipo;
+			if (!hasPlayerIn(m->posX,m->posY))
+			{
+				shLab->labirinto[m->posY][m->posX] = m->tipo;
+			}
+			else {
+				shLab->labirinto[m->posY][m->posX] = m->tipo * 100;
+			}
 			break;
 		}
 		else {
@@ -51,7 +57,13 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 		if ((m->posY + 1) <= LABIRINTOSIZE - 2 && !(shLab->labirinto[m->posY+1][m->posX] >= WALL_START_INDEX && shLab->labirinto[m->posY+1][m->posX] <= WALL_END_INDEX)) {
 			shLab->labirinto[m->posY][m->posX] = EMPTY;
 			m->posY = m->posY + 1;
-			shLab->labirinto[m->posY][m->posX] = m->tipo;
+			if (!hasPlayerIn(m->posX, m->posY))
+			{
+				shLab->labirinto[m->posY][m->posX] = m->tipo;
+			}
+			else {
+				shLab->labirinto[m->posY][m->posX] = m->tipo * 100;
+			}
 			break;
 		}
 		else {
@@ -66,7 +78,13 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 		if ((m->posX + 1) <= LABIRINTOSIZE - 2 && !(shLab->labirinto[m->posY][m->posX+1] >= WALL_START_INDEX && shLab->labirinto[m->posY][m->posX+1] <= WALL_END_INDEX)) {
 			shLab->labirinto[m->posY][m->posX] = EMPTY;
 			m->posX = m->posX + 1;
-			shLab->labirinto[m->posY][m->posX] = m->tipo;
+			if (!hasPlayerIn(m->posX, m->posY))
+			{
+				shLab->labirinto[m->posY][m->posX] = m->tipo;
+			}
+			else {
+				shLab->labirinto[m->posY][m->posX] = m->tipo * 100;
+			}
 			break;
 		}
 		else {
@@ -81,7 +99,13 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 		if ((m->posX - 1) >= 1 && !(shLab->labirinto[m->posY][m->posX - 1] >= WALL_START_INDEX && shLab->labirinto[m->posY][m->posX - 1] <= WALL_END_INDEX)) {
 			shLab->labirinto[m->posY][m->posX] = EMPTY;
 			m->posX = m->posX - 1;
-			shLab->labirinto[m->posY][m->posX] = m->tipo;
+			if (!hasPlayerIn(m->posX, m->posY))
+			{
+				shLab->labirinto[m->posY][m->posX] = m->tipo;
+			}
+			else {
+				shLab->labirinto[m->posY][m->posX] = m->tipo * 100;
+			}
 			break;
 		}
 		else {
@@ -197,4 +221,14 @@ void escondeCursor() {
 	cci.dwSize = 20;					// Define a altura do cursor [1-100]
 
 	SetConsoleCursorInfo(hStdout, &cci);	// Aplica as definições anteriores
+}
+
+void CheckForThreats(Monstro *m) {
+	if (shLabirinto->labirinto[m->posY][m->posX] > 1000)
+		m->hp++;
+}
+
+BOOL hasPlayerIn(int x, int y) {
+	return shLabirinto->labirinto[y][x] >= PLAYER_START_INDEX
+		&& shLabirinto->labirinto[y][x] <= PLAYER_END_INDEX;
 }
