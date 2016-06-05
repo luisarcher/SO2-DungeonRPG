@@ -6,7 +6,7 @@
 
 Monstro NovoMonstroBully(int nPassos) {
 	Monstro *m = malloc(sizeof(Monstro));
-	m->hp = 10;
+	m->hp = HP_BASE;
 	m->lentidao = 7;
 	m->tipo = 51;
 	m->posX = 0;
@@ -20,7 +20,7 @@ Monstro NovoMonstroBully(int nPassos) {
 
 Monstro NovoMonstroDistraido(int nPassos) {
 	Monstro *m = malloc(sizeof(Monstro));
-	m->hp = 10;
+	m->hp = HP_BASE;
 	m->lentidao = 3;
 	m->tipo = 51;
 	m->posX = 0;
@@ -37,14 +37,21 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 	{	
 		
 		if ((m->posY - 1) >= 1 && !(shLab->labirinto[m->posY-1][m->posX] >= WALL_START_INDEX && shLab->labirinto[m->posY-1][m->posX] <= WALL_END_INDEX)) {
-			shLab->labirinto[m->posY][m->posX] = EMPTY;
+			if (shLab->labirinto[m->posY][m->posX] > 1000)
+			{
+				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] - (m->tipo * 100);
+			}
+			else
+			{
+				shLab->labirinto[m->posY][m->posX] = EMPTY;
+			}
 			m->posY = m->posY - 1;
-			if (!hasPlayerIn(m->posX,m->posY))
+			if (shLab->labirinto[m->posY][m->posX] == EMPTY)
 			{
 				shLab->labirinto[m->posY][m->posX] = m->tipo;
 			}
 			else {
-				shLab->labirinto[m->posY][m->posX] = m->tipo * 100;
+				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] + (m->tipo * 100);
 			}
 			break;
 		}
@@ -58,14 +65,21 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 	case DOWN:
 	{	
 		if ((m->posY + 1) <= LABIRINTOSIZE - 2 && !(shLab->labirinto[m->posY+1][m->posX] >= WALL_START_INDEX && shLab->labirinto[m->posY+1][m->posX] <= WALL_END_INDEX)) {
-			shLab->labirinto[m->posY][m->posX] = EMPTY;
+			if (shLab->labirinto[m->posY][m->posX] > 1000)
+			{
+				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] - (m->tipo * 100);
+			}
+			else
+			{
+				shLab->labirinto[m->posY][m->posX] = EMPTY;
+			}
 			m->posY = m->posY + 1;
-			if (!hasPlayerIn(m->posX, m->posY))
+			if (shLab->labirinto[m->posY][m->posX] == EMPTY)
 			{
 				shLab->labirinto[m->posY][m->posX] = m->tipo;
 			}
 			else {
-				shLab->labirinto[m->posY][m->posX] = m->tipo * 100;
+				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] +( m->tipo * 100);
 			}
 			break;
 		}
@@ -79,14 +93,21 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 	case RIGHT:
 	{	
 		if ((m->posX + 1) <= LABIRINTOSIZE - 2 && !(shLab->labirinto[m->posY][m->posX+1] >= WALL_START_INDEX && shLab->labirinto[m->posY][m->posX+1] <= WALL_END_INDEX)) {
-			shLab->labirinto[m->posY][m->posX] = EMPTY;
+			if (shLab->labirinto[m->posY][m->posX] > 1000)
+			{
+				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] - (m->tipo * 100);
+			}
+			else
+			{
+				shLab->labirinto[m->posY][m->posX] = EMPTY;
+			}
 			m->posX = m->posX + 1;
-			if (!hasPlayerIn(m->posX, m->posY))
+			if (shLab->labirinto[m->posY][m->posX] == EMPTY)
 			{
 				shLab->labirinto[m->posY][m->posX] = m->tipo;
 			}
 			else {
-				shLab->labirinto[m->posY][m->posX] = m->tipo * 100;
+				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] + (m->tipo * 100);
 			}
 			break;
 		}
@@ -100,14 +121,21 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 	case LEFT:
 	{	
 		if ((m->posX - 1) >= 1 && !(shLab->labirinto[m->posY][m->posX - 1] >= WALL_START_INDEX && shLab->labirinto[m->posY][m->posX - 1] <= WALL_END_INDEX)) {
-			shLab->labirinto[m->posY][m->posX] = EMPTY;
+			if (shLab->labirinto[m->posY][m->posX] > 1000)
+			{
+				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] - (m->tipo * 100);
+			}
+			else
+			{
+				shLab->labirinto[m->posY][m->posX] = EMPTY;
+			}
 			m->posX = m->posX - 1;
-			if (!hasPlayerIn(m->posX, m->posY))
+			if (shLab->labirinto[m->posY][m->posX] == EMPTY)
 			{
 				shLab->labirinto[m->posY][m->posX] = m->tipo;
 			}
 			else {
-				shLab->labirinto[m->posY][m->posX] = m->tipo * 100;
+				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] + (m->tipo * 100);
 			}
 			break;
 		}

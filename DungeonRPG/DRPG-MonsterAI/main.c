@@ -29,6 +29,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	
 	shLabirinto->labirinto[m.posY][m.posX] = m.tipo;
 	
+	//apenas move random-> implementar a perseguição
 	while (!fim) { 
 		//Espera pelo evento ser sinalizado do lado do servidor
 		WaitForSingleObject(hGameInstanceEvent, INFINITE);
@@ -58,6 +59,17 @@ int _tmain(int argc, LPTSTR argv[]) {
 			}
 		}
 		CheckForThreats(&m);
+		//meter a separação aqui
+		/*
+		
+		if((m.hp*1.6) ==  (HP_BASE * 1.6))
+		{
+			m.hp = m.hp * 0.8;
+			iniciar novo monstro, passar HP por argumento
+			
+		}
+		
+		*/
 		m.stamina--;
 		//m.passos--;
 	}
