@@ -7,8 +7,8 @@ BOOL fim = FALSE;
 int _tmain(int argc, LPTSTR argv[]) {
 	HANDLE hMappedObj;
 	HANDLE hGameInstanceEvent;
-
-	Monstro m = NovoMonstroBully();
+	int nPassos = 4; //recebe o argv adequado
+	
 #ifdef UNICODE 
 	_setmode(_fileno(stdin), _O_WTEXT);
 	_setmode(_fileno(stdout), _O_WTEXT);
@@ -20,9 +20,13 @@ int _tmain(int argc, LPTSTR argv[]) {
 	
 	_tprintf(TEXT("Vou ler o estado do labirinto...\n"));
 	system("pause");
+	escondeCursor();
+	//valida aqui o tipo de monstro
+	Monstro m = NovoMonstroBully(4);
+
 	m.posX = 15;
 	m.posY = 1;
-	escondeCursor();
+	
 	shLabirinto->labirinto[m.posY][m.posX] = m.tipo;
 	
 	while (!fim) { 
@@ -32,9 +36,30 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 		ReadSharedMemory(); 
 		
+		if (m.stamina == 0)
+		{
+			if (m.passos == 0)
+			{
+				//ver percentagem 75%
+				int r = rand() % 101;
 
-		MoveMonstro(shLabirinto, m.direcao, &m);
+				if (r <= 75)
+				{
+					m.direcao = MudaDirecao(shLabirinto, m.direcao, &m);
+				}
+				
+				m.stamina = m.lentidao;
+				m.passos = nPassos;
+			}
+			else {
+				MoveMonstro(shLabirinto, m.direcao, &m);
+				m.stamina = m.lentidao;
+				m.passos--;
+			}
+		}
 		CheckForThreats(&m);
+		m.stamina--;
+		//m.passos--;
 	}
 
 	CloseHandles(&hMappedObj);

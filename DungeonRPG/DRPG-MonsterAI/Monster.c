@@ -4,26 +4,29 @@
 
 //Monstro
 
-Monstro NovoMonstroBully() {
+Monstro NovoMonstroBully(int nPassos) {
 	Monstro *m = malloc(sizeof(Monstro));
 	m->hp = 10;
 	m->lentidao = 7;
 	m->tipo = 51;
 	m->posX = 0;
 	m->posY = 0;
+	m->stamina = m->lentidao;
 	//srand(time(NULL));
-
+	m->passos = nPassos;
 	m->direcao = 2;
 	return *m;
 }
 
-Monstro NovoMonstroDistraido() {
+Monstro NovoMonstroDistraido(int nPassos) {
 	Monstro *m = malloc(sizeof(Monstro));
 	m->hp = 10;
 	m->lentidao = 3;
 	m->tipo = 51;
 	m->posX = 0;
 	m->posY = 0;
+	m->passos = nPassos;
+	m->stamina = m->lentidao;
 	return *m;
 }
 
