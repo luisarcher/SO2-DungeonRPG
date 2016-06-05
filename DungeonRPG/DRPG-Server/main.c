@@ -34,7 +34,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	}
 
 	//Manual reset event
-	if ((ghGameInstanceEvent = CreateEvent(NULL,TRUE,FALSE,TEXT("Instante de Jogo"))) == NULL) {
+	if ((ghGameInstanceEvent = CreateEvent(NULL,TRUE,FALSE,TEXT("gameInstanceEvent"))) == NULL) {
 		printf("Criação do Evento falhou (%d)\n", GetLastError());
 		return;
 	}
@@ -84,6 +84,14 @@ int _tmain(int argc, LPTSTR argv[]) {
 	//gLabirinto = NovoLabirinto();
 	*shLabirinto = LerLabirinto();
 	DistribuirItems();
+
+	/* ####### LANÇAR MONSTROS ########## */
+	/*int nMonsters = ((rand() % 5) + 5); // 5~9
+	for (size_t i = 0; i <  nMonsters; i++)
+	{
+
+	}*/
+	/* ################################## */
 
 	hThreadListener = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecebeClientes, NULL, 0, NULL);
 	hThreadSender	= CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ActualizaClientes, NULL, 0, NULL);

@@ -48,7 +48,6 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 	}
 	case DOWN:
 	{	
-		
 		if ((m->posY + 1) <= LABIRINTOSIZE - 2 && !(shLab->labirinto[m->posY+1][m->posX] >= WALL_START_INDEX && shLab->labirinto[m->posY+1][m->posX] <= WALL_END_INDEX)) {
 			shLab->labirinto[m->posY][m->posX] = EMPTY;
 			m->posY = m->posY + 1;
@@ -93,7 +92,6 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 		
 	}
 
-
 	default:
 		break;
 	}
@@ -101,12 +99,10 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 
 int MudaDirecao(int anterior) {
 	int r = anterior;
-	
 
 	while (r == anterior)
 	{
 		r = rand() % 4 + 1;
-
 	}
 	return r;
 }
@@ -180,5 +176,5 @@ void ReadSharedMemory() {
 
 void CloseHandles(HANDLE * hMappedObj) {
 	UnmapViewOfFile(shLabirinto);
-	CloseHandle(hMappedObj);
+	CloseHandle(*hMappedObj);
 }
