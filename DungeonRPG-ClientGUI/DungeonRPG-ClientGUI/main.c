@@ -251,7 +251,15 @@ LRESULT CALLBACK TrataEventos(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lPara
 		}
 		break;
 	case WM_DESTROY:	// Destruir a janela e terminar o programa
-						// "PostQuitMessage(Exit Status)"		
+						// "PostQuitMessage(Exit Status)"	
+
+		DeleteObject(figura);
+		DeleteObject(figura1);
+		DeleteObject(fundo);
+		DeleteObject(fundo1);
+		DeleteObject(fundo2);
+		DeleteObject(fundo3);
+
 		PostQuitMessage(0);
 		break;
 		//case WM_LBUTTONDOWN: //SINGLE CLICK
@@ -294,6 +302,19 @@ LRESULT CALLBACK TrataEventos(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lPara
 			x += 5;
 			InvalidateRect(hWnd, NULL, 1);
 			break;
+
+		//traduzir para o case
+		/* notas aula 0606*/
+		//Evitar flicks
+		/*if (eventoImagem == ID_REPAINTOTIMIZADO || eventoImagem == ID_TRANSPARENTE) {
+		area.bottom = y + 143 + 6;	//(y+1) * altura;
+		area.left = x - 124 - 6;	//(x-1) * largura;
+		area.right = x + 124 + 6;	//(x+1)	* largura;
+		area.top = y - 143 - 6;		//(x-1) * altura;
+		InvalidateRect(hwnd, &area, 0);
+		}
+		else InvalidateRect(hWnd, NULL, 1);*/
+
 		default:
 			break;
 		}
@@ -355,3 +376,5 @@ LRESULT CALLBACK DlgBox1Proc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam
 	}
 	return FALSE;
 }
+
+
