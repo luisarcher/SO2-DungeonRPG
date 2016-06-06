@@ -211,3 +211,7 @@ GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
 /DungeonRPG-ClientGUI/DungeonRPG-ClientGUI/Debug/DungeonR.99B2C4B7.tlog
+
+#Mine
+*.VC.opendb
+*.VC.db

@@ -34,4 +34,15 @@
       <Filter>Resource Files</Filter>
     </Library>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="sprites\land.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sprites\land.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sprites\monster_b.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>

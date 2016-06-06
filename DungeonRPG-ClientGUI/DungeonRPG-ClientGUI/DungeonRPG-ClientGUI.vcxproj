@@ -92,6 +92,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -152,6 +153,11 @@
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\DRPGClientDLL.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="sprites\land.bmp" />
+    <Image Include="sprites\land.png" />
+    <Image Include="sprites\monster_b.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

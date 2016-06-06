@@ -72,9 +72,10 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst,
 	wcApp.cbClsExtra = 0;							// Livre, para uso particular
 	wcApp.cbWndExtra = 0;							// Livre, para uso particular
 
-	wcApp.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH); // "hbrBackground" = handler para 
-															   // "brush" de pintura do fundo da
-															   // janela. Devolvido por
+	//wcApp.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH); // "hbrBackground" = handler para 
+	
+	//fundo														   // "brush" de pintura do fundo da
+	wcApp.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);														   // janela. Devolvido por
 															   // "GetStockObject". Neste caso o
 															   // fundo vai ser branco
 															   /*OUTRAS CORES DE BRUSH:	BLACK_BRUSH  DKGRAY_BRUSH GRAY_BRUSH LTGRAY_BRUSH  */
@@ -186,18 +187,61 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst,
 LRESULT CALLBACK TrataEventos(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 {
 	HDC hdc; //handle for device context
+	HDC auxdc;
+
+	static UINT eventoImagem;
+	static HBITMAP figura, figura1, fundo1, fundo2;
+	static HBRUSH fundo3;
+	PAINTSTRUCT pt;
+	RECT area;
+	int tamx, tamy;
+	static HPEN linha;	//handle para uma caneta
+	static HBRUSH fundo;
+
+
 	static int x = 0, y = 0;
 	static int xi = 0, xf = 0, yi = 0, yf = 0;
 	static TCHAR letra[200] = TEXT("texto");
 	TCHAR pal[100];
 	PAINTSTRUCT p;
 	switch (messg) {
+	case WM_CREATE:
+		figura = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_BITMAP1));
+		figura1 = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_BITMAP2));
+		linha = CreatePen(PS_DOT, 1, RGB(255, 0, 0));
+		fundo3 = CreateSolidBrush(RGB(0,255,0));
+		fundo = CreatePatternBrush(figura);
+		break;
 	case WM_PAINT:
-		hdc = BeginPaint(hWnd, &p);
-		TextOut(hdc, x, y, letra, _tcslen(letra));
-		hdc = GetDC(hWnd);
-		Ellipse(hdc, xi, yi, xf, yf);
+		//iniciar
+		hdc = BeginPaint(hWnd, &pt);
+
+		/*aula anterior
+		//TextOut(hdc, x, y, letra, _tcslen(letra));
+		//hdc = GetDC(hWnd);
+		//Ellipse(hdc, xi, yi, xf, yf);
 		//ReleaseDC(hWnd,hdc);
+		*/
+
+		/*aula 0606*/
+		SelectObject(hdc,fundo);
+		SelectObject(hdc,linha);
+		//SelectObject(hdc, fundo3);
+		Rectangle(hdc,0, 0, 200, 200);
+		SetBkMode(hdc, TRANSPARENT);
+		TextOut(hdc, 100, 100, TEXT("Olá"), 3);
+
+		//mostrar bitmap em x,y
+		auxdc = CreateCompatibleDC(hdc);
+		SelectObject(auxdc, figura1);
+		//BitBlt(hdc, 60, 60, 59, 59, auxdc, 0, 0, SRCCOPY);
+		//StretchBlt(hdc, 0, 0, 32, 32, auxdc, 60, 60, 59, 59, SRCPAINT);
+
+		TransparentBlt(hdc,x,y,59,59,auxdc,0,0,59,59,RGB(255,255,255));
+
+		DeleteDC(auxdc);
+
+		//FIM
 		EndPaint(hWnd, &p);
 		break;
 	case WM_COMMAND:
@@ -231,11 +275,23 @@ LRESULT CALLBACK TrataEventos(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lPara
 		switch (wParam)
 		{
 		case VK_DOWN:
-			y++;
+			//y++;
+			y += 5;
 			InvalidateRect(hWnd, NULL, 1);
 			break;
 		case VK_UP:
-			y--;
+			//y--;
+			y -= 5;
+			InvalidateRect(hWnd, NULL, 1);
+			break;
+		case VK_LEFT:
+			//--x;
+			x -= 5;
+			InvalidateRect(hWnd, NULL, 1);
+			break;
+		case VK_RIGHT:
+			//++x;
+			x += 5;
 			InvalidateRect(hWnd, NULL, 1);
 			break;
 		default:
