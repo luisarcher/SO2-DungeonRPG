@@ -3,6 +3,7 @@
 
 Labirinto * shLabirinto;
 BOOL fim = FALSE;
+HANDLE gMutexLabirinto;
 
 int _tmain(int argc, LPTSTR argv[]) {
 	HANDLE hMappedObj;
@@ -16,14 +17,17 @@ int _tmain(int argc, LPTSTR argv[]) {
 	_setmode(_fileno(stderr), _O_WTEXT);
 #endif
 
-	if ((hGameInstanceEvent = OpenEvent(EVENT_MODIFY_STATE, FALSE, TEXT("gameInstanceEvent"))) == NULL) {
+	if ((gMutexLabirinto = OpenMutex(MUTEX_ALL_ACCESS, FALSE, TEXT("LabirintoOcupado"))) == NULL) {
+		_tprintf(TEXT("[ERRO] Falha ao abir mutex de labirinto. (%d)\n"), GetLastError());
+		exit(-1);
+	}
+	if ((hGameInstanceEvent = OpenEvent(EVENT_ALL_ACCESS, FALSE, TEXT("gameInstanceEvent"))) == NULL) {
 		_tprintf(TEXT("[ERRO] Falha ao abir evento de instâncias. (%d)\n"), GetLastError());
 		exit(-1);
 	}
-	if ((hUpdateGameClientEvent = OpenEvent(EVENT_MODIFY_STATE, FALSE, TEXT("ActualizarClientes"))) == NULL) {
+	if ((hUpdateGameClientEvent = OpenEvent(EVENT_ALL_ACCESS, FALSE, TEXT("ActualizarClientes"))) == NULL) {
 		_tprintf(TEXT("[ERRO] Falha ao abir evento de difusão. (%d)\n"), GetLastError());
 		exit(-1);
-		return;
 	}
 	InitializeSharedMemory(&hMappedObj);
 	

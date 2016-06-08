@@ -1,9 +1,6 @@
 #pragma once
 #include "Monster.h"
 
-
-//Monstro
-
 Monstro NovoMonstroBully(int nPassos) {
 	Monstro *m = malloc(sizeof(Monstro));
 	m->hp = HP_BASE;
@@ -34,7 +31,10 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 	switch (d)
 	{
 	case UP:
-	{	
+	{		
+		//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
+		WaitForSingleObject(gMutexLabirinto, INFINITE);
+
 		if ((m->posY - 1) >= 1 && !(shLab->labirinto[m->posY-1][m->posX] >= WALL_START_INDEX && shLab->labirinto[m->posY-1][m->posX] <= WALL_END_INDEX)) {
 			if (shLab->labirinto[m->posY][m->posX] > 1000)
 			{
@@ -52,10 +52,16 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 			else {
 				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] + (m->tipo * 100);
 			}
+			//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
+			ReleaseMutex(gMutexLabirinto);
 			break;
 		}
 		else {
 			m->direcao = MudaDirecao(UP);
+
+			//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
+			//A função pai, tem de entregar o recurso antes do "filho" pedir.
+			ReleaseMutex(gMutexLabirinto);
 			MoveMonstro(shLab, m->direcao, m);
 			break;
 		}
@@ -63,6 +69,8 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 	}
 	case DOWN:
 	{	
+		//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
+		WaitForSingleObject(gMutexLabirinto, INFINITE);
 		if ((m->posY + 1) <= LABIRINTOSIZE - 2 && !(shLab->labirinto[m->posY+1][m->posX] >= WALL_START_INDEX && shLab->labirinto[m->posY+1][m->posX] <= WALL_END_INDEX)) {
 			if (shLab->labirinto[m->posY][m->posX] > 1000)
 			{
@@ -80,10 +88,14 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 			else {
 				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] +( m->tipo * 100);
 			}
+			//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
+			ReleaseMutex(gMutexLabirinto);
 			break;
 		}
 		else {
 			m->direcao = MudaDirecao(DOWN);
+			//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
+			ReleaseMutex(gMutexLabirinto);
 			MoveMonstro(shLab, m->direcao, m);
 			break;
 		}
@@ -91,6 +103,9 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 	}
 	case RIGHT:
 	{	
+		//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
+		WaitForSingleObject(gMutexLabirinto, INFINITE);
+
 		if ((m->posX + 1) <= LABIRINTOSIZE - 2 && !(shLab->labirinto[m->posY][m->posX+1] >= WALL_START_INDEX && shLab->labirinto[m->posY][m->posX+1] <= WALL_END_INDEX)) {
 			if (shLab->labirinto[m->posY][m->posX] > 1000)
 			{
@@ -108,10 +123,14 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 			else {
 				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] + (m->tipo * 100);
 			}
+			//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
+			ReleaseMutex(gMutexLabirinto);
 			break;
 		}
 		else {
 			m->direcao = MudaDirecao(RIGHT);
+			//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
+			ReleaseMutex(gMutexLabirinto);
 			MoveMonstro(shLab, m->direcao, m);
 			break;
 		}
@@ -119,6 +138,9 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 	}
 	case LEFT:
 	{	
+		//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
+		WaitForSingleObject(gMutexLabirinto, INFINITE);
+
 		if ((m->posX - 1) >= 1 && !(shLab->labirinto[m->posY][m->posX - 1] >= WALL_START_INDEX && shLab->labirinto[m->posY][m->posX - 1] <= WALL_END_INDEX)) {
 			if (shLab->labirinto[m->posY][m->posX] > 1000)
 			{
@@ -136,10 +158,14 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 			else {
 				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] + (m->tipo * 100);
 			}
+			//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
+			ReleaseMutex(gMutexLabirinto);
 			break;
 		}
 		else {
 			m->direcao = MudaDirecao(LEFT);
+			//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
+			ReleaseMutex(gMutexLabirinto);
 			MoveMonstro(shLab, m->direcao, m);
 			break;
 		}
@@ -168,7 +194,7 @@ void InitializeSharedMemory(HANDLE * hMappedObj) {
 		FALSE,
 		TEXT("ShLabirinto"));
 	if (hMappedObj == NULL) {
-		_tprintf(TEXT("[Erro] Criar objectos mapeamentos(%d)\n"), GetLastError());
+		_tprintf(TEXT("[Erro] Criar objectos mapeados(%d)\n"), GetLastError());
 		system("pause");
 		return -1;
 	}

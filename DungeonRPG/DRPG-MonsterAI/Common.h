@@ -15,6 +15,7 @@ typedef struct {
 	BOOL init;
 } Labirinto;
 
+extern HANDLE gMutexLabirinto;
 extern Labirinto * shLabirinto;
 
 /*****  Items da matriz | Chart de ints  *****/
