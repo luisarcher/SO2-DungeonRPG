@@ -100,11 +100,15 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	//fim = TRUE; //define quando as threads devem terminar
 
-	//Esperar a thread RecebeClientes terminar e fecha o handle
+	//Esperar e fechar threads
 	WaitForSingleObject(hThreadListener, INFINITE);
 	WaitForSingleObject(hThreadSender, INFINITE);
+	WaitForSingleObject(hThreadGameTime, INFINITE);
+	WaitForSingleObject(hThreadGameEvents, INFINITE);
 	CloseHandle(hThreadListener);
 	CloseHandle(hThreadSender);
+	CloseHandle(hThreadGameTime);
+	CloseHandle(hThreadGameEvents);
 
 	//Espera pelas threads dos clientes e desliga-as
 	for (int i = 0; i < totalConnections; i++)
