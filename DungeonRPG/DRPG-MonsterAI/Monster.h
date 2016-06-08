@@ -26,9 +26,9 @@ typedef struct {
 
 //Monstro
 
-Monstro NovoMonstroBully();
+Monstro NovoMonstroBully(int nPassos);
 
-Monstro NovoMonstroDistraido();
+Monstro NovoMonstroDistraido(int nPassos);
 
 void MoveMonstro(Labirinto *shLab, int d, Monstro *m);
 
@@ -43,5 +43,4 @@ void CloseHandles(HANDLE * hMappedObj);
 
 void gotoxy(int x, int y);
 void escondeCursor();
-
-BOOL hasPlayerIn(int x, int y);
+void clrscr();

@@ -214,34 +214,59 @@ void InitializeSharedMemory(HANDLE * hMappedObj) {
 }
 
 void DisplayMonsterSurroundings(int x, int y) {
-	int matriz[15][15]; //Criar um diâmentro de visão para o monstro
-
-	SetEmptyMatrix(&matriz);
+	int matriz[MONSTER_MAT_SIZE][MONSTER_MAT_SIZE]; //Criar um diâmentro de visão para o monstro
 
 	int iniX, iniY, maxX, maxY;
 
-	if (x - 5 < 0) iniX = 0;
-	else iniX = x - 5;
-	if (x + 5 > LABIRINTOSIZE) maxX = LABIRINTOSIZE;
-	else maxX = x + 5;
+	if (x - (MONSTER_MAT_SIZE/2) < 0) iniX = 0;
+	else iniX = x - MONSTER_MAT_SIZE / 2;
+	if (x + MONSTER_MAT_SIZE / 2 > LABIRINTOSIZE) maxX = LABIRINTOSIZE;
+	else maxX = x + MONSTER_MAT_SIZE / 2;
 
-	if (y - 5 < 0) iniY = 0;
-	else iniY = y - 5;
-	if (y + 5 > LABIRINTOSIZE) maxY = LABIRINTOSIZE;
-	else maxY = y + 5;
+	if (y - MONSTER_MAT_SIZE / 2 < 0) iniY = 0;
+	else iniY = y - MONSTER_MAT_SIZE / 2;
+	if (y + MONSTER_MAT_SIZE / 2 > LABIRINTOSIZE) maxY = LABIRINTOSIZE;
+	else maxY = y + MONSTER_MAT_SIZE / 2;
 
 	int m = 0, n = 0;
 
 	//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
 	WaitForSingleObject(gMutexLabirinto, INFINITE);
 
+	clrscr();
 	for (int i = iniY; i < maxY; i++, n++, m = 0)
 	{
 		for (int j = iniX; j < maxX; j++, m++)
 		{
-			matriz[n][m] = shLabirinto->labirinto[i][j];
+			int c = shLabirinto->labirinto[i][j];
+			if (c >= WALL_START_INDEX && c <= WALL_END_INDEX)
+			{
+				_tprintf(TEXT("%c"), 9619);
+			}
+			else if (c == EMPTY)
+			{
+				_tprintf(TEXT("%c"), 9617);
+			}
+			else if (c >= PLAYER_START_INDEX && c <= PLAYER_END_INDEX)
+			{
+				_tprintf(TEXT("%c"), 64);
+			}
+			else if (c >= MONSTER_START_INDEX && c <= MONSTER_END_INDEX)
+			{
+				_tprintf(TEXT("%c"), 167);
+			}
+			else if (c >= ITEM_START_INDEX && c <= ITEM_END_INDEX)
+			{
+				_tprintf(TEXT("%c"), '+');
+			}
+			else if (c > PEDRAS && c < 600)
+			{
+				_tprintf(TEXT("%c"), 'P');
+			}
 		}
+		_tprintf(TEXT("\n"));
 	}
+	_tprintf(TEXT("Monster at: Y:%d X:%d\n"),y,x);
 
 	//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
 	ReleaseMutex(gMutexLabirinto);
@@ -255,7 +280,6 @@ void ReadSharedMemory() {
 			for (int j = 0; j < LABIRINTOSIZE; j++)
 			{
 				int c = shLabirinto->labirinto[i][j];
-				gotoxy(j, i);
 				if (c >= WALL_START_INDEX && c <= WALL_END_INDEX)
 				{
 					_tprintf(TEXT("%c"), 9619);
@@ -316,4 +340,24 @@ void escondeCursor() {
 void CheckForThreats(Monstro *m) {
 	if (shLabirinto->labirinto[m->posY][m->posX] > 1000)
 		m->hp++;
+}
+
+void clrscr() {
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+	const COORD startCoords = { 0, 0 };
+	DWORD dummy;
+	HANDLE hconsola = GetStdHandle(STD_OUTPUT_HANDLE);;
+
+	GetConsoleScreenBufferInfo(hconsola, &csbi);
+	FillConsoleOutputCharacter(hconsola,
+		' ',
+		csbi.dwSize.X * csbi.dwSize.Y,
+		startCoords,
+		&dummy);
+	FillConsoleOutputAttribute(hconsola,
+		csbi.wAttributes,
+		csbi.dwSize.X * csbi.dwSize.Y,
+		startCoords,
+		&dummy);
+	gotoxy(0, 0);
 }

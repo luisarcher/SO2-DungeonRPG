@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #define LABIRINTOSIZE 70
+#define MONSTER_MAT_SIZE 20
 
 extern BOOL fim;
 

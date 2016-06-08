@@ -36,6 +36,8 @@
 // - Ints da matriz
 	#define EMPTY -1
 	#define FOG_OF_WAR -2
+	#define MONSTERS_MIN 8
+	#define MONSTERS_MAX 16
 
 	//Players 0~19
 	#define PLAYER_START_INDEX 0

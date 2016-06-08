@@ -86,8 +86,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 	DistribuirItems();
 
 	/* ####### LANÇAR MONSTROS ########## */
-	/*int nMonsters = ((rand() % 5) + 5); // 5~9
-	for (size_t i = 0; i <  nMonsters; i++)
+	int nMonsters = ((rand() % MONSTERS_MAX + 1) + MONSTERS_MIN);
+	/*for (size_t i = 0; i <  nMonsters; i++)
 	{
 
 	}*/

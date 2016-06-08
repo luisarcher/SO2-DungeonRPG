@@ -48,7 +48,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 		WaitForSingleObject(hGameInstanceEvent, INFINITE);
 		//... Passou 1 instante... segue...
 
-		ReadSharedMemory(); 
+		//ReadSharedMemory(); //Monstra labirinto todo
+		DisplayMonsterSurroundings(m.posX, m.posY); //Monstra um raio de visão limitado
 		
 		if (m.stamina == 0)
 		{
