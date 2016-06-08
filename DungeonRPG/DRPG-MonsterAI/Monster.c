@@ -2,29 +2,28 @@
 #include "Monster.h"
 
 Monstro NovoMonstroBully(int nPassos) {
-	Monstro *m = malloc(sizeof(Monstro));
-	m->hp = HP_BASE;
-	m->lentidao = 7;
-	m->tipo = 51;
-	m->posX = 0;
-	m->posY = 0;
-	m->stamina = m->lentidao;
-	//srand(time(NULL));
-	m->passos = nPassos;
-	m->direcao = 2;
-	return *m;
+	Monstro m;
+	m.hp = HP_BASE;
+	m.lentidao = 7;
+	m.tipo = 51;
+	m.posX = 0;
+	m.posY = 0;
+	m.stamina = m.lentidao;
+	m.passos = nPassos;
+	m.direcao = 2;
+	return m;
 }
 
 Monstro NovoMonstroDistraido(int nPassos) {
-	Monstro *m = malloc(sizeof(Monstro));
-	m->hp = HP_BASE;
-	m->lentidao = 3;
-	m->tipo = 51;
-	m->posX = 0;
-	m->posY = 0;
-	m->passos = nPassos;
-	m->stamina = m->lentidao;
-	return *m;
+	Monstro m;
+	m.hp = HP_BASE;
+	m.lentidao = 3;
+	m.tipo = 51;
+	m.posX = 0;
+	m.posY = 0;
+	m.passos = nPassos;
+	m.stamina = m.lentidao;
+	return m;
 }
 
 void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
@@ -174,6 +173,8 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 	default:
 		break;
 	}
+	//No fim de mover, sinaliza o evento que vai actualizar a interface dos clientes.
+	SetEvent(ghUpdateGameClientEvent);
 }
 
 int MudaDirecao(int anterior) {
@@ -210,6 +211,40 @@ void InitializeSharedMemory(HANDLE * hMappedObj) {
 		system("pause");
 		return -1;
 	}
+}
+
+void DisplayMonsterSurroundings(int x, int y) {
+	int matriz[15][15]; //Criar um diâmentro de visão para o monstro
+
+	SetEmptyMatrix(&matriz);
+
+	int iniX, iniY, maxX, maxY;
+
+	if (x - 5 < 0) iniX = 0;
+	else iniX = x - 5;
+	if (x + 5 > LABIRINTOSIZE) maxX = LABIRINTOSIZE;
+	else maxX = x + 5;
+
+	if (y - 5 < 0) iniY = 0;
+	else iniY = y - 5;
+	if (y + 5 > LABIRINTOSIZE) maxY = LABIRINTOSIZE;
+	else maxY = y + 5;
+
+	int m = 0, n = 0;
+
+	//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
+	WaitForSingleObject(gMutexLabirinto, INFINITE);
+
+	for (int i = iniY; i < maxY; i++, n++, m = 0)
+	{
+		for (int j = iniX; j < maxX; j++, m++)
+		{
+			matriz[n][m] = shLabirinto->labirinto[i][j];
+		}
+	}
+
+	//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
+	ReleaseMutex(gMutexLabirinto);
 }
 
 void ReadSharedMemory() {
@@ -281,9 +316,4 @@ void escondeCursor() {
 void CheckForThreats(Monstro *m) {
 	if (shLabirinto->labirinto[m->posY][m->posX] > 1000)
 		m->hp++;
-}
-
-BOOL hasPlayerIn(int x, int y) {
-	return shLabirinto->labirinto[y][x] >= PLAYER_START_INDEX
-		&& shLabirinto->labirinto[y][x] <= PLAYER_END_INDEX;
 }

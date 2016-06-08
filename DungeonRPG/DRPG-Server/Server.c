@@ -202,6 +202,7 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 			exit(-1);
 		}
 
+		//Quando um jogador faz uma acção, os outros são notificados
 		SetEvent(ghUpdateGameClientEvent);		//Sinalizar evento de difusão
 	} while (pedido.command != QUITGAME);
 

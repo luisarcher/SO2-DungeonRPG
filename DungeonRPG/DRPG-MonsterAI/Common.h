@@ -18,6 +18,8 @@ typedef struct {
 extern HANDLE gMutexLabirinto;
 extern Labirinto * shLabirinto;
 
+extern HANDLE ghUpdateGameClientEvent;
+
 /*****  Items da matriz | Chart de ints  *****/
 #define EMPTY -1
 #define FOG_OF_WAR -2

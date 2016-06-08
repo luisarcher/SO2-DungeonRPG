@@ -4,11 +4,11 @@
 Labirinto * shLabirinto;
 BOOL fim = FALSE;
 HANDLE gMutexLabirinto;
+HANDLE ghUpdateGameClientEvent;
 
 int _tmain(int argc, LPTSTR argv[]) {
 	HANDLE hMappedObj;
 	HANDLE hGameInstanceEvent;
-	HANDLE hUpdateGameClientEvent;
 	int nPassos = 4; //recebe o argv adequado
 	
 #ifdef UNICODE 
@@ -25,7 +25,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 		_tprintf(TEXT("[ERRO] Falha ao abir evento de instâncias. (%d)\n"), GetLastError());
 		exit(-1);
 	}
-	if ((hUpdateGameClientEvent = OpenEvent(EVENT_ALL_ACCESS, FALSE, TEXT("ActualizarClientes"))) == NULL) {
+	if ((ghUpdateGameClientEvent = OpenEvent(EVENT_ALL_ACCESS, FALSE, TEXT("ActualizarClientes"))) == NULL) {
 		_tprintf(TEXT("[ERRO] Falha ao abir evento de difusão. (%d)\n"), GetLastError());
 		exit(-1);
 	}
