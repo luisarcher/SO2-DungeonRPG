@@ -28,7 +28,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	_setmode(_fileno(stderr), _O_WTEXT);
 #endif
 
-	if ((gMutexLabirinto = CreateMutex(NULL, FALSE, TEXT("Labirinto ocupado"))) == NULL){
+	if ((gMutexLabirinto = CreateMutex(NULL, FALSE, TEXT("LabirintoOcupado"))) == NULL){
 		printf("Criação do Mutex falhou (%d)\n", GetLastError());
 		return;
 	}
@@ -40,7 +40,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	}
 
 	//Auto-reset Event
-	if ((ghUpdateGameClientEvent = CreateEvent(NULL, FALSE, FALSE, TEXT("Actualizar Clientes"))) == NULL) {
+	if ((ghUpdateGameClientEvent = CreateEvent(NULL, FALSE, FALSE, TEXT("ActualizarClientes"))) == NULL) {
 		printf("Criação do Evento falhou (%d)\n", GetLastError());
 		return;
 	}

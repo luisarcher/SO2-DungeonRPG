@@ -48,6 +48,7 @@ Labirinto LerLabirinto() {
 	return l;
 }
 
+
 BOOL hasPlayerIn(int x, int y) {
 	return shLabirinto->labirinto[y][x] >= PLAYER_START_INDEX
 		&& shLabirinto->labirinto[y][x] <= PLAYER_END_INDEX;

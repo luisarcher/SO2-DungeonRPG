@@ -7,6 +7,7 @@ BOOL fim = FALSE;
 int _tmain(int argc, LPTSTR argv[]) {
 	HANDLE hMappedObj;
 	HANDLE hGameInstanceEvent;
+	HANDLE hUpdateGameClientEvent;
 	int nPassos = 4; //recebe o argv adequado
 	
 #ifdef UNICODE 
@@ -15,7 +16,15 @@ int _tmain(int argc, LPTSTR argv[]) {
 	_setmode(_fileno(stderr), _O_WTEXT);
 #endif
 
-	hGameInstanceEvent = OpenEvent(EVENT_MODIFY_STATE, FALSE, TEXT("gameInstanceEvent"));
+	if ((hGameInstanceEvent = OpenEvent(EVENT_MODIFY_STATE, FALSE, TEXT("gameInstanceEvent"))) == NULL) {
+		_tprintf(TEXT("[ERRO] Falha ao abir evento de instâncias. (%d)\n"), GetLastError());
+		exit(-1);
+	}
+	if ((hUpdateGameClientEvent = OpenEvent(EVENT_MODIFY_STATE, FALSE, TEXT("ActualizarClientes"))) == NULL) {
+		_tprintf(TEXT("[ERRO] Falha ao abir evento de difusão. (%d)\n"), GetLastError());
+		exit(-1);
+		return;
+	}
 	InitializeSharedMemory(&hMappedObj);
 	
 	_tprintf(TEXT("Vou ler o estado do labirinto...\n"));

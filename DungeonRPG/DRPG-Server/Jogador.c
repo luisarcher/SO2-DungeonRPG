@@ -47,7 +47,9 @@ void MoverJogador(int playerId, int keystroke) {
 
 	if (!hasStamina(*j)) return;
 
+	//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
 	WaitForSingleObject(gMutexLabirinto, INFINITE);
+
 	switch (keystroke) {
 		case KEY_UP:
 		{
@@ -101,10 +103,13 @@ void MoverJogador(int playerId, int keystroke) {
 	// Update matrix after collected items
 	shLabirinto->labirinto[j->y][j->x] = playerId;
 	
+	//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
 	ReleaseMutex(gMutexLabirinto);
-	// Player is now "tired" and recovering stamina
+
+	// Player is now "tired"
 	j->lentidaoCounter = j->lentidao; //player is able to move on 0
 	
+	//Para efeitos de debug
 	_tprintf(TEXT("P[%d] -> POSX: %d POSY: %d\n\n"),playerId, j->x, j->y);
 }
 
@@ -127,6 +132,10 @@ void UpdatePlayerLOS(int x, int y, int (*matriz)[PLAYER_LOS]) {
 	else maxY = y + 5;
 
 	int m=0, n= 0;
+
+	//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
+	WaitForSingleObject(gMutexLabirinto, INFINITE);
+
 	for (int i = iniY; i < maxY; i++, n++, m=0)
 	{
 		for (int j = iniX; j < maxX; j++, m++)
@@ -134,6 +143,9 @@ void UpdatePlayerLOS(int x, int y, int (*matriz)[PLAYER_LOS]) {
 			matriz[n][m] = shLabirinto->labirinto[i][j];
 		}
 	}
+
+	//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
+	ReleaseMutex(gMutexLabirinto);
 }
 
 /**
@@ -150,6 +162,10 @@ void SetEmptyMatrix(int (*matriz)[PLAYER_LOS]) {
 */
 void SetPlayerInRandomPosition(Jogador * p) {
 	int x, y;
+
+	//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
+	WaitForSingleObject(gMutexLabirinto, INFINITE);
+
 	do {
 		srand(time(NULL));
 		x = (rand() % LABIRINTOSIZE);
@@ -159,6 +175,9 @@ void SetPlayerInRandomPosition(Jogador * p) {
 	p->x = x;
 	p->y = y;
 	shLabirinto->labirinto[y][x] = p->id;
+
+	//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
+	ReleaseMutex(gMutexLabirinto);
 }
 
 BOOL canAttack(Jogador p) {
@@ -170,7 +189,7 @@ BOOL hasStamina(Jogador p) {
 }
 
 /**
-*	O jogador recupera um ponto de stamina.
+*	O jogador recupera um ponto de stamina e de ataque.
 */
 void RecoverPlayerStamina(Jogador * p) {
 	if (p->lentidaoCounter > 0)
@@ -198,6 +217,8 @@ void CheckItemDurability(Jogador * p) {
 void AttackClosePlayers(Jogador * p) {
 	if (!canAttack(*p)) return;
 
+	//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
+	WaitForSingleObject(gMutexLabirinto, INFINITE);
 	for (int i = (p->y - 1); i <= (p->y + 1); i++)
 	{
 		for (int j = (p->x - 1); j <= (p->x + 1); j++)
@@ -210,6 +231,8 @@ void AttackClosePlayers(Jogador * p) {
 			}
 		}
 	}
+	//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
+	ReleaseMutex(gMutexLabirinto);
 }
 
 /**
@@ -217,8 +240,14 @@ void AttackClosePlayers(Jogador * p) {
 *	caso se verifique, o jogador é atacado.
 */
 void CheckForThreats(Jogador* p) {
+	//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
+	WaitForSingleObject(gMutexLabirinto, INFINITE);
+
 	if (shLabirinto->labirinto[p->y][p->x] > 1000)
 		--p->hp;
+
+	//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
+	ReleaseMutex(gMutexLabirinto);
 }
 
 /**
@@ -247,6 +276,7 @@ void DropStones(Jogador * p) {
 * Depois de apanhado, a posição do objecto na matriz,
 * deve de ser sobreposta com o id do utilizador.
 */
+//Protegida pela função que a invoca. (Mutex)
 void AskPlayerToCollectItems(Jogador * p) {
 	int nPedras = 0;
 	switch (shLabirinto->labirinto[p->x][p->y])

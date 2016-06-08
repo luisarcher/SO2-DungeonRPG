@@ -35,7 +35,6 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 	{
 	case UP:
 	{	
-		
 		if ((m->posY - 1) >= 1 && !(shLab->labirinto[m->posY-1][m->posX] >= WALL_START_INDEX && shLab->labirinto[m->posY-1][m->posX] <= WALL_END_INDEX)) {
 			if (shLab->labirinto[m->posY][m->posX] > 1000)
 			{
@@ -146,7 +145,6 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 		}
 		
 	}
-
 	default:
 		break;
 	}

@@ -224,6 +224,8 @@ DWORD WINAPI ActualizaClientes(LPVOID param) {
 	ServerResponse resposta;
 
 	while (!fim) {
+
+		//Espera que o evento de difusão seja sinalizado.
 		WaitForSingleObject(ghUpdateGameClientEvent, INFINITE);
 
 		if (totalConnections > 0 && activePlayers() > 0) {
