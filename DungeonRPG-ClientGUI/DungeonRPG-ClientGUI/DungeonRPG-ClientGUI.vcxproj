@@ -155,6 +155,7 @@
     <Library Include="lib\DRPGClientDLL.lib" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="sprites\grass.bmp" />
     <Image Include="sprites\land.bmp" />
     <Image Include="sprites\land.png" />
     <Image Include="sprites\monster_b.bmp" />

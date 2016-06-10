@@ -44,5 +44,8 @@
     <Image Include="sprites\monster_b.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="sprites\grass.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
