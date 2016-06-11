@@ -364,10 +364,10 @@ void escondeCursor() {
 
 void CheckForThreats(Monstro *m) {
 	
-	if (shLabirinto->labirinto[m->posY][m->posX] > 1000 && !hasItemIn(shLabirinto->labirinto[m->posY][m->posX] % 100) )
+	if (shLabirinto->labirinto[m->posY][m->posX] > 1000 && !hasItemIn(shLabirinto->labirinto[m->posY][m->posX]) )
 	{
-		_tprintf(TEXT("threat at Y:%d X: %d\nvalor no mapa:%d\nResto = %d\n"), m->posY, m->posX, shLabirinto->labirinto[m->posY][m->posX], shLabirinto->labirinto[m->posY][m->posX] % 100);
-		system("pause");
+		//_tprintf(TEXT("threat at Y:%d X: %d\nvalor no mapa:%d\nResto = %d\n"), m->posY, m->posX, shLabirinto->labirinto[m->posY][m->posX], shLabirinto->labirinto[m->posY][m->posX] % 100);
+		//system("pause");
 		m->hp++;
 	}
 }
@@ -404,7 +404,26 @@ BOOL hasMonsterIn(int x, int y) {
 
 BOOL hasItemIn(int d) {
 	//30-49
+	int mp = (d - 501) / 100;
 	
-	return d >= ITEM_START_INDEX 
-		&& d <= ITEM_END_INDEX;
+	/*if (d % 1000 > 500 && (d % 100 >= ITEM_START_INDEX && d % 100 <= ITEM_END_INDEX))
+	{
+		return TRUE;
+	}
+	else
+		return FALSE;*/
+	if ((mp >= MONSTER_START_INDEX && mp <= MONSTER_END_INDEX))
+	{
+		/*_tprintf(TEXT("Encontrei monte pedras\n"));
+		system("pause");*/
+		return TRUE;
+	}
+	else if ((d % 100 >= ITEM_START_INDEX && d % 100 <= ITEM_END_INDEX))
+	{
+		/*_tprintf(TEXT("Encontrei item\n"));
+		system("pause");*/
+		return TRUE;
+	}
+	else
+		return FALSE;
 }
