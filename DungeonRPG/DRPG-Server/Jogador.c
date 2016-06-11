@@ -245,7 +245,7 @@ void CheckForThreats(Jogador* p) {
 	//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
 	WaitForSingleObject(gMutexLabirinto, INFINITE);
 
-	if (shLabirinto->labirinto[p->y][p->x] > 1000)
+	if (shLabirinto->labirinto[p->y][p->x] > 1000 && !hasItemIn(shLabirinto->labirinto[p->y][p->x]))
 		--p->hp;
 
 	//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
@@ -316,4 +316,23 @@ InformarJogador PrepararCopiaDadosParaEnviar(Jogador p) {
 	_info.x = p.x;
 	_info.y = p.y;
 	return _info;
+}
+
+BOOL hasItemIn(int d) {
+
+	int mp = (d - 501) / 100;
+
+
+	if ((mp >= MONSTER_START_INDEX && mp <= MONSTER_END_INDEX))
+	{
+
+		return TRUE;
+	}
+	else if ((d % 100 >= ITEM_START_INDEX && d % 100 <= ITEM_END_INDEX))
+	{
+
+		return TRUE;
+	}
+	else
+		return FALSE;
 }

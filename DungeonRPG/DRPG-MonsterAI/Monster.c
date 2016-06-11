@@ -403,25 +403,18 @@ BOOL hasMonsterIn(int x, int y) {
 }
 
 BOOL hasItemIn(int d) {
-	//30-49
+	
 	int mp = (d - 501) / 100;
 	
-	/*if (d % 1000 > 500 && (d % 100 >= ITEM_START_INDEX && d % 100 <= ITEM_END_INDEX))
-	{
-		return TRUE;
-	}
-	else
-		return FALSE;*/
+	
 	if ((mp >= MONSTER_START_INDEX && mp <= MONSTER_END_INDEX))
 	{
-		/*_tprintf(TEXT("Encontrei monte pedras\n"));
-		system("pause");*/
+		
 		return TRUE;
 	}
 	else if ((d % 100 >= ITEM_START_INDEX && d % 100 <= ITEM_END_INDEX))
 	{
-		/*_tprintf(TEXT("Encontrei item\n"));
-		system("pause");*/
+		
 		return TRUE;
 	}
 	else
