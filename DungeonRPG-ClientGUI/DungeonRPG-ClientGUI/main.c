@@ -1,6 +1,5 @@
 #include "Common.h"
 #include "Proc.h"
-#include "SetupGame.h"
 
 HINSTANCE ghInstance;
 HBITMAP bitmapElements[N_BITMAPS];
@@ -21,10 +20,6 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 
 	TCHAR *szProgName = TEXT("DungeonRPG");
 	ghInstance = hInst;
-
-	//Carregar bitmaps
-	if (!CarregarTodasAsImagens())
-		return 0;
 
 	//Registar a classe no windows
 	if (!RegistaClasse(hInst, szProgName))

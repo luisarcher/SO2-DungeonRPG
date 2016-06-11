@@ -5,6 +5,8 @@
 
 LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 {
+	int result;
+
 	HDC hdc;
 	HDC hdcDoubleBuffer = NULL;
 
@@ -26,6 +28,12 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 	switch (messg)
 	{
 	case WM_CREATE:
+
+		//Carregar bitmaps
+		result = CarregarTodasAsImagens();
+		if (result < 0)
+			MessageBox(hWnd, TEXT("Erro ao carregar imagens"), TEXT("Carregar Imagens"), MB_OK | MB_ICONERROR);
+		
 		hdc = GetDC(hWnd);
 		ConfigurarDCs(hdc);
 		ReleaseDC(hWnd, hdc);
@@ -43,16 +51,16 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		//GetClientRect(hWnd, &area);
 
 		//Preparação de DoubleBuffer
-		/*if (hdcDoubleBuffer == NULL)
+		if (hdcDoubleBuffer == NULL)
 		{
 			hdcDoubleBuffer = CreateCompatibleDC(hdc);
 			hBitmap = CreateCompatibleBitmap(hdc, area.right, area.right);
 			SelectObject(hdcDoubleBuffer, hBitmap);
-		}*/
+		}
 
 		//Desenho da área de jogo
 		Rectangle(hdc, BOARD_LEFT_MARGIN, BOARD_TOP_MARGIN, PLAYER_LOS*TILE_SZ, PLAYER_LOS*TILE_SZ);
-		SetBkMode(hdc, TRANSPARENT);
+		//SetBkMode(hdc, TRANSPARENT);
 
 		//DEBUBG - inicializar a matriz resp que é a resposta do servidor
 		for (int i = 0; i < PLAYER_LOS; i++)
@@ -68,7 +76,7 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		}
 
 		//Desenhar área de jogo no segundo buffer
-		/*for (int i = 0; i < PLAYER_LOS; i++)
+		for (int i = 0; i < PLAYER_LOS; i++)
 		{
 			for (int j = 0; j < PLAYER_LOS; j++)
 			{
@@ -101,10 +109,10 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		}// FIM DB*/
 
 		//Copiar o que está no buffer para o device context principal
-		//BitBlt(hdc, 0, 0, area.right, area.bottom, hdcDoubleBuffer, 0, 0, SRCCOPY);
+		BitBlt(hdc, 0, 0, area.right, area.bottom, hdcDoubleBuffer, 0, 0, SRCCOPY);
 
 
-		TextOut(hdc, 100, 100, TEXT("Olá"), 3);
+		//TextOut(hdc, 100, 100, TEXT("Olá"), 3);
 
 		//mostrar bitmap em x,y
 		//auxdc = CreateCompatibleDC(hdc);
@@ -112,7 +120,7 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		//BitBlt(hdc, 60, 60, 59, 59, auxdc, 0, 0, SRCCOPY);
 		//StretchBlt(hdc, 0, 0, 32, 32, auxdc, 60, 60, 59, 59, SRCPAINT);
 
-		TransparentBlt(hdc, x, y, 64, 64, auxdc, 0, 0, 64, 64, RGB(255, 255, 255));
+		//TransparentBlt(hdc, x, y, 64, 64, auxdc, 0, 0, 64, 64, RGB(255, 255, 255));
 
 
 		//FIM
