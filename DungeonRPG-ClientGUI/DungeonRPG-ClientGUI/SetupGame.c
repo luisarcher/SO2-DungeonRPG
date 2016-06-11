@@ -62,3 +62,16 @@ void ConfigurarDCs(HDC hdcOrigin) {
 		bitmapElementsOrigin[i] = SelectObject(bitmapElementsDC[i],bitmapElements[i]);
 	}
 }
+
+DWORD WINAPI AtualizaJogo(LPVOID lpParam) {
+	DWORD nBytes;
+	HWND hWnd = (HWND)lpParam;
+	while (!fim) {
+		if (pendingChangesFlag) {
+			//Analisa a estrutura recebida em resp
+			//if(resp.playerInfo.hp > 0)
+				InvalidateRect(hWnd, NULL, FALSE);
+		}
+	}
+	return 0;
+}

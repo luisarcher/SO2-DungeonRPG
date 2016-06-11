@@ -149,7 +149,7 @@
     <ClCompile Include="Labirinto.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="MenuProc.c" />
-    <ClCompile Include="Proc.c" />
+    <ClCompile Include="GameProc.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h" />
@@ -158,7 +158,7 @@
     <ClInclude Include="SetupGame.h" />
     <ClInclude Include="Labirinto.h" />
     <ClInclude Include="MenuProc.h" />
-    <ClInclude Include="Proc.h" />
+    <ClInclude Include="GameProc.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>

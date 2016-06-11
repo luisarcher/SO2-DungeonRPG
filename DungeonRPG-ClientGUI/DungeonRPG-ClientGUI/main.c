@@ -1,5 +1,5 @@
 #include "Common.h"
-#include "Proc.h"
+#include "GameProc.h"
 
 HINSTANCE ghInstance;
 HBITMAP bitmapElements[N_BITMAPS];

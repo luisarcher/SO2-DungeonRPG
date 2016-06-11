@@ -10,6 +10,17 @@
 #define BOARD_TOP_MARGIN	25
 #define BOARD_LEFT_MARGIN	25
 
+/* === GAME COMMANDS === */
+#define SETNAME		600
+#define STARTGAME	601
+#define QUITGAME	604
+#define GAMESTATUS	610
+#define MOVEUP		672
+#define MOVEDOWN	680
+#define MOVELEFT	675
+#define MOVERIGHT	677
+#define SWITCH_STONE_AUTOHIT 650
+
 /*****  Items da matriz | Chart de ints  *****/
 #define EMPTY -1
 #define FOG_OF_WAR -2
@@ -38,6 +49,5 @@ extern HANDLE hPipe;
 extern HANDLE hPipeJogo;
 extern HANDLE hThreadBroadcastReceiver;
 
-extern TCHAR receivedMSG[BUFFERSIZE];
 extern int connected;
 extern int started;
