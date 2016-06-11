@@ -1,6 +1,7 @@
 #ifndef SERVER_H_INCLUDED
 #define SERVER_H_INCLUDED
 #include "Common.h"
+#include "Jogador.h"
 
 #define PIPE_NAME TEXT("\\\\.\\pipe\\DRPG")
 #define PIPE_NAME_JOGO TEXT("\\\\.\\pipe\\DRPG-Jogo")

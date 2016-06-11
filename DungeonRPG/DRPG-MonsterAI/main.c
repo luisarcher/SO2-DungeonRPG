@@ -6,8 +6,6 @@ BOOL fim = FALSE;
 HANDLE gMutexLabirinto;
 HANDLE ghUpdateGameClientEvent;
 
-
-
 //monster call MonsterType MonsterNStep MonsterHpSet
 int _tmain(int argc, LPTSTR argv[]) {
 	PROCESS_INFORMATION pi;
@@ -100,7 +98,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 		{
 			TCHAR str[256];
 			//monster call MonsterType MonsterNStep MonsterHpSet
-			_stprintf_s(str, 256, TEXT("\DRPG-MonsterAI.exe %d %d %d"), m.tipo, m.passos,m.hp * 0.8);
+			_stprintf_s(str, 256, TEXT("\DRPG-MonsterAI.exe %d %d %d"), m.tipo, m.passos,m.hp * 0.8);
+
 			m.hp = m.hp * 0.8;
 			ZeroMemory(&si, sizeof(STARTUPINFO));
 			si.cb = sizeof(STARTUPINFO);
