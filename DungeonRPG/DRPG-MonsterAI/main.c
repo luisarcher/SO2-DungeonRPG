@@ -6,10 +6,23 @@ BOOL fim = FALSE;
 HANDLE gMutexLabirinto;
 HANDLE ghUpdateGameClientEvent;
 
+
+
+//monster call MonsterType MonsterNStep MonsterHpSet
 int _tmain(int argc, LPTSTR argv[]) {
+	PROCESS_INFORMATION pi;
+	STARTUPINFO si;
 	HANDLE hMappedObj;
 	HANDLE hGameInstanceEvent;
-	int nPassos = 4; //recebe o argv adequado
+	int tipoMonstro = _ttoi(argv[1]);
+	int nPassos = _ttoi(argv[2]); 
+	int hp = _ttoi(argv[3]);
+	int x = _ttoi(argv[4]);
+	int y = _ttoi(argv[5]);
+	/*argv[1] = 1;
+	argv[2] = 2;*/
+	_tprintf(TEXT("Argc %d\nTipo %d\npassos %d\nHP %d \nx %d\ny %d\n"), argc, tipoMonstro, nPassos,hp,x, y);
+	Monstro m;
 	
 #ifdef UNICODE 
 	_setmode(_fileno(stdin), _O_WTEXT);
@@ -35,10 +48,17 @@ int _tmain(int argc, LPTSTR argv[]) {
 	system("pause");
 	escondeCursor();
 	//valida aqui o tipo de monstro
-	Monstro m = NovoMonstroBully(4);
-
+	if(tipoMonstro == 1){
+		m = NovoMonstroBully(nPassos);
+		
+	}
+	else if (tipoMonstro == 2) {
+		m = NovoMonstroDistraido(nPassos);
+	}
+	
 	m.posX = 15;
 	m.posY = 1;
+	
 	
 	shLabirinto->labirinto[m.posY][m.posX] = m.tipo;
 	
@@ -48,8 +68,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 		WaitForSingleObject(hGameInstanceEvent, INFINITE);
 		//... Passou 1 instante... segue...
 
-		//ReadSharedMemory(); //Monstra labirinto todo
-		DisplayMonsterSurroundings(m.posX, m.posY); //Monstra um raio de visão limitado
+		//Mostra um raio de visão limitado
+		DisplayMonsterSurroundings(m.posX, m.posY); 
 		
 		if (m.stamina == 0)
 		{
@@ -74,18 +94,35 @@ int _tmain(int argc, LPTSTR argv[]) {
 		}
 		CheckForThreats(&m);
 		//meter a separação aqui
-		/*
 		
-		if((m.hp*1.6) ==  (HP_BASE * 1.6))
+		
+		/*if((m.hp*1.6) ==  (HP_BASE * 1.6))
 		{
+			TCHAR str[256];
+			//monster call MonsterType MonsterNStep MonsterHpSet
+			_stprintf_s(str, 256, TEXT("\DRPG-MonsterAI.exe %d %d %d"), m.tipo, m.passos,m.hp * 0.8);
 			m.hp = m.hp * 0.8;
-			iniciar novo monstro, passar HP por argumento
+			ZeroMemory(&si, sizeof(STARTUPINFO));
+			si.cb = sizeof(STARTUPINFO);
+			//GetModuleFileName(NULL, "./DRPG-MonsterAI",256);
+			CreateProcess(
+				NULL,
+				str,
+				NULL,
+				NULL,
+				0,
+				CREATE_NEW_CONSOLE,
+				NULL,
+				NULL,
+				&si,
+				&pi);
 			
-		}
+			
+		}*/
 		
-		*/
+		
 		m.stamina--;
-		//m.passos--;
+		
 	}
 
 	CloseHandles(&hMappedObj);

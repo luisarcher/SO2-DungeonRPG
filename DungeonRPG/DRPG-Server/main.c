@@ -21,6 +21,9 @@ int _tmain(int argc, LPTSTR argv[]) {
 	HANDLE hThreadGameTime;
 	HANDLE hThreadGameEvents;
 	HANDLE hFileToMap, hMappedObj;
+	PROCESS_INFORMATION pi;
+	STARTUPINFO si;
+	
 
 #ifdef UNICODE 
 	_setmode(_fileno(stdin), _O_WTEXT);
@@ -87,10 +90,31 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	/* ####### LANÇAR MONSTROS ########## */
 	int nMonsters = ((rand() % MONSTERS_MAX + 1) + MONSTERS_MIN);
-	/*for (size_t i = 0; i <  nMonsters; i++)
+	TCHAR path[512];
+	//LPTSTR cmdArgs = "App name@example.com"
+	
+	for (size_t i = 0; i <  4; i++)
 	{
+		_stprintf_s(path, 256, TEXT("\DRPG-MonsterAI.exe %d %d %d %d %d"), 1, 4, 20, i, 1);
+		ZeroMemory(&si, sizeof(STARTUPINFO));
+		si.cb = sizeof(STARTUPINFO);
+		//GetModuleFileName(NULL, "./DRPG-MonsterAI",256);
+		CreateProcess(
+			NULL, 
+			path, 
+			NULL, 
+			NULL, 
+			0, 
+			CREATE_NEW_CONSOLE,
+			NULL, 
+			NULL, 
+			&si, 
+			&pi);
+			
 
-	}*/
+
+	}
+
 	/* ################################## */
 
 	hThreadListener = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecebeClientes, NULL, 0, NULL);
