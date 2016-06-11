@@ -67,7 +67,7 @@
 	#define QNT_PEDRAS 0.06			//6% Pedras no mapa
 	
 	#define MONSTER_START_INDEX 51
-	#define MAX_MONSTERS 48
+	#define MAX_MONSTERS 20
 	#define MONSTER_END_INDEX (int)((int)MONSTER_START_INDEX+(int)MAX_MONSTERS)
 
 // ---  Game Globals

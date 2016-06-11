@@ -93,10 +93,18 @@ int _tmain(int argc, LPTSTR argv[]) {
 	TCHAR path[512];
 	
 	
-	for (size_t i = 15; i < 16; i++)
+	for (size_t i = 0; i < nMonsters; i++)
 	{
-		//fazer um random x e y e atribuir a i e 1
-		_stprintf_s(path, 256, TEXT("\DRPG-MonsterAI.exe %d %d %d %d %d"), 51, 4, 10, i, 1);
+		int x = 0;
+		int y = 0;
+		do {
+			//srand(time(NULL));
+			x = (rand() % LABIRINTOSIZE);
+			y = (rand() % LABIRINTOSIZE);
+		} while (!(shLabirinto->labirinto[y][x] == EMPTY));
+
+		
+		_stprintf_s(path, 256, TEXT("\DRPG-MonsterAI.exe %d %d %d %d %d"), 51, 4, 10,x, y);
 		ZeroMemory(&si, sizeof(STARTUPINFO));
 		si.cb = sizeof(STARTUPINFO);
 		CreateProcess(
