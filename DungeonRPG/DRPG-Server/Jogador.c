@@ -19,7 +19,10 @@ void NovoJogador(int id) {
 	j->itemDurationCounter = 0;
 
 	//Define x e y do jogador (pos vazia) e regista-o no labirinto
-	SetPlayerInRandomPosition(j);
+	//SetPlayerInRandomPosition(j);
+	j->x = 28;
+	j->y = 1;
+
 
 	//Define se o jogador é activo ou espectador, conforme o jogo estiver começado.
 	j->hp = (!start) ? (int)HP_BASE : 0;

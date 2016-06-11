@@ -45,7 +45,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	InitializeSharedMemory(&hMappedObj);
 	
 	_tprintf(TEXT("Vou ler o estado do labirinto...\n"));
-	system("pause");
+	//system("pause");
 	escondeCursor();
 	//valida aqui o tipo de monstro
 	if(tipoMonstro == 1){
