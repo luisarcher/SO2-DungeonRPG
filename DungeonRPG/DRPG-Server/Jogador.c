@@ -23,7 +23,6 @@ void NovoJogador(int id) {
 	j->x = 28;
 	j->y = 1;
 
-
 	//Define se o jogador é activo ou espectador, conforme o jogo estiver começado.
 	j->hp = (!start) ? (int)HP_BASE : 0;
 }
@@ -304,4 +303,17 @@ void AskPlayerToCollectItems(Jogador * p) {
 		}
 		break;
 	}
+}
+
+InformarJogador PrepararCopiaDadosParaEnviar(Jogador p) {
+	InformarJogador _info;
+	_info.atkCounter = p.atkCounter;
+	_info.hp = p.hp;
+	_info.itemDurationCounter = p.itemDurationCounter;
+	_info.lentidaoCounter = p.lentidaoCounter;
+	_info.nStones = p.nStones;
+	_info.stoneAutoHit = p.stoneAutoHit;
+	_info.x = p.x;
+	_info.y = p.y;
+	return _info;
 }
