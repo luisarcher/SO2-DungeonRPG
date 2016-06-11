@@ -90,6 +90,15 @@
     <Image Include="sprites\vit.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="sprites\orange_bull.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sprites\reb_cafeina.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sprites\stone.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DungeonRPG-ClientGUI.rc">

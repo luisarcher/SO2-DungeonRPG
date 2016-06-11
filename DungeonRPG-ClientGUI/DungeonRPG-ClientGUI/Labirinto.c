@@ -12,11 +12,6 @@ BOOL isObject(int pos) {
 		&& pos < 600);
 }
 
-BOOL isMonster(int pos) {
-	return pos >= MONSTER_START_INDEX
-		&& pos <= MONSTER_START_INDEX + 50;
-}
-
 BOOL isPlayer(int pos) {
 	return pos >= PLAYER_START_INDEX
 		&& pos <= PLAYER_END_INDEX;

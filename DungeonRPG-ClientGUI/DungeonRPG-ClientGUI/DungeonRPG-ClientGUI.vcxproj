@@ -170,7 +170,10 @@
     <Image Include="sprites\grass.bmp" />
     <Image Include="sprites\monster_a.bmp" />
     <Image Include="sprites\monster_b.bmp" />
+    <Image Include="sprites\orange_bull.bmp" />
     <Image Include="sprites\player.bmp" />
+    <Image Include="sprites\reb_cafeina.bmp" />
+    <Image Include="sprites\stone.bmp" />
     <Image Include="sprites\vit.bmp" />
   </ItemGroup>
   <ItemGroup>

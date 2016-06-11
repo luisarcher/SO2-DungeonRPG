@@ -93,18 +93,18 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 							j*(TILE_SZ)+BOARD_LEFT_MARGIN,
 							i*(TILE_SZ)+BOARD_TOP_MARGIN,
 							TILE_SZ, TILE_SZ,
-							bitmapElementsDC[GRASS],
+							bitmapElementsDC[GRASS_I],
 							0, 0,
 							SRCAND);
 						break;
 
-					case BRICK_ID:
+					case BRICK:
 						BitBlt(
 							hdcDoubleBuffer,
 							j*(TILE_SZ)+BOARD_LEFT_MARGIN,
 							i*(TILE_SZ)+BOARD_TOP_MARGIN,
 							TILE_SZ, TILE_SZ,
-							bitmapElementsDC[BRICK],
+							bitmapElementsDC[BRICK_I],
 							0, 0,
 							SRCAND);
 						break;
@@ -120,19 +120,48 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 						break;
 					}
 				}
-				else if(isObject(pos)|| isMonster(pos)
-					|| isPlayer(pos)|| isMonsterAndPlayer(pos)){ //Items com opacidade
+				else if(isObject(pos) || isPlayer(pos)|| isMonsterAndPlayer(pos)
+					|| pos == 51 || pos == 52){ //Items com opacidade
 					//Imprimir o chão que está por baixo do item
 					BitBlt(
 						hdcDoubleBuffer,
 						j*(TILE_SZ)+BOARD_LEFT_MARGIN,
 						i*(TILE_SZ)+BOARD_TOP_MARGIN,
 						TILE_SZ, TILE_SZ,
-						bitmapElementsDC[GRASS],
+						bitmapElementsDC[GRASS_I],
 						0, 0,
 						SRCAND);
-					if (isObject(pos)) //Mas qual objecto?
+					if (pos == MONSTER_A)
 					{
+						TransparentBlt(hdcDoubleBuffer,
+							j*(TILE_SZ)+BOARD_LEFT_MARGIN,
+							i*(TILE_SZ)+BOARD_TOP_MARGIN,
+							TILE_SZ, TILE_SZ,
+							bitmapElementsDC[MONSTER_A_I], 0, 0,
+							TILE_SZ, TILE_SZ, RGB(255, 255, 255));
+					}
+					else if (pos == MONSTER_B) {
+						TransparentBlt(hdcDoubleBuffer,
+							j*(TILE_SZ)+BOARD_LEFT_MARGIN,
+							i*(TILE_SZ)+BOARD_TOP_MARGIN,
+							TILE_SZ, TILE_SZ,
+							bitmapElementsDC[MONSTER_B_I], 0, 0,
+							TILE_SZ, TILE_SZ, RGB(255, 255, 255));
+					} //fim tipo monstro
+					else
+					if (isObject(pos)) //Qual objecto?
+					{
+						if (pos >= PEDRAS && pos< 600) { //É uma pedra?
+							TransparentBlt(hdcDoubleBuffer,
+								j*(TILE_SZ)+BOARD_LEFT_MARGIN,
+								i*(TILE_SZ)+BOARD_TOP_MARGIN,
+								TILE_SZ, TILE_SZ,
+								bitmapElementsDC[STONES_I], 0, 0,
+								//j*(TILE_SZ)+BOARD_LEFT_MARGIN, i*(TILE_SZ)+BOARD_TOP_MARGIN,
+								TILE_SZ, TILE_SZ, RGB(255, 255, 255));
+							continue; //continuar para o próximo for
+						}
+
 						switch (pos)
 						{
 						case VITAMINA:
@@ -140,26 +169,44 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 								j*(TILE_SZ)+BOARD_LEFT_MARGIN,
 								i*(TILE_SZ)+BOARD_TOP_MARGIN,
 								TILE_SZ, TILE_SZ,
-								bitmapElementsDC[VITAMIN], 0, 0,
+								bitmapElementsDC[VITAMINA_I], 0, 0,
+								//j*(TILE_SZ)+BOARD_LEFT_MARGIN, i*(TILE_SZ)+BOARD_TOP_MARGIN,
+								TILE_SZ, TILE_SZ, RGB(255, 255, 255));
+							break;
+						case ORANGE_BULL:
+							TransparentBlt(hdcDoubleBuffer,
+								j*(TILE_SZ)+BOARD_LEFT_MARGIN,
+								i*(TILE_SZ)+BOARD_TOP_MARGIN,
+								TILE_SZ, TILE_SZ,
+								bitmapElementsDC[ORANGE_BULL_I], 0, 0,
+								//j*(TILE_SZ)+BOARD_LEFT_MARGIN, i*(TILE_SZ)+BOARD_TOP_MARGIN,
+								TILE_SZ, TILE_SZ, RGB(255, 255, 255));
+							break;
+						case REB_CAFEINA:
+							TransparentBlt(hdcDoubleBuffer,
+								j*(TILE_SZ)+BOARD_LEFT_MARGIN,
+								i*(TILE_SZ)+BOARD_TOP_MARGIN,
+								TILE_SZ, TILE_SZ,
+								bitmapElementsDC[REB_CAFEINA_I], 0, 0,
 								//j*(TILE_SZ)+BOARD_LEFT_MARGIN, i*(TILE_SZ)+BOARD_TOP_MARGIN,
 								TILE_SZ, TILE_SZ, RGB(255, 255, 255));
 							break;
 						default:
 							break;
 						}
-					}
+					} //fim objectos
 					else if (isPlayer(pos)) {
 						TransparentBlt(hdcDoubleBuffer,
 							j*(TILE_SZ)+BOARD_LEFT_MARGIN-1,
 							i*(TILE_SZ)+BOARD_TOP_MARGIN-1,
 							TILE_SZ+1, TILE_SZ+1,
-							bitmapElementsDC[PLAYER],0,0,
+							bitmapElementsDC[PLAYER_I],0,0,
 							//j*(TILE_SZ)+BOARD_LEFT_MARGIN, i*(TILE_SZ)+BOARD_TOP_MARGIN,
 							TILE_SZ, TILE_SZ, RGB(56, 80, 80));
-					}
-				}
-			}
-		}// FIM DB*/
+					} //fim player
+				} //fim if objectos transparentes
+			} //for j
+		}// for i
 		
 		BitBlt(hdc,
 			BOARD_LEFT_MARGIN,
@@ -203,8 +250,8 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 			EnviaTecla(MOVERIGHT);
 			break;
 
-		/*case WM_ERASEBKGND:		//Não deixar que o fundo seja apagado (para técnica de BoubleBuffer)
-			break;*/
+		case WM_ERASEBKGND:		//Não deixar que o fundo seja apagado (para técnica de BoubleBuffer)
+			break;
 		
 		default:
 			break;

@@ -4,7 +4,7 @@
 #include "resource.h"
 #include "lib\ClientDLL.h"
 
-#define N_BITMAPS			7
+#define N_BITMAPS			10
 #define LABIRINTOSIZE		70
 #define TILE_SZ				64
 #define BOARD_TOP_MARGIN	25
@@ -31,7 +31,7 @@
 
 //Paredes 20~29
 #define WALL_START_INDEX 20
-#define BRICK_ID 20
+#define BRICK 20
 #define WALL_END_INDEX 29
 
 //Items 30~49 | 500+
@@ -44,6 +44,8 @@
 #define ITEM_END_INDEX 49
 
 #define MONSTER_START_INDEX 51
+#define MONSTER_A	52	//Distraido
+#define MONSTER_B	51	//Agressivo
 
 //Common
 extern HINSTANCE ghInstance;
