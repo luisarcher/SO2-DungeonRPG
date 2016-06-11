@@ -19,9 +19,11 @@ int _tmain(int argc, LPTSTR argv[]) {
 	int hp = _ttoi(argv[3]);
 	int x = _ttoi(argv[4]);
 	int y = _ttoi(argv[5]);
-	/*argv[1] = 1;
-	argv[2] = 2;*/
-	_tprintf(TEXT("Argc %d\nTipo %d\npassos %d\nHP %d \nx %d\ny %d\n"), argc, tipoMonstro, nPassos,hp,x, y);
+
+	//debug
+	//_tprintf(TEXT("Argc %d\nTipo %d\npassos %d\nHP %d \nx %d\ny %d\n"), argc, tipoMonstro, nPassos,hp,x, y);
+	//system("pause");
+
 	Monstro m;
 	
 #ifdef UNICODE 
@@ -48,28 +50,29 @@ int _tmain(int argc, LPTSTR argv[]) {
 	//system("pause");
 	escondeCursor();
 	//valida aqui o tipo de monstro
-	if(tipoMonstro == 1){
-		m = NovoMonstroBully(nPassos);
+	if(tipoMonstro == 51){
+		m = NovoMonstroBully(nPassos,hp,x,y);
 		
 	}
-	else if (tipoMonstro == 2) {
-		m = NovoMonstroDistraido(nPassos);
+	else if (tipoMonstro == 52) {
+		m = NovoMonstroDistraido(nPassos,hp,x,y);
 	}
 	
-	m.posX = 15;
-	m.posY = 1;
+	/*m.posX = 15;
+	m.posY = 1;*/
 	
 	
 	shLabirinto->labirinto[m.posY][m.posX] = m.tipo;
 	
 	//apenas move random-> implementar a perseguição
+
 	while (!fim) { 
 		//Espera pelo evento ser sinalizado do lado do servidor
 		WaitForSingleObject(hGameInstanceEvent, INFINITE);
 		//... Passou 1 instante... segue...
 
 		//Mostra um raio de visão limitado
-		DisplayMonsterSurroundings(m.posX, m.posY); 
+		DisplayMonsterSurroundings(m.posX, m.posY,m.hp); 
 		
 		if (m.stamina == 0)
 		{
@@ -93,31 +96,43 @@ int _tmain(int argc, LPTSTR argv[]) {
 			}
 		}
 		CheckForThreats(&m);
-		//meter a separação aqui
+		
 		
 		
 		/*if((m.hp*1.6) ==  (HP_BASE * 1.6))
 		{
+			//system("pause");
 			TCHAR str[256];
-			//monster call MonsterType MonsterNStep MonsterHpSet
-			_stprintf_s(str, 256, TEXT("\DRPG-MonsterAI.exe %d %d %d"), m.tipo, m.passos,m.hp * 0.8);
-			m.hp = m.hp * 0.8;
+			int hp = m.hp *0.80;
+			
+			
+			if (!hasWallIn(m.posX + 1, m.posY) && !hasMonsterIn(m.posX+1,m.posY))
+			{
+				_stprintf_s(str, 256, TEXT("\DRPG-MonsterAI.exe %d %d %d %d %d"), m.tipo, m.passos, hp, m.posX + 1, m.posY);
+			}
+			else if(!hasWallIn(m.posX - 1, m.posY) && !hasMonsterIn(m.posX - 1, m.posY))
+			{
+				_stprintf_s(str, 256, TEXT("\DRPG-MonsterAI.exe %d %d %d %d %d"), m.tipo, m.passos, hp, m.posX - 1 , m.posY);
+			}
+			
+			system("pause");
 			ZeroMemory(&si, sizeof(STARTUPINFO));
 			si.cb = sizeof(STARTUPINFO);
-			//GetModuleFileName(NULL, "./DRPG-MonsterAI",256);
+			
 			CreateProcess(
-				NULL,
-				str,
-				NULL,
-				NULL,
-				0,
+				NULL, 
+				str, 
+				NULL, 
+				NULL, 
+				0, 
 				CREATE_NEW_CONSOLE,
-				NULL,
-				NULL,
-				&si,
+				NULL, 
+				NULL, 
+				&si, 
 				&pi);
 			
 			
+			m.hp = hp;
 		}*/
 		
 		
@@ -127,3 +142,4 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	CloseHandles(&hMappedObj);
 }
+

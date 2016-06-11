@@ -4,7 +4,7 @@
 
 #define MONSTRO_LENTIDAO_BASE 7
 #define AGRESSIVO_DEFAULT 0
-#define HP_BASE 10
+#define HP_BASE 20
 
 /*Direcções*/
 #define UP 1

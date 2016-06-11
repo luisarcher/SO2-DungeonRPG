@@ -1,26 +1,26 @@
 #pragma once
 #include "Monster.h"
 
-Monstro NovoMonstroBully(int nPassos) {
+Monstro NovoMonstroBully(int nPassos,int hp,int x,int y) {
 	Monstro m;
-	m.hp = HP_BASE;
+	m.hp = hp;
 	m.lentidao = 7;
 	m.tipo = 51;
-	m.posX = 0;
-	m.posY = 0;
+	m.posX = x;
+	m.posY = y;
 	m.stamina = m.lentidao;
 	m.passos = nPassos;
 	m.direcao = 2;
 	return m;
 }
 
-Monstro NovoMonstroDistraido(int nPassos) {
+Monstro NovoMonstroDistraido(int nPassos,int hp,int x, int y) {
 	Monstro m;
-	m.hp = HP_BASE;
+	m.hp = hp;
 	m.lentidao = 3;
-	m.tipo = 51;
-	m.posX = 0;
-	m.posY = 0;
+	m.tipo = 52;
+	m.posX = x;
+	m.posY = y;
 	m.passos = nPassos;
 	m.stamina = m.lentidao;
 	return m;
@@ -34,7 +34,7 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 		//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
 		WaitForSingleObject(gMutexLabirinto, INFINITE);
 
-		if ((m->posY - 1) >= 1 && !(shLab->labirinto[m->posY-1][m->posX] >= WALL_START_INDEX && shLab->labirinto[m->posY-1][m->posX] <= WALL_END_INDEX)) {
+		if ((m->posY - 1) >= 1 && !hasWallIn(m->posX, m->posY - 1) && !hasMonsterIn(m->posX, m->posY - 1)) {
 			if (shLab->labirinto[m->posY][m->posX] > 1000)
 			{
 				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] - (m->tipo * 100);
@@ -70,7 +70,9 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 	{	
 		//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
 		WaitForSingleObject(gMutexLabirinto, INFINITE);
-		if ((m->posY + 1) <= LABIRINTOSIZE - 2 && !(shLab->labirinto[m->posY+1][m->posX] >= WALL_START_INDEX && shLab->labirinto[m->posY+1][m->posX] <= WALL_END_INDEX)) {
+		if ((m->posY + 1) <= LABIRINTOSIZE - 2 && !hasWallIn( m->posX, m->posY + 1 ) && !hasMonsterIn(m->posX, m->posY + 1)) {
+			//_tprintf(TEXT("[sfsfsf] a mover para (%d)\n"), m->posY+1);
+			//system("pause");
 			if (shLab->labirinto[m->posY][m->posX] > 1000)
 			{
 				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] - (m->tipo * 100);
@@ -105,7 +107,7 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 		//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
 		WaitForSingleObject(gMutexLabirinto, INFINITE);
 
-		if ((m->posX + 1) <= LABIRINTOSIZE - 2 && !(shLab->labirinto[m->posY][m->posX+1] >= WALL_START_INDEX && shLab->labirinto[m->posY][m->posX+1] <= WALL_END_INDEX)) {
+		if ((m->posX + 1) <= LABIRINTOSIZE - 2 && !hasWallIn(m->posX + 1, m->posY) && !hasMonsterIn( m->posX+1, m->posY)) {
 			if (shLab->labirinto[m->posY][m->posX] > 1000)
 			{
 				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] - (m->tipo * 100);
@@ -140,7 +142,7 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 		//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
 		WaitForSingleObject(gMutexLabirinto, INFINITE);
 
-		if ((m->posX - 1) >= 1 && !(shLab->labirinto[m->posY][m->posX - 1] >= WALL_START_INDEX && shLab->labirinto[m->posY][m->posX - 1] <= WALL_END_INDEX)) {
+		if ((m->posX - 1) >= 1 && !hasWallIn(m->posX - 1, m->posY) && !hasMonsterIn(m->posX - 1, m->posY)) {
 			if (shLab->labirinto[m->posY][m->posX] > 1000)
 			{
 				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] - (m->tipo * 100);
@@ -213,7 +215,7 @@ void InitializeSharedMemory(HANDLE * hMappedObj) {
 	}
 }
 
-void DisplayMonsterSurroundings(int x, int y) {
+void DisplayMonsterSurroundings(int x, int y,int hp) {
 	int matriz[MONSTER_MAT_SIZE][MONSTER_MAT_SIZE]; //Criar um diâmentro de visão para o monstro
 
 	int iniX, iniY, maxX, maxY;
@@ -239,34 +241,57 @@ void DisplayMonsterSurroundings(int x, int y) {
 		for (int j = iniX; j < maxX; j++, m++)
 		{
 			int c = shLabirinto->labirinto[i][j];
-			if (c >= WALL_START_INDEX && c <= WALL_END_INDEX)
-			{
-				_tprintf(TEXT("%c"), 9619);
+			if (c > 1000) {
+				c = c % 100;
+				if (c >= PLAYER_START_INDEX && c <= PLAYER_END_INDEX)
+				{
+					_tprintf(TEXT("%c"), 64);
+				}
+				else if (c >= MONSTER_START_INDEX && c <= MONSTER_END_INDEX)
+				{
+					_tprintf(TEXT("%c"), 167);
+				}
+				else if (c >= ITEM_START_INDEX && c <= ITEM_END_INDEX)
+				{
+					_tprintf(TEXT("%c"), '+');
+				}
+				else if (c > PEDRAS && c < 600)
+				{
+					_tprintf(TEXT("%c"), 'P');
+				}
 			}
-			else if (c == EMPTY)
+			else
 			{
-				_tprintf(TEXT("%c"), 9617);
+				if (c >= WALL_START_INDEX && c <= WALL_END_INDEX)
+				{
+					_tprintf(TEXT("%c"), 9619);
+				}
+				else if (c == EMPTY)
+				{
+					_tprintf(TEXT("%c"), 9617);
+				}
+				else if (c >= PLAYER_START_INDEX && c <= PLAYER_END_INDEX)
+				{
+					_tprintf(TEXT("%c"), 64);
+				}
+				else if (c >= MONSTER_START_INDEX && c <= MONSTER_END_INDEX)
+				{
+					_tprintf(TEXT("%c"), 167);
+				}
+				else if (c >= ITEM_START_INDEX && c <= ITEM_END_INDEX)
+				{
+					_tprintf(TEXT("%c"), '+');
+				}
+				else if (c > PEDRAS && c < 600)
+				{
+					_tprintf(TEXT("%c"), 'P');
+				}
 			}
-			else if (c >= PLAYER_START_INDEX && c <= PLAYER_END_INDEX)
-			{
-				_tprintf(TEXT("%c"), 64);
-			}
-			else if (c >= MONSTER_START_INDEX && c <= MONSTER_END_INDEX)
-			{
-				_tprintf(TEXT("%c"), 167);
-			}
-			else if (c >= ITEM_START_INDEX && c <= ITEM_END_INDEX)
-			{
-				_tprintf(TEXT("%c"), '+');
-			}
-			else if (c > PEDRAS && c < 600)
-			{
-				_tprintf(TEXT("%c"), 'P');
-			}
+			
 		}
 		_tprintf(TEXT("\n"));
 	}
-	_tprintf(TEXT("Monster at: Y:%d X:%d\n"),y,x);
+	_tprintf(TEXT("Monster at: Y:%d X:%d\n HP: %d"),y,x, hp);
 
 	//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
 	ReleaseMutex(gMutexLabirinto);
@@ -338,8 +363,13 @@ void escondeCursor() {
 }
 
 void CheckForThreats(Monstro *m) {
-	if (shLabirinto->labirinto[m->posY][m->posX] > 1000)
+	
+	if (shLabirinto->labirinto[m->posY][m->posX] > 1000 && !hasItemIn(shLabirinto->labirinto[m->posY][m->posX] % 100) )
+	{
+		_tprintf(TEXT("threat at Y:%d X: %d\nvalor no mapa:%d\nResto = %d\n"), m->posY, m->posX, shLabirinto->labirinto[m->posY][m->posX], shLabirinto->labirinto[m->posY][m->posX] % 100);
+		system("pause");
 		m->hp++;
+	}
 }
 
 void clrscr() {
@@ -360,4 +390,21 @@ void clrscr() {
 		startCoords,
 		&dummy);
 	gotoxy(0, 0);
+}
+
+BOOL hasWallIn(int x, int y) {
+	return shLabirinto->labirinto[y][x] >= WALL_START_INDEX
+		&& shLabirinto->labirinto[y][x] <= WALL_END_INDEX;
+}
+
+BOOL hasMonsterIn(int x, int y) {
+	return shLabirinto->labirinto[y][x] >= MONSTER_START_INDEX
+		&& shLabirinto->labirinto[y][x] <= MONSTER_END_INDEX;
+}
+
+BOOL hasItemIn(int d) {
+	//30-49
+	
+	return d >= ITEM_START_INDEX 
+		&& d <= ITEM_END_INDEX;
 }

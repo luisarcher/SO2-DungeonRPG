@@ -24,7 +24,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	PROCESS_INFORMATION pi;
 	STARTUPINFO si;
 	
-
+	
 #ifdef UNICODE 
 	_setmode(_fileno(stdin), _O_WTEXT);
 	_setmode(_fileno(stdout), _O_WTEXT);
@@ -91,14 +91,14 @@ int _tmain(int argc, LPTSTR argv[]) {
 	/* ####### LANÇAR MONSTROS ########## */
 	int nMonsters = ((rand() % MONSTERS_MAX + 1) + MONSTERS_MIN);
 	TCHAR path[512];
-	//LPTSTR cmdArgs = "App name@example.com"
 	
-	for (size_t i = 0; i <  4; i++)
+	
+	for (size_t i = 15; i < 16; i++)
 	{
-		_stprintf_s(path, 256, TEXT("\DRPG-MonsterAI.exe %d %d %d %d %d"), 1, 4, 20, i, 1);
+		//fazer um random x e y e atribuir a i e 1
+		_stprintf_s(path, 256, TEXT("\DRPG-MonsterAI.exe %d %d %d %d %d"), 51, 4, 10, i, 1);
 		ZeroMemory(&si, sizeof(STARTUPINFO));
 		si.cb = sizeof(STARTUPINFO);
-		//GetModuleFileName(NULL, "./DRPG-MonsterAI",256);
 		CreateProcess(
 			NULL, 
 			path, 
@@ -110,8 +110,6 @@ int _tmain(int argc, LPTSTR argv[]) {
 			NULL, 
 			&si, 
 			&pi);
-			
-
 
 	}
 
