@@ -48,13 +48,27 @@ typedef struct {
 	TCHAR msg[BUFFERSIZE];
 } ClientRequest;
 
+//Estrutura para informar o jogador
+typedef struct {
+	int x;
+	int y;
+	int hp;
+	int nStones;
+	int lentidaoCounter;
+	int atkCounter;
+	int itemDurationCounter;
+	BOOL stoneAutoHit;
+}InformarJogador;
+
 typedef struct {
 	int matriz[PLAYER_LOS][PLAYER_LOS];
 	TCHAR msg[BUFFERSIZE];
+	InformarJogador playerInfo;
 } ServerResponse;
 
 extern DLL_IMP_API BOOL fim;
 extern DLL_IMP_API ServerResponse resp;
+extern DLL_IMP_API BOOL pendingChangesFlag;
 
 DLL_IMP_API int InicializarPipes(HANDLE * hPipe, HANDLE * hPipeJogo, TCHAR * ipServ);
 DLL_IMP_API DWORD LerMensagem(HANDLE pipe, TCHAR * serverResponse);

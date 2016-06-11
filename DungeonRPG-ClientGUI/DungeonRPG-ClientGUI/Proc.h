@@ -1,6 +1,7 @@
 #pragma once
 #include "Common.h"
 
+extern HDC hdcDoubleBuffer;
 //extern HBITMAP	hBitmapDoubleBuffer;
 //extern HBITMAP	hBitmapDoubleBufferOrigin;
 

@@ -23,13 +23,15 @@ LRESULT CALLBACK DlgBoxConnectProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM 
 				MessageBox(hWnd, buffer, TEXT("Não ligado"), MB_OK | MB_ICONERROR);
 				return TRUE;
 			}
-			else connected = 1;
+			else {
+				connected = 1;
 
-			GetDlgItemText(hWnd, IDC_txtLogin, buffer, 100);
-			_tcscpy(receivedMSG, Registar(buffer));
+				GetDlgItemText(hWnd, IDC_txtLogin, buffer, 100);
+				//_tcscpy(receivedMSG, Registar(buffer));
 
-			hThreadBroadcastReceiver = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LerBroadcast, (LPVOID)hPipeJogo, 0, NULL);
-
+				hThreadBroadcastReceiver = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LerBroadcast, (LPVOID)hPipeJogo, 0, NULL);
+				EndDialog(hWnd, 0);
+			}
 			return TRUE;
 		case IDCANCEL:
 			EndDialog(hWnd, 0);

@@ -19,7 +19,7 @@ ATOM RegistaClasse(HINSTANCE hInstance, TCHAR * szWinName) {
 	wcApp.lpszMenuName = IDR_MENU1;							// Classe do menu que a janela pode ter | (NULL = não tem menu)
 	wcApp.cbClsExtra = 0;							// Livre, para uso particular
 	wcApp.cbWndExtra = 0;							// Livre, para uso particular
-	wcApp.hbrBackground = (HBRUSH)GetStockObject(DKGRAY_BRUSH);	/*OUTRAS CORES DE BRUSH:	BLACK_BRUSH  DKGRAY_BRUSH GRAY_BRUSH LTGRAY_BRUSH  */
+	wcApp.hbrBackground = (HBRUSH)GetStockObject(WHITE_BRUSH);	/*OUTRAS CORES DE BRUSH:	BLACK_BRUSH  DKGRAY_BRUSH GRAY_BRUSH LTGRAY_BRUSH  */
 
 	// ============================================================================
 	// 2. Registar a classe "wcApp" no Windows
@@ -47,7 +47,7 @@ HWND CriarJanela(HINSTANCE hInstance, TCHAR * szWinName) {
 
 int CarregarTodasAsImagens() {
 	for (int i = 0; i < N_BITMAPS; i++) {
-		bitmapElements[i] = LoadBitmap(GetModuleHandle(NULL),_bitmaps[N_BITMAPS]);
+		bitmapElements[i] = LoadBitmap(GetModuleHandle(NULL),_bitmaps[i]);
 		if (bitmapElements[i] == NULL) {
 			return i*(-1);
 		}

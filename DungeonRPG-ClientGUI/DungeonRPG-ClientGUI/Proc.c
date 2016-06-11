@@ -3,40 +3,35 @@
 #include "SetupGame.h"
 #include "GameData.h"
 
+HDC hdcDoubleBuffer;
+
 LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 {
 	int result;
 
 	HDC hdc;
-	HDC hdcDoubleBuffer = NULL;
-
 	PAINTSTRUCT paintStruct;
 	HBITMAP		hBitmap;
 
 	RECT area;
 	static int x = 0, y = 0;
 
-	/* """"""""""""""""" garbage */
-	HDC auxdc;
-	static UINT eventoImagem;
-	int tamx, tamy;
-	static int xi = 0, xf = 0, yi = 0, yf = 0;
-	static TCHAR letra[200] = TEXT("texto");
-	TCHAR pal[100];
-	/* """""""""""""""""""""" garbage ends*/
-
 	switch (messg)
 	{
 	case WM_CREATE:
 
+		hdc = GetDC(hWnd);
+
 		//Carregar bitmaps
 		result = CarregarTodasAsImagens();
-		if (result < 0)
+		if (result <= 0) {
 			MessageBox(hWnd, TEXT("Erro ao carregar imagens"), TEXT("Carregar Imagens"), MB_OK | MB_ICONERROR);
-		
-		hdc = GetDC(hWnd);
+		}
+
 		ConfigurarDCs(hdc);
+
 		ReleaseDC(hWnd, hdc);
+		hdcDoubleBuffer = NULL;
 		break;
 
 	case WM_DESTROY:	
@@ -48,19 +43,23 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		hdc = BeginPaint(hWnd, &paintStruct);
 
 		//Depois define-se melhor a área de jogo
-		//GetClientRect(hWnd, &area);
+		GetClientRect(hWnd, &area);
 
-		//Preparação de DoubleBuffer
 		if (hdcDoubleBuffer == NULL)
 		{
 			hdcDoubleBuffer = CreateCompatibleDC(hdc);
-			hBitmap = CreateCompatibleBitmap(hdc, area.right, area.right);
+			hBitmap = CreateCompatibleBitmap(hdc, area.right, area.bottom);
 			SelectObject(hdcDoubleBuffer, hBitmap);
 		}
+		
+		FillRect(hdcDoubleBuffer, &area, (HBRUSH)GetStockObject(WHITE_BRUSH));
 
 		//Desenho da área de jogo
-		Rectangle(hdc, BOARD_LEFT_MARGIN, BOARD_TOP_MARGIN, PLAYER_LOS*TILE_SZ, PLAYER_LOS*TILE_SZ);
+		//Rectangle(hdc, BOARD_LEFT_MARGIN, BOARD_TOP_MARGIN, PLAYER_LOS*TILE_SZ, PLAYER_LOS*TILE_SZ);
 		//SetBkMode(hdc, TRANSPARENT);
+
+		//Copiar o que está no buffer para o device context principal
+		BitBlt(hdc, 0, 0, area.right, area.bottom, hdcDoubleBuffer, 0, 0, SRCCOPY);
 
 		//DEBUBG - inicializar a matriz resp que é a resposta do servidor
 		for (int i = 0; i < PLAYER_LOS; i++)
@@ -84,19 +83,19 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 				{
 				case WALL_START_INDEX:
 					BitBlt(
-						hdcDoubleBuffer,
-						i*(TILE_SZ / 2) + BOARD_TOP_MARGIN,
-						j*(TILE_SZ / 2) + BOARD_LEFT_MARGIN,
+						hdc,
+						i*(TILE_SZ) + BOARD_TOP_MARGIN,
+						j*(TILE_SZ) + BOARD_LEFT_MARGIN,
 						TILE_SZ, TILE_SZ,
-						bitmapElementsDC[GRANITE],
+						bitmapElementsDC[BRICK],
 						0, 0,
 						SRCAND);
 					break;
 				case EMPTY:
 					BitBlt(
-						hdcDoubleBuffer,
-						i*(TILE_SZ / 2) + BOARD_TOP_MARGIN,
-						j*(TILE_SZ / 2) + BOARD_LEFT_MARGIN,
+						hdc,
+						i*(TILE_SZ) + BOARD_TOP_MARGIN,
+						j*(TILE_SZ) + BOARD_LEFT_MARGIN,
 						TILE_SZ, TILE_SZ,
 						bitmapElementsDC[GRASS],
 						0, 0,
@@ -108,11 +107,10 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 			}
 		}// FIM DB*/
 
-		//Copiar o que está no buffer para o device context principal
-		BitBlt(hdc, 0, 0, area.right, area.bottom, hdcDoubleBuffer, 0, 0, SRCCOPY);
+		
 
 
-		//TextOut(hdc, 100, 100, TEXT("Olá"), 3);
+		TextOut(hdc, 100, 100, TEXT("Olá"), 3);
 
 		//mostrar bitmap em x,y
 		//auxdc = CreateCompatibleDC(hdc);
@@ -146,22 +144,22 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		case VK_DOWN:
 			//y++;
 			y += 5;
-			InvalidateRect(hWnd, NULL, 1);
+			InvalidateRect(hWnd, NULL, 0);
 			break;
 		case VK_UP:
 			//y--;
 			y -= 5;
-			InvalidateRect(hWnd, NULL, 1);
+			InvalidateRect(hWnd, NULL, 0);
 			break;
 		case VK_LEFT:
 			//--x;
 			x -= 5;
-			InvalidateRect(hWnd, NULL, 1);
+			InvalidateRect(hWnd, NULL, 0);
 			break;
 		case VK_RIGHT:
 			//++x;
 			x += 5;
-			InvalidateRect(hWnd, NULL, 1);
+			InvalidateRect(hWnd, NULL, 0);
 			break;
 
 			//traduzir para o case
