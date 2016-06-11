@@ -32,19 +32,19 @@ int _tmain(int argc, LPTSTR argv[]) {
 #endif
 
 	if ((gMutexLabirinto = CreateMutex(NULL, FALSE, TEXT("LabirintoOcupado"))) == NULL){
-		printf("Criação do Mutex falhou (%d)\n", GetLastError());
+		_tprintf(TEXT("Criação do Mutex falhou (%d)\n"), GetLastError());
 		return;
 	}
 
 	//Manual reset event
 	if ((ghGameInstanceEvent = CreateEvent(NULL,TRUE,FALSE,TEXT("gameInstanceEvent"))) == NULL) {
-		printf("Criação do Evento falhou (%d)\n", GetLastError());
+		_tprintf(TEXT("Criação do Evento falhou (%d)\n"), GetLastError());
 		return;
 	}
 
 	//Auto-reset Event
 	if ((ghUpdateGameClientEvent = CreateEvent(NULL, FALSE, FALSE, TEXT("ActualizarClientes"))) == NULL) {
-		printf("Criação do Evento falhou (%d)\n", GetLastError());
+		_tprintf(TEXT("Criação do Evento falhou (%d)\n"), GetLastError());
 		return;
 	}
 	/*****  MEMÓRIA PARTILHADA  *****/

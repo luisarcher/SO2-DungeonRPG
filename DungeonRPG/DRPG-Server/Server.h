@@ -24,6 +24,7 @@ typedef struct {
 typedef struct {
 	int matriz[PLAYER_LOS][PLAYER_LOS];
 	TCHAR msg[BUFFERSIZE];
+	InformarJogador playerInfo;
 } ServerResponse;
 
 DWORD WINAPI RecebeClientes(LPVOID param);		//Listen

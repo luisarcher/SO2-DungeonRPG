@@ -240,6 +240,9 @@ DWORD WINAPI ActualizaClientes(LPVOID param) {
 			//Actualiza o labirinto de todos os clientes activos
 			for (int i = 0; i < totalConnections; i++) {
 				if (gClients[i].hp > 0) {
+					//Enviar dados do jogador
+					resposta.playerInfo = PrepararCopiaDadosParaEnviar(gClients[i]);
+
 					if (!start) SetEmptyMatrix(resposta.matriz); //security
 					else UpdatePlayerLOS(gClients[i].x, gClients[i].y, resposta.matriz);
 					if (!WriteFile(gClients[i].hPipeJogo, &resposta, sizeof(ServerResponse), &n, NULL)) {

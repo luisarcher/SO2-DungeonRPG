@@ -2,8 +2,8 @@
 #define JOGADOR_H_INCLUDED
 #include "Common.h"
 
-typedef struct JOGADOR Jogador;
-struct JOGADOR {
+//Estrutura para uso interno
+typedef struct JOGADOR {
 	TCHAR nome[20];
 	int x;
 	int y;
@@ -20,7 +20,20 @@ struct JOGADOR {
 	HANDLE hPipe;
 	HANDLE hPipeJogo;
 	HANDLE hThread;
-};
+} Jogador;
+
+//Estrutura para informar o jogador
+//Dedicada para não enviar toda a estrutura com dados críicos ao server
+typedef struct {
+	int x;
+	int y;
+	int hp;
+	int nStones;
+	int lentidaoCounter;
+	int atkCounter;
+	int itemDurationCounter;
+	BOOL stoneAutoHit;
+}InformarJogador;
 
 void NovoJogador(int id);
 void DesligarJogador(Jogador * j);
@@ -37,6 +50,8 @@ void CheckForThreats(Jogador* p);
 void DropStones(Jogador * p);
 BOOL UseStone(Jogador * p);
 BOOL hasStamina(Jogador p);
+
+InformarJogador PrepararCopiaDadosParaEnviar(Jogador p);
 
 extern Jogador gClients[MAX_CLIENTS];
 #endif
