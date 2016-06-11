@@ -216,7 +216,7 @@ void InitializeSharedMemory(HANDLE * hMappedObj) {
 }
 
 void DisplayMonsterSurroundings(int x, int y,int hp) {
-	int matriz[MONSTER_MAT_SIZE][MONSTER_MAT_SIZE]; //Criar um diâmentro de visão para o monstro
+	//int matriz[MONSTER_MAT_SIZE][MONSTER_MAT_SIZE]; //Criar um diâmentro de visão para o monstro
 
 	int iniX, iniY, maxX, maxY;
 
@@ -420,3 +420,54 @@ BOOL hasItemIn(int d) {
 	else
 		return FALSE;
 }
+
+BOOL hasPlayerIn(int x, int y) {
+	return shLabirinto->labirinto[y][x] >= PLAYER_START_INDEX
+		&& shLabirinto->labirinto[y][x] <= PLAYER_END_INDEX;
+}
+
+
+//procura player
+void CheckForPlayers(Monstro *m) {
+	
+
+	WaitForSingleObject(gMutexLabirinto, INFINITE);
+	for (int i = 0; i < LABIRINTOSIZE; i++)
+	{
+		for (int j = 0; j < LABIRINTOSIZE; j++)
+		{
+			
+			int c = shLabirinto->labirinto[i][j];
+			if (!hasItemIn(c) && hasPlayerIn(i, j))
+			{
+				if (i > m->posY)//se estiver abaixo
+				{
+					MoveMonstro(shLabirinto,UP,m);
+					break;
+				}
+				else if (i < m->posY) //se estiver acima
+				{
+					MoveMonstro(shLabirinto, DOWN, m);
+					break;
+				}
+				else
+				{
+					if (j > m->posX)// se estiver à direita
+					{
+						MoveMonstro(shLabirinto, RIGHT, m);
+						break;
+					}
+					else if (j < m->posX)//se estiver à esquerda
+					{
+						MoveMonstro(shLabirinto, LEFT, m);
+						break;
+					}
+				}
+			}
+			
+		}
+	}
+	ReleaseMutex(gMutexLabirinto);
+}
+
+	

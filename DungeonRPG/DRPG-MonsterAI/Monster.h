@@ -12,6 +12,8 @@
 #define LEFT 3
 #define RIGHT 4
 
+
+
 typedef struct {
 	int lentidao;
 	int agressivo;
