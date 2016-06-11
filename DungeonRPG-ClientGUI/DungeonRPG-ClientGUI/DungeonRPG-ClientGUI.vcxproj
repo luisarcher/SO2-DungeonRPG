@@ -143,9 +143,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Config.c" />
+    <ClCompile Include="GameData.c" />
     <ClCompile Include="Controller.c" />
-    <ClCompile Include="Init.c" />
+    <ClCompile Include="SetupGame.c" />
     <ClCompile Include="Labirinto.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="MenuProc.c" />
@@ -153,9 +153,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h" />
-    <ClInclude Include="Config.h" />
+    <ClInclude Include="GameData.h" />
     <ClInclude Include="Controller.h" />
-    <ClInclude Include="Init.h" />
+    <ClInclude Include="SetupGame.h" />
     <ClInclude Include="Labirinto.h" />
     <ClInclude Include="MenuProc.h" />
     <ClInclude Include="Proc.h" />
@@ -168,9 +168,13 @@
     <Library Include="lib\DRPGClientDLL.lib" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="sprites\brick.bmp" />
+    <Image Include="sprites\granite.bmp" />
     <Image Include="sprites\grass.bmp" />
-    <Image Include="sprites\land.bmp" />
+    <Image Include="sprites\monster_a.bmp" />
     <Image Include="sprites\monster_b.bmp" />
+    <Image Include="sprites\player.bmp" />
+    <Image Include="sprites\vit.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,47 +1,42 @@
 #include "MenuProc.h"
+#include "GameData.h"
+#include "Controller.h"
 
 LRESULT CALLBACK DlgBoxConnectProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam) {
-	TCHAR buf[100];
-	int i;
-	TCHAR _i[5];
+	TCHAR buffer[100];
+	int ret;
 	switch (messg)
 	{
-
 	case WM_INITDIALOG:
 		SetDlgItemText(hWnd, IDC_txtIpServ, TEXT("127.0.0.1"));
-		SendDlgItemMessage(hWnd, IDC_lbxPlayers, LB_ADDSTRING, 0, TEXT("Luís"));
 		return TRUE;
 
 	case WM_COMMAND:
-		if (wParam == IDC_btnCheckConn) {
-			GetDlgItemText(hWnd, IDC_txtIpServ, buf, 100);
-			i = InicializarPipes(&hPipe, &hPipeJogo, buf);
-			if (i < 0) {
-				MessageBox(hWnd, TEXT("Ligado"), TEXT("Ligação Estabelecida ao servidor!"), MB_OK);
+		switch (wParam)
+		{
+		case IDOK:
+			GetDlgItemText(hWnd, IDC_txtIpServ, buffer, 100);
+			ret = InicializarPipes(&hPipe, &hPipeJogo, buffer);
+			if (!ret){
+				_tcscpy(buffer, TEXT("Não foi possível ligar ao servidor! Erro: \n"));
+				_tcscat(buffer, trataErrosPipe[ret*(-1)]);
+				MessageBox(hWnd, buffer, TEXT("Não ligado"), MB_OK | MB_ICONERROR);
+				return TRUE;
 			}
-			else {
-				_tcscpy(buf, TEXT("Não foi possível ligar ao servidor! Erro: "));
-				_stprintf(_i, TEXT("%d"), i);
-				_tcscat(buf, _i);
-				MessageBox(hWnd, buf, TEXT("Não ligado"), MB_OK);
-			}
-			return TRUE;
-		}
-		if (wParam == IDOK) {
-			GetDlgItemText(GetModuleHandle(NULL), IDC_txtLogin, buf, 100);
-			MessageBox(GetModuleHandle(NULL), buf, TEXT("Lido"), MB_OK);
-			return TRUE;
-		}
+			else connected = 1;
 
-		if (LOWORD(wParam) == IDOK && HIWORD(wParam) == LBN_DBLCLK) {
-			//Buscar Item Selecionado
-			i = SendDlgItemMessage(hWnd, IDC_lbxPlayers, LB_GETCURSEL, 0, 0);
-		}
+			GetDlgItemText(hWnd, IDC_txtLogin, buffer, 100);
+			_tcscpy(receivedMSG, Registar(buffer));
 
-		if (wParam == IDCANCEL) {
+			hThreadBroadcastReceiver = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LerBroadcast, (LPVOID)hPipeJogo, 0, NULL);
+
+			return TRUE;
+		case IDCANCEL:
 			EndDialog(hWnd, 0);
+			return TRUE;
 		}
 		return TRUE;
+
 	case WM_CLOSE:
 		EndDialog(hWnd, 0);
 		return TRUE;

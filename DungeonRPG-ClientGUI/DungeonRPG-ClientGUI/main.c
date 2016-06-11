@@ -1,11 +1,18 @@
 #include "Common.h"
 #include "Proc.h"
-#include "Init.h"
+#include "SetupGame.h"
 
 HINSTANCE ghInstance;
+HBITMAP bitmapElements[N_BITMAPS];
 
 HANDLE hPipe;		//Pipe para tratar pedidos
 HANDLE hPipeJogo;	//Pipe para enviar estado do mapa e do jogador
+HANDLE hThreadBroadcastReceiver;
+
+TCHAR receivedMSG[BUFFERSIZE];
+ServerResponse resp;
+int connected = 0;
+int started = 0;
 
 int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nCmdShow) {
 
@@ -14,6 +21,10 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 
 	TCHAR *szProgName = TEXT("DungeonRPG");
 	ghInstance = hInst;
+
+	//Carregar bitmaps
+	if (!CarregarTodasAsImagens())
+		return 0;
 
 	//Registar a classe no windows
 	if (!RegistaClasse(hInst, szProgName))

@@ -18,12 +18,6 @@
     <ClCompile Include="main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Config.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Init.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Proc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -36,18 +30,18 @@
     <ClCompile Include="Controller.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SetupGame.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameData.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Config.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Init.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Proc.h">
@@ -62,6 +56,12 @@
     <ClInclude Include="Controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SetupGame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DungeonRPG-ClientGUI.rc">
@@ -74,13 +74,25 @@
     </Library>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="sprites\land.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="sprites\monster_b.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="sprites\grass.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sprites\brick.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sprites\granite.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sprites\monster_a.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sprites\player.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sprites\vit.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -1,102 +1,137 @@
 #include "Proc.h"
 #include "MenuProc.h"
+#include "SetupGame.h"
+#include "GameData.h"
 
 LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 {
-	//handle for device context
 	HDC hdc;
-	HDC auxdc;
+	HDC hdcDoubleBuffer = NULL;
 
-	static UINT eventoImagem;
-	static HBITMAP figura, figura1, fundo1, fundo2;
-	static HBRUSH fundo3;
-	PAINTSTRUCT pt;
+	PAINTSTRUCT paintStruct;
+	HBITMAP		hBitmap;
+
 	RECT area;
-	int tamx, tamy;
-	static HPEN linha;	//handle para uma caneta
-	static HBRUSH fundo;
-
 	static int x = 0, y = 0;
+
+	/* """"""""""""""""" garbage */
+	HDC auxdc;
+	static UINT eventoImagem;
+	int tamx, tamy;
 	static int xi = 0, xf = 0, yi = 0, yf = 0;
 	static TCHAR letra[200] = TEXT("texto");
 	TCHAR pal[100];
-	PAINTSTRUCT p;
-	switch (messg) {
+	/* """""""""""""""""""""" garbage ends*/
+
+	switch (messg)
+	{
 	case WM_CREATE:
-		figura = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_BITMAP3));
-		figura1 = LoadBitmap(GetModuleHandle(NULL), MAKEINTRESOURCE(IDB_BITMAP2));
-		linha = CreatePen(PS_DOT, 1, RGB(255, 0, 0));
-		fundo3 = CreateSolidBrush(RGB(0, 255, 0));
-		fundo = CreatePatternBrush(figura);
+		hdc = GetDC(hWnd);
+		ConfigurarDCs(hdc);
+		ReleaseDC(hWnd, hdc);
 		break;
-	case WM_PAINT:
-		//iniciar
-		hdc = BeginPaint(hWnd, &pt);
 
-		/*aula anterior
-		//TextOut(hdc, x, y, letra, _tcslen(letra));
-		//hdc = GetDC(hWnd);
-		//Ellipse(hdc, xi, yi, xf, yf);
-		//ReleaseDC(hWnd,hdc);
-		*/
-
-		/*aula 0606*/
-		SelectObject(hdc, fundo);
-		SelectObject(hdc, linha);
-		//SelectObject(hdc, fundo3);
-		Rectangle(hdc, 25, 15, PLAYER_LOS*TILE_SZ, PLAYER_LOS*TILE_SZ);
-
-		SetBkMode(hdc, TRANSPARENT);
-		TextOut(hdc, 100, 100, TEXT("Olá"), 3);
-
-		//mostrar bitmap em x,y
-		auxdc = CreateCompatibleDC(hdc);
-		SelectObject(auxdc, figura1);
-		//BitBlt(hdc, 60, 60, 59, 59, auxdc, 0, 0, SRCCOPY);
-		//StretchBlt(hdc, 0, 0, 32, 32, auxdc, 60, 60, 59, 59, SRCPAINT);
-
-		TransparentBlt(hdc, x, y, 59, 59, auxdc, 0, 0, 59, 59, RGB(255, 255, 255));
-
-		DeleteDC(auxdc);
-
-		//FIM
-		EndPaint(hWnd, &p);
-		break;
-	case WM_COMMAND:
-		if (wParam == ID_FICHEIRO_REGISTAR) {
-			//MessageBox(hWnd, TEXT("Frase"), TEXT("Title"), MB_OK);
-			DialogBox(ghInstance, MAKEINTRESOURCE(IDD_dlgMain), hWnd, DlgBoxConnectProc);
-		}
-		break;
-	case WM_DESTROY:	// Destruir a janela e terminar o programa
-						// "PostQuitMessage(Exit Status)"	
-
-		DeleteObject(figura);
-		DeleteObject(figura1);
-		DeleteObject(fundo);
-		DeleteObject(fundo1);
-		DeleteObject(fundo2);
-		DeleteObject(fundo3);
+	case WM_DESTROY:	
 
 		PostQuitMessage(0);
 		break;
-		//case WM_LBUTTONDOWN: //SINGLE CLICK
-	case WM_LBUTTONDBLCLK:	//DOUBLECLICK
-		x = LOWORD(lParam);
-		y = HIWORD(lParam);
-		InvalidateRect(hWnd, NULL, 1);
-		break;
+	case WM_PAINT:
+		//iniciar
+		hdc = BeginPaint(hWnd, &paintStruct);
 
-	case WM_LBUTTONDOWN:
-		xi = LOWORD(lParam);
-		yi = HIWORD(lParam);
-		break;
-	case WM_LBUTTONUP:
-		xf = LOWORD(lParam);
-		yf = HIWORD(lParam);
-		InvalidateRect(hWnd, NULL, 1);
-		break;
+		//Depois define-se melhor a área de jogo
+		//GetClientRect(hWnd, &area);
 
+		//Preparação de DoubleBuffer
+		/*if (hdcDoubleBuffer == NULL)
+		{
+			hdcDoubleBuffer = CreateCompatibleDC(hdc);
+			hBitmap = CreateCompatibleBitmap(hdc, area.right, area.right);
+			SelectObject(hdcDoubleBuffer, hBitmap);
+		}*/
+
+		//Desenho da área de jogo
+		Rectangle(hdc, BOARD_LEFT_MARGIN, BOARD_TOP_MARGIN, PLAYER_LOS*TILE_SZ, PLAYER_LOS*TILE_SZ);
+		SetBkMode(hdc, TRANSPARENT);
+
+		//DEBUBG - inicializar a matriz resp que é a resposta do servidor
+		for (int i = 0; i < PLAYER_LOS; i++)
+		{
+			for (int j = 0; j < PLAYER_LOS; j++)
+			{
+				if (i == 0 || j == 0 || i == PLAYER_LOS-1 || j == PLAYER_LOS-1)
+				{
+					resp.matriz[i][j] = 20;
+				}
+				else resp.matriz[i][j] = -1;
+			}
+		}
+
+		//Desenhar área de jogo no segundo buffer
+		/*for (int i = 0; i < PLAYER_LOS; i++)
+		{
+			for (int j = 0; j < PLAYER_LOS; j++)
+			{
+				switch (resp.matriz[i][j])
+				{
+				case WALL_START_INDEX:
+					BitBlt(
+						hdcDoubleBuffer,
+						i*(TILE_SZ / 2) + BOARD_TOP_MARGIN,
+						j*(TILE_SZ / 2) + BOARD_LEFT_MARGIN,
+						TILE_SZ, TILE_SZ,
+						bitmapElementsDC[GRANITE],
+						0, 0,
+						SRCAND);
+					break;
+				case EMPTY:
+					BitBlt(
+						hdcDoubleBuffer,
+						i*(TILE_SZ / 2) + BOARD_TOP_MARGIN,
+						j*(TILE_SZ / 2) + BOARD_LEFT_MARGIN,
+						TILE_SZ, TILE_SZ,
+						bitmapElementsDC[GRASS],
+						0, 0,
+						SRCAND);
+					break;
+				default:
+					break;
+				}
+			}
+		}// FIM DB*/
+
+		//Copiar o que está no buffer para o device context principal
+		//BitBlt(hdc, 0, 0, area.right, area.bottom, hdcDoubleBuffer, 0, 0, SRCCOPY);
+
+
+		TextOut(hdc, 100, 100, TEXT("Olá"), 3);
+
+		//mostrar bitmap em x,y
+		//auxdc = CreateCompatibleDC(hdc);
+		//SelectObject(auxdc, figura1);
+		//BitBlt(hdc, 60, 60, 59, 59, auxdc, 0, 0, SRCCOPY);
+		//StretchBlt(hdc, 0, 0, 32, 32, auxdc, 60, 60, 59, 59, SRCPAINT);
+
+		TransparentBlt(hdc, x, y, 64, 64, auxdc, 0, 0, 64, 64, RGB(255, 255, 255));
+
+
+		//FIM
+		EndPaint(hWnd, &paintStruct);
+		break;
+	case WM_COMMAND:
+		switch (wParam)
+		{
+		/* Menu Items*/
+		case ID_FICHEIRO_LIGAR:
+			DialogBox(ghInstance, MAKEINTRESOURCE(IDD_dlgMain), hWnd, DlgBoxConnectProc);
+			break;
+		/* Menu Items ends*/
+		default:
+			break;
+		}
+
+		break;
+	
 	case WM_KEYDOWN:
 		switch (wParam)
 		{
@@ -133,6 +168,9 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 			}
 			else InvalidateRect(hWnd, NULL, 1);*/
 
+		case WM_ERASEBKGND:		//Não deixar que o fundo seja apagado (para técnica de BoubleBuffer)
+			break;
+		
 		default:
 			break;
 		}

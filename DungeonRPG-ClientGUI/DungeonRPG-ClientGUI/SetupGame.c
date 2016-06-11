@@ -1,4 +1,8 @@
-#include "Init.h"
+#include "SetupGame.h"
+#include "GameData.h"
+
+HDC		bitmapElementsDC[N_BITMAPS];
+HBITMAP	bitmapElementsOrigin[N_BITMAPS];
 
 ATOM RegistaClasse(HINSTANCE hInstance, TCHAR * szWinName) {
 	WNDCLASSEX wcApp;	// WNDCLASSEX é uma estrutura cujos membros servem para definir as características da classe da janela
@@ -15,7 +19,7 @@ ATOM RegistaClasse(HINSTANCE hInstance, TCHAR * szWinName) {
 	wcApp.lpszMenuName = IDR_MENU1;							// Classe do menu que a janela pode ter | (NULL = não tem menu)
 	wcApp.cbClsExtra = 0;							// Livre, para uso particular
 	wcApp.cbWndExtra = 0;							// Livre, para uso particular
-	wcApp.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);	/*OUTRAS CORES DE BRUSH:	BLACK_BRUSH  DKGRAY_BRUSH GRAY_BRUSH LTGRAY_BRUSH  */
+	wcApp.hbrBackground = (HBRUSH)GetStockObject(DKGRAY_BRUSH);	/*OUTRAS CORES DE BRUSH:	BLACK_BRUSH  DKGRAY_BRUSH GRAY_BRUSH LTGRAY_BRUSH  */
 
 	// ============================================================================
 	// 2. Registar a classe "wcApp" no Windows
@@ -39,4 +43,22 @@ HWND CriarJanela(HINSTANCE hInstance, TCHAR * szWinName) {
 		(HMENU)NULL,
 		(HINSTANCE)hInstance,
 		0);
+}
+
+int CarregarTodasAsImagens() {
+	for (int i = 0; i < N_BITMAPS; i++) {
+		bitmapElements[i] = LoadBitmap(GetModuleHandle(NULL),_bitmaps[N_BITMAPS]);
+		if (bitmapElements[i] == NULL) {
+			return i*(-1);
+		}
+	}
+	return 1;
+}
+
+void ConfigurarDCs(HDC hdcOrigin) {
+	for (int i = 0; i < N_BITMAPS; i++)
+	{
+		bitmapElementsDC[i] = CreateCompatibleDC(hdcOrigin);
+		bitmapElementsOrigin[i] = SelectObject(bitmapElementsDC[i],bitmapElements[i]);
+	}
 }
