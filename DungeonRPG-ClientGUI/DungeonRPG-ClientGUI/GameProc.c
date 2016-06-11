@@ -2,6 +2,7 @@
 #include "MenuProc.h"
 #include "SetupGame.h"
 #include "GameData.h"
+#include "Labirinto.h"
 
 HDC hdcDoubleBuffer;
 
@@ -80,31 +81,82 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		{
 			for (int j = 0; j < PLAYER_LOS; j++)
 			{
-				switch (resp.matriz[i][j])
+				int pos = resp.matriz[i][j];
+				//Items sem opacidade
+				if (isWall(pos) || pos == EMPTY || pos == FOG_OF_WAR)
 				{
-				case WALL_START_INDEX:
-					BitBlt(
-						hdcDoubleBuffer,
-						i*(TILE_SZ) + BOARD_TOP_MARGIN,
-						j*(TILE_SZ) + BOARD_LEFT_MARGIN,
-						TILE_SZ, TILE_SZ,
-						bitmapElementsDC[BRICK],
-						0, 0,
-						SRCAND);
-					break;
+					switch (pos)
+					{
+					case EMPTY:
+						BitBlt(
+							hdcDoubleBuffer,
+							j*(TILE_SZ)+BOARD_LEFT_MARGIN,
+							i*(TILE_SZ)+BOARD_TOP_MARGIN,
+							TILE_SZ, TILE_SZ,
+							bitmapElementsDC[GRASS],
+							0, 0,
+							SRCAND);
+						break;
 
-				case EMPTY:
+					case BRICK_ID:
+						BitBlt(
+							hdcDoubleBuffer,
+							j*(TILE_SZ)+BOARD_LEFT_MARGIN,
+							i*(TILE_SZ)+BOARD_TOP_MARGIN,
+							TILE_SZ, TILE_SZ,
+							bitmapElementsDC[BRICK],
+							0, 0,
+							SRCAND);
+						break;
+
+					case FOG_OF_WAR:
+						Rectangle(hdcDoubleBuffer,
+							(j*TILE_SZ)+BOARD_LEFT_MARGIN,
+							(i*TILE_SZ)+BOARD_TOP_MARGIN,
+							((j+1)*TILE_SZ) + BOARD_LEFT_MARGIN,
+							((i+1)*TILE_SZ)+BOARD_TOP_MARGIN);
+						break;
+					default:
+						break;
+					}
+				}
+				else if(isObject(pos)|| isMonster(pos)
+					|| isPlayer(pos)|| isMonsterAndPlayer(pos)){ //Items com opacidade
+					//Imprimir o chão que está por baixo do item
 					BitBlt(
 						hdcDoubleBuffer,
-						i*(TILE_SZ) + BOARD_TOP_MARGIN,
-						j*(TILE_SZ) + BOARD_LEFT_MARGIN,
+						j*(TILE_SZ)+BOARD_LEFT_MARGIN,
+						i*(TILE_SZ)+BOARD_TOP_MARGIN,
 						TILE_SZ, TILE_SZ,
 						bitmapElementsDC[GRASS],
 						0, 0,
 						SRCAND);
-					break;
-				default:
-					break;
+					if (isObject(pos)) //Mas qual objecto?
+					{
+						switch (pos)
+						{
+						case VITAMINA:
+							TransparentBlt(hdcDoubleBuffer,
+								j*(TILE_SZ)+BOARD_LEFT_MARGIN,
+								i*(TILE_SZ)+BOARD_TOP_MARGIN,
+								TILE_SZ, TILE_SZ,
+								bitmapElementsDC[VITAMIN], 0, 0,
+								//j*(TILE_SZ)+BOARD_LEFT_MARGIN, i*(TILE_SZ)+BOARD_TOP_MARGIN,
+								TILE_SZ, TILE_SZ, RGB(255, 255, 255));
+							break;
+						default:
+							break;
+						}
+					}
+					else if (isPlayer(pos)) {
+						TransparentBlt(hdcDoubleBuffer,
+							j*(TILE_SZ)+BOARD_LEFT_MARGIN-1,
+							i*(TILE_SZ)+BOARD_TOP_MARGIN-1,
+							TILE_SZ+1, TILE_SZ+1,
+							bitmapElementsDC[PLAYER],0,0,
+							//j*(TILE_SZ)+BOARD_LEFT_MARGIN, i*(TILE_SZ)+BOARD_TOP_MARGIN,
+							TILE_SZ, TILE_SZ, RGB(56, 80, 80));
+					}
 				}
 			}
 		}// FIM DB*/
@@ -140,23 +192,19 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		{
 		case VK_DOWN:
 			EnviaTecla(MOVEDOWN);
-			InvalidateRect(hWnd, NULL, 0);
 			break;
 		case VK_UP:
 			EnviaTecla(MOVEUP);
-			InvalidateRect(hWnd, NULL, 0);
 			break;
 		case VK_LEFT:
 			EnviaTecla(MOVELEFT);
-			InvalidateRect(hWnd, NULL, 0);
 			break;
 		case VK_RIGHT:
 			EnviaTecla(MOVERIGHT);
-			InvalidateRect(hWnd, NULL, 0);
 			break;
 
-		case WM_ERASEBKGND:		//Não deixar que o fundo seja apagado (para técnica de BoubleBuffer)
-			break;
+		/*case WM_ERASEBKGND:		//Não deixar que o fundo seja apagado (para técnica de BoubleBuffer)
+			break;*/
 		
 		default:
 			break;
@@ -169,4 +217,5 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		break;
 	}
 	return(0);
+
 }

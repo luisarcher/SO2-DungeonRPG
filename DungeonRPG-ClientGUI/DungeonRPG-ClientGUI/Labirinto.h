@@ -6,12 +6,14 @@ typedef struct LABIRINTO {
 	BOOL init;
 } Labirinto;
 
+//Opacos
 BOOL isWall(int pos);
 
+//Com transparência
 BOOL isObject(int pos);
 
 BOOL isMonster(int pos);
 
 BOOL isPlayer(int pos);
 
-BOOL isMonsterAndPlayerIn(int pos);
+BOOL isMonsterAndPlayer(int pos);

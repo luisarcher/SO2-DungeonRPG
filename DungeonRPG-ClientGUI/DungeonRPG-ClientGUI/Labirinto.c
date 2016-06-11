@@ -22,6 +22,6 @@ BOOL isPlayer(int pos) {
 		&& pos <= PLAYER_END_INDEX;
 }
 
-BOOL isMonsterAndPlayerIn(int pos) {
+BOOL isMonsterAndPlayer(int pos) {
 	return pos > 1000;
 }

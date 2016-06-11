@@ -68,6 +68,7 @@ DWORD WINAPI AtualizaJogo(LPVOID lpParam) {
 	HWND hWnd = (HWND)lpParam;
 	while (!fim) {
 		if (pendingChangesFlag) {
+			pendingChangesFlag = 0;
 			//Analisa a estrutura recebida em resp
 			//if(resp.playerInfo.hp > 0)
 				InvalidateRect(hWnd, NULL, FALSE);
