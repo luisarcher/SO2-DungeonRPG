@@ -2,6 +2,7 @@
 
 ServerResponse resp;
 BOOL fim = FALSE;
+BOOL pendingChangesFlag = 0;
 
 /**
 *	Liga ao servidor.
@@ -63,8 +64,10 @@ DWORD WINAPI LerBroadcast(LPVOID param) {
 	HANDLE pipe = (HANDLE)param;
 	DWORD n = 0;
 
-	while (!fim)
+	while (!fim) {
 		ReadFile(pipe, &resp, sizeof(ServerResponse), &n, NULL);
+		pendingChangesFlag = 1;
+	}
 	return n;
 }
 
