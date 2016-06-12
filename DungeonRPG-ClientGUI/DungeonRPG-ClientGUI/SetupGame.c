@@ -70,8 +70,10 @@ DWORD WINAPI AtualizaJogo(LPVOID lpParam) {
 		if (pendingChangesFlag) {
 			pendingChangesFlag = 0;
 			//Analisa a estrutura recebida em resp
-			//if(resp.playerInfo.hp > 0)
+			if (resp.playerInfo.hp > 0) {
+				started = 1;
 				InvalidateRect(hWnd, NULL, FALSE);
+			}	
 		}
 	}
 	return 0;

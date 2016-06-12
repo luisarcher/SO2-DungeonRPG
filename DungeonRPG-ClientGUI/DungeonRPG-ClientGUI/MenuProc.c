@@ -29,10 +29,12 @@ LRESULT CALLBACK DlgBoxConnectProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM 
 				else {
 					connected = 1;
 
-					CallStartGame();
-
+					memset(buffer, TEXT('\0'), sizeof(TCHAR)*100);
 					GetDlgItemText(hWnd, IDC_txtLogin, buffer, 100);
-					//_tcscpy(receivedMSG, Registar(buffer));
+					if (buffer[0] != TEXT('\0'))
+						if (!Registar(buffer))
+							MessageBox(hWnd, TEXT("Erro ao registar o nome no servidor!"), TEXT("Registar"), MB_OK | MB_ICONERROR);
+					
 
 					hThreadBroadcastReceiver = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LerBroadcast, (LPVOID)hPipeJogo, 0, NULL);
 					EndDialog(hWnd, 0);
