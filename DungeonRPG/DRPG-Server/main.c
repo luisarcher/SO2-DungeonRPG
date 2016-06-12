@@ -93,7 +93,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 	TCHAR path[512];
 	
 	
-	for (size_t i = 0; i < nMonsters; i++)
+	//for (size_t i = 0; i < nMonsters; i++)
+	for (size_t i = 0; i < 2; i++)
 	{
 		int x = 0;
 		int y = 0;

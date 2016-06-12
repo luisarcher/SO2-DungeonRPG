@@ -35,6 +35,7 @@ DWORD WINAPI GameTimer(LPVOID param);
 DWORD WINAPI GameEvents(LPVOID param);
 
 int activePlayers();
+void StartGame();
 
 //void CopyGameStateToSharedMemory();
 void DesligarThreadsDeCliente();

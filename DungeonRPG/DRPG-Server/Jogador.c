@@ -19,12 +19,8 @@ void NovoJogador(int id) {
 	j->itemDurationCounter = 0;
 
 	//Define x e y do jogador (pos vazia) e regista-o no labirinto
-	SetPlayerInRandomPosition(j);
-	//j->x = 28;
-	//j->y = 1;
-
-	//Define se o jogador é activo ou espectador, conforme o jogo estiver começado.
-	j->hp = (!start) ? (int)HP_BASE : 0;
+	if (!start) SetPlayerInRandomPosition(j);
+	j->hp =  0;
 }
 
 /**
@@ -281,7 +277,7 @@ void DropStones(Jogador * p) {
 //Protegida pela função que a invoca. (Mutex)
 void AskPlayerToCollectItems(Jogador * p) {
 	int nPedras = 0;
-	switch (shLabirinto->labirinto[p->x][p->y])
+	switch (shLabirinto->labirinto[p->y][p->x])
 	{
 	case VITAMINA:
 		if ((p->hp + 1) <= (int)HP_BASE * 2) p->hp++;
@@ -294,7 +290,7 @@ void AskPlayerToCollectItems(Jogador * p) {
 		p->itemDurationCounter = 15 * 60; // 15 instantes por segundo * 60 segundos = 900 instantes;
 		break;
 	default:
-		if ((nPedras = shLabirinto->labirinto[p->x][p->y]) > PEDRAS){
+		if ((nPedras = shLabirinto->labirinto[p->y][p->x]) > PEDRAS){
 			nPedras -= (int)PEDRAS;
 			if (p->nStones + nPedras <= (int)PLAYER_STONE_CAP) p->nStones += nPedras;
 		}

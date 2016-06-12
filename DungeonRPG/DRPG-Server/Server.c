@@ -149,7 +149,7 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 				break;
 
 			case STARTGAME:
-				start = TRUE;
+				StartGame();
 				_tcscpy(respostaServidor, TEXT("Começaste um novo jogo!"));
 
 				//Broadcast
@@ -259,6 +259,12 @@ DWORD WINAPI ActualizaClientes(LPVOID param) {
 	}
 	_tprintf(TEXT("Thread %d exiting\n"), GetCurrentThreadId());
 	return 0;
+}
+
+void StartGame() {
+	start = TRUE;
+	for (int i = 0; i < totalConnections; i++)
+		gClients[i].hp = HP_BASE;
 }
 
 /**
