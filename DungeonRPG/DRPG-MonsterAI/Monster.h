@@ -46,3 +46,4 @@ void CloseHandles(HANDLE * hMappedObj);
 void gotoxy(int x, int y);
 void escondeCursor();
 void clrscr();
+void CheckForPlayers(Monstro *m);

@@ -90,16 +90,25 @@ int _tmain(int argc, LPTSTR argv[]) {
 				m.passos = nPassos;
 			}
 			else {
-				MoveMonstro(shLabirinto, m.direcao, &m);
-				m.stamina = m.lentidao;
-				m.passos--;
+				if (m.tipo = 51)
+				{
+					MoveMonstro(shLabirinto, m.direcao, &m);
+					m.stamina = m.lentidao;
+					m.passos--;
+				}
+				else {
+					CheckForPlayers(&m);
+					m.stamina = m.lentidao;
+					m.passos--;
+				}
+				
 			}
 		}
 		CheckForThreats(&m);
 		
 		
 		
-		/*if((m.hp*1.6) ==  (HP_BASE * 1.6))
+		if((m.hp*1.6) ==  (HP_BASE * 1.6))
 		{
 			//system("pause");
 			TCHAR str[256];
@@ -133,7 +142,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 			
 			
 			m.hp = hp;
-		}*/
+		}
 		
 		
 		m.stamina--;

@@ -442,24 +442,24 @@ void CheckForPlayers(Monstro *m) {
 			{
 				if (i > m->posY)//se estiver abaixo
 				{
-					MoveMonstro(shLabirinto,UP,m);
+					MoveMonstro(shLabirinto,DOWN,m);
 					break;
 				}
 				else if (i < m->posY) //se estiver acima
 				{
-					MoveMonstro(shLabirinto, DOWN, m);
+					MoveMonstro(shLabirinto, UP, m);
 					break;
 				}
 				else
 				{
 					if (j > m->posX)// se estiver à direita
 					{
-						MoveMonstro(shLabirinto, RIGHT, m);
+						MoveMonstro(shLabirinto, LEFT, m);
 						break;
 					}
 					else if (j < m->posX)//se estiver à esquerda
 					{
-						MoveMonstro(shLabirinto, LEFT, m);
+						MoveMonstro(shLabirinto, RIGHT, m);
 						break;
 					}
 				}
