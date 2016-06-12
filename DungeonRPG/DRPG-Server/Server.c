@@ -256,6 +256,8 @@ DWORD WINAPI ActualizaClientes(LPVOID param) {
 			//_tprintf(TEXT("Shared Memory:\n"));
 			//CopyGameStateToSharedMemory();
 		}
+		//Não existem jogadores activos? Então não está nenhum jogo a decorrer
+		else start = FALSE;
 	}
 	_tprintf(TEXT("Thread %d exiting\n"), GetCurrentThreadId());
 	return 0;
