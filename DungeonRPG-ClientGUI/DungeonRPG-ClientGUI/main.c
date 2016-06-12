@@ -37,6 +37,11 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 		TranslateMessage(&lpMsg);			// Pré-processamento da mensagem, p.e. obter código ASCII da tecla premida
 		DispatchMessage(&lpMsg);			// Enviar a mensagem traduzida de volta ao Windows, que aguarda até que a possa enviar ao tratamento da janela.
 	}
+
+	WaitForSingleObject(hThreadBroadcastReceiver,INFINITE);
+	void UnlinkObjects();
+	FecharHandles(&hPipe, &hPipeJogo);
+
 	return((int)lpMsg.wParam);
 }
 

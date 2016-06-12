@@ -10,3 +10,4 @@ ATOM RegistaClasse(HINSTANCE hInstance, TCHAR * szWinName);
 HWND CriarJanela(HINSTANCE hInstance, TCHAR * szWinName);
 int CarregarTodasAsImagens();
 void ConfigurarDCs(HDC hdcOrigin);
+void UnlinkObjects();

@@ -62,3 +62,17 @@ void ConfigurarDCs(HDC hdcOrigin) {
 		bitmapElementsOrigin[i] = SelectObject(bitmapElementsDC[i],bitmapElements[i]);
 	}
 }
+
+void UnlinkObjects() {
+	for (int i = 0; i < N_BITMAPS; i++)
+	{
+		if (bitmapElementsDC[i] != NULL){
+			SelectObject(bitmapElementsDC[i],bitmapElementsOrigin[i]);
+			DeleteDC(bitmapElementsDC[i]);
+		}
+		if (bitmapElements[i] != NULL){
+			DeleteObject(bitmapElements[i]);
+		}
+	}
+	DeleteObject(hdcDoubleBuffer);
+}
