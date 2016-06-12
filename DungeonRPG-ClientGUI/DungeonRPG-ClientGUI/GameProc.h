@@ -6,5 +6,3 @@ extern HDC hdcDoubleBuffer;
 //extern HBITMAP	hBitmapDoubleBufferOrigin;
 
 LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam);
-void DrawMap();
-void DrawInfo(HDC hdc, int xStart);

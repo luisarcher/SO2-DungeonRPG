@@ -1,4 +1,5 @@
 #include "GameData.h"
+#include "Controller.h"
 
 TCHAR * trataErrosPipe[3] = {
 	TEXT("[0] Esperar pelo pipe - WaitNamedPipe"),
@@ -21,3 +22,21 @@ TCHAR * _bitmaps[N_BITMAPS] = {
 	MAKEINTRESOURCE(IDB_BITMAP10),	//8-Reb Cafeina
 	MAKEINTRESOURCE(IDB_BITMAP11)	//9-Pedras
 };
+
+DWORD WINAPI AtualizaJogo(LPVOID lpParam) {
+	DWORD nBytes;
+	HWND hWnd = (HWND)lpParam;
+	while (!fim) {
+		if (pendingChangesFlag) {
+			pendingChangesFlag = 0;
+
+			_tcscpy(receivedMSG, resp.msg);
+			//Analisa a estrutura recebida em resp
+			if (resp.playerInfo.hp > 0) {
+				started = 1;
+				InvalidateRect(hWnd, NULL, FALSE);
+			}
+		}
+	}
+	return 0;
+}

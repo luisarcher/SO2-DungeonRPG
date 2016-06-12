@@ -13,8 +13,8 @@ ATOM RegistaClasse(HINSTANCE hInstance, TCHAR * szWinName) {
 	wcApp.lpszClassName = szWinName;	// Nome da janela (neste caso = nome do programa)
 	wcApp.lpfnWndProc = WinProc;		// Endereço da função de processamento da janela
 	wcApp.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;			// Estilo da janela: Fazer o redraw vertical, horizontar, e poder capturar duplo Cliques.
-	wcApp.hIcon = LoadIcon(NULL, IDI_APPLICATION);				// "hIcon" = handler do ícon normal | "NULL" = Icon definido no Windows | "IDI_AP..." Ícone "aplicação"
-	wcApp.hIconSm = LoadIcon(NULL, IDI_INFORMATION);			// "hIcon" = handler do ícon pequeno | Ver documentação prof.
+	wcApp.hIcon = LoadIcon(hInstance, IDI_ICON1);				// "hIcon" = handler do ícon normal | "NULL" = Icon definido no Windows | "IDI_AP..." Ícone "aplicação"
+	wcApp.hIconSm = LoadIcon(hInstance, IDI_ICON1);			// "hIcon" = handler do ícon pequeno | Ver documentação prof.
 	wcApp.hCursor = LoadCursor(NULL, IDC_ARROW);				// "hCursor" = handler do cursor (rato) | Ver documentação prof.
 	wcApp.lpszMenuName = IDR_MENU1;							// Classe do menu que a janela pode ter | (NULL = não tem menu)
 	wcApp.cbClsExtra = 0;							// Livre, para uso particular
@@ -61,20 +61,4 @@ void ConfigurarDCs(HDC hdcOrigin) {
 		bitmapElementsDC[i] = CreateCompatibleDC(hdcOrigin);
 		bitmapElementsOrigin[i] = SelectObject(bitmapElementsDC[i],bitmapElements[i]);
 	}
-}
-
-DWORD WINAPI AtualizaJogo(LPVOID lpParam) {
-	DWORD nBytes;
-	HWND hWnd = (HWND)lpParam;
-	while (!fim) {
-		if (pendingChangesFlag) {
-			pendingChangesFlag = 0;
-			//Analisa a estrutura recebida em resp
-			if (resp.playerInfo.hp > 0) {
-				started = 1;
-				InvalidateRect(hWnd, NULL, FALSE);
-			}	
-		}
-	}
-	return 0;
 }

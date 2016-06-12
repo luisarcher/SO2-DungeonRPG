@@ -15,3 +15,5 @@
 
 extern TCHAR * trataErrosPipe[3];
 extern TCHAR * _bitmaps[N_BITMAPS];
+
+DWORD WINAPI AtualizaJogo(LPVOID lpParam);

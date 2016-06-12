@@ -35,7 +35,6 @@ LRESULT CALLBACK DlgBoxConnectProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM 
 						if (!Registar(buffer))
 							MessageBox(hWnd, TEXT("Erro ao registar o nome no servidor!"), TEXT("Registar"), MB_OK | MB_ICONERROR);
 					
-
 					hThreadBroadcastReceiver = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LerBroadcast, (LPVOID)hPipeJogo, 0, NULL);
 					EndDialog(hWnd, 0);
 				}

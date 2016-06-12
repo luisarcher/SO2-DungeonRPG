@@ -150,6 +150,7 @@
     <ClCompile Include="main.c" />
     <ClCompile Include="MenuProc.c" />
     <ClCompile Include="GameProc.c" />
+    <ClCompile Include="UserInterface.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h" />
@@ -160,11 +161,13 @@
     <ClInclude Include="MenuProc.h" />
     <ClInclude Include="GameProc.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="UserInterface.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="lib\DRPGClientDLL.lib" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\drpg.ico" />
     <Image Include="sprites\brick.bmp" />
     <Image Include="sprites\granite.bmp" />
     <Image Include="sprites\grass.bmp" />
