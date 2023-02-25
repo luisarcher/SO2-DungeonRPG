@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuProc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Labirinto.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Controller.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SetupGame.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameData.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameProc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UserInterface.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuProc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Labirinto.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SetupGame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameProc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="lib\DRPGClientDLL.lib">
+      <Filter>Resource Files</Filter>
+    </Library>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="sprites\monster_b.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sprites\grass.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sprites\brick.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sprites\granite.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sprites\monster_a.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sprites\player.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sprites\vit.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sprites\orange_bull.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sprites\reb_cafeina.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="sprites\stone.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\drpg.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="DungeonRPG-ClientGUI.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
