@@ -2,7 +2,7 @@
 
 This project has been done by [André Oliveira](https://github.com/AndreOliveiraRepos) and I during our Computer Science degree for the Operating Systems Course, where we have scored full marks.
 
-DungeonRPG is a multiplayer game where players must collect items randomly placed on a map while dealing with monsters and other players. The game uses Windows API to create a graphical user interface and has been written using Visual Studio 2015 v140 PlatforToolset.
+DungeonRPG is a multiplayer game where players must collect items randomly placed on a map while dealing with monsters and other players. The game uses Windows API to create a graphical user interface and has been written using Visual Studio 2015 v140 PlatformToolset.
 
 ___
 
