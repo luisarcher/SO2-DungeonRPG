@@ -39,7 +39,7 @@ With regard to Figure "DungeonRPG Gameplay",
 This project is something that we passionately did 7 years ago, previous last commits in Jun 12, 2016. We will keep the original code intact in the "original_vs2015-v140" branch if you want to see the original code.
 
 So, what is planned?
-- Back then, we have writen a lot of code in Portuguese, we plan to refactor everything to the English Language
+- Back then, we have written a lot of code in Portuguese, we plan to refactor everything to the English Language
 - Write a CMake
 - Correct existing bugs
 
