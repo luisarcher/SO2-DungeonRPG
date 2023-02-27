@@ -1,42 +1,55 @@
-﻿# SO2-DungeonRPG
-Projecto Final - Sistemas Operativos 2 - Engenharia Informática
-________________________
+﻿# DungeonRPG
 
-### Servidor:
+This project has been done by [André Oliveira](https://github.com/AndreOliveiraRepos) and I during our Computer Science degree for the Operating Systems Course, where we have scored full marks.
 
-//Finished
+DungeonRPG is a multiplayer game where players must collect items randomly placed on a map while dealing with monsters and other players. The game uses Windows API to create a graphical user interface and has been written using Visual Studio 2015 v140 PlatforToolset.
 
-[EXTRA] criar novo objecto chamado crate que pode sair um item aleatóriamente ou armadilha
+___
 
-[EXTRA] Colocar o servidor como serviço
+## Getting started
 
-[IMPORTANTE] Sincronizar jogadores e monstros
+You can build this project on the command line by using tools that are included in Visual Studio. The Microsoft C++ (MSVC) compiler toolset is also downloadable as a standalone package. You don't need to install the Visual Studio IDE if you don't plan to use it.
 
-### Cliente:
+This article describes how to compile a C program on the command line on Windows:
+https://learn.microsoft.com/en-us/cpp/build/walkthrough-compile-a-c-program-on-the-command-line?view=msvc-170
 
-//Finished
+___
 
-### Monstros:
+## Description
 
-[feito]Memória partilhada
+This repository contains three Visual Studio Solutions:
+- Server
+- Client GUI
+- Client DLL
 
-Mostro Distraído - Anda aleatóriamente pelo labirinto, lentidão 3, agressive = 0;
+Multiple clients can connect to the running server through named pipes. When there are enough players waiting, one of the waiting players can __Start__ the game.
+The server also contains **Monster** processes that will be walking around the map. One process per monster. Monsters access the existing map through Shared Memory (where players will be moving as well).
 
-Mostro Bully (Agressivo) - Tem LOS(mesmo do player?) para detectar jogador, quando detectar, move-se na direcção dele, caso contrário, anda aleatóriamente. Lentidão 7, agressivo = 1;
+The following Figure "DungeonRPG Gameplay" presents an overview of the game.
 
-Algoritmo aleatório: O monstro anda N posições numa direcção (N é recebido por argumento da função main), depois de N passos, tem 75% de mudar de direcção, (Sortear as 4 posições a 25% cada).
+![DungeonRPG Gameplay](gameplay.png)
 
-O mostro colide com paredes (pode-se usar o código que já existe no server dos jogadores)
+With regard to Figure "DungeonRPG Gameplay", 
+- The top left window presents the Server Instance displaying exchanged messages and internal status.
+- The bottom left windows are the monster processes (two windows, so two monsters walking on the map). Monsters will spawn more Monsters (processes) upon killing players.
+- On the right side of the screen is the Game window where the Game map is displayed as well as players' status. For instance, it can be seen that a monster is nearbly, items on the floor that can be collected and brick-walls that cannot be traversed. On the right panel, it can be visualised the Player coordinates, HP, Stones (incresing the attack against monsters and other players), Auto-attack toggled on/off as a player might want to save its stones for later in the game, allowed actions, and temporary items e.g., caffeine sweets that provide temporary movement speed.
 
-Os monstros têm lifeDrain/lifeSteal, 1 hp do jogador para o monstro
+## Development and Branching
 
-Quando atingem 160% dividem-se, lançam um novo monstro (criam um novo processo) numa casa adjacente e ficam com 80% de vida cada um. O novo processo é lançado pelo monstro original que atingiu 160% de hp.
+This project is something that we passionately did 7 years ago, previous last commits in Jun 12, 2016. We will keep the original code intact in the "original_vs2015-v140" branch if you want to see the original code.
 
-Primeiros monstros lançados pelo servidor
+So, what is planned?
+- Back then, we have written a lot of code in Portuguese, we plan to refactor everything to the English Language
+- Write a CMake
+- Correct existing bugs
 
-Têm de ter a capacidade de lançar um processo(monstro)
+Latest developments will be placed on the **dev** branch.
 
-Usar mutex entre processos para sincronizar os monstros
+## Known bugs
+
+- The client does not dispose all the resources when closed.
+- No sprite is displayed when when a monster is on the same tile with an item.
+- Deadlocks might happen during players enconter.
 
 
 

@@ -1,13 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DRPG-Server", "DRPG-Server\DRPG-Server.vcxproj", "{CD966AB1-F1C6-462D-B997-7AC7798EC24A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DRPG-Client", "DRPG-Client\DRPG-Client.vcxproj", "{87B58A51-6AAF-4E94-92D1-3884C481BB93}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6E17ADF2-87C0-434A-98F2-AC603A6185A7} = {6E17ADF2-87C0-434A-98F2-AC603A6185A7}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DRPG-MonsterAI", "DRPG-MonsterAI\DRPG-MonsterAI.vcxproj", "{30E180A7-217A-4481-B130-FFBD3FA94CFD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DRPGClientDLL", "..\DRPGClientDLL\DRPGClientDLL\DRPGClientDLL.vcxproj", "{6E17ADF2-87C0-434A-98F2-AC603A6185A7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,8 +46,19 @@ Global
 		{30E180A7-217A-4481-B130-FFBD3FA94CFD}.Release|x64.Build.0 = Release|x64
 		{30E180A7-217A-4481-B130-FFBD3FA94CFD}.Release|x86.ActiveCfg = Release|Win32
 		{30E180A7-217A-4481-B130-FFBD3FA94CFD}.Release|x86.Build.0 = Release|Win32
+		{6E17ADF2-87C0-434A-98F2-AC603A6185A7}.Debug|x64.ActiveCfg = Debug|x64
+		{6E17ADF2-87C0-434A-98F2-AC603A6185A7}.Debug|x64.Build.0 = Debug|x64
+		{6E17ADF2-87C0-434A-98F2-AC603A6185A7}.Debug|x86.ActiveCfg = Debug|Win32
+		{6E17ADF2-87C0-434A-98F2-AC603A6185A7}.Debug|x86.Build.0 = Debug|Win32
+		{6E17ADF2-87C0-434A-98F2-AC603A6185A7}.Release|x64.ActiveCfg = Release|x64
+		{6E17ADF2-87C0-434A-98F2-AC603A6185A7}.Release|x64.Build.0 = Release|x64
+		{6E17ADF2-87C0-434A-98F2-AC603A6185A7}.Release|x86.ActiveCfg = Release|Win32
+		{6E17ADF2-87C0-434A-98F2-AC603A6185A7}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {01FC6ACB-85A4-44C6-88D9-0CD5C437D979}
 	EndGlobalSection
 EndGlobal

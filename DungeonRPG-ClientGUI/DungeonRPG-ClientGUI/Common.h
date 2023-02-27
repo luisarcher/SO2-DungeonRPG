@@ -2,7 +2,7 @@
 #include <windows.h>
 #include <tchar.h>
 #include "resource.h"
-#include "lib\ClientDLL.h"
+#include "./../../DRPGClientDLL/DRPGClientDLL/ClientDLL.h"
 
 #define N_BITMAPS			10
 #define LABIRINTOSIZE		70

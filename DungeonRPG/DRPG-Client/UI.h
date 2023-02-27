@@ -1,5 +1,6 @@
 #pragma once
-#include "lib/ClientDLL.h"
+
+#include "./../../DRPGClientDLL/DRPGClientDLL/ClientDLL.h"
 
 //Tecla premida pelo utilizador
 #define KEY_UP 1
