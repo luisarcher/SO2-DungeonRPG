@@ -164,9 +164,6 @@
     <ClInclude Include="UserInterface.h" />
   </ItemGroup>
   <ItemGroup>
-    <Library Include="lib\DRPGClientDLL.lib" />
-  </ItemGroup>
-  <ItemGroup>
     <Image Include="res\drpg.ico" />
     <Image Include="sprites\brick.bmp" />
     <Image Include="sprites\granite.bmp" />
@@ -181,6 +178,9 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="DungeonRPG-ClientGUI.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\DRPGClientDLL\Debug\DRPGClientDLL.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

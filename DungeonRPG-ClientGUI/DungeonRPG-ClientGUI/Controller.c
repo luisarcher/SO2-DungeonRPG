@@ -1,5 +1,5 @@
 #include "Controller.h"
-#include "lib\ClientDLL.h"
+#include "./../../DRPGClientDLL/DRPGClientDLL/ClientDLL.h"
 
 DWORD EnviaTecla(int _command) {
 	ClientRequest cr;

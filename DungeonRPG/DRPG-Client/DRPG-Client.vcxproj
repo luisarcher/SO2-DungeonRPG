@@ -69,7 +69,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>$(SolutionDir)\DRPG-Client\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)\DRPG-Client\lib;$(SolutionDir)\..\DRPGClientDLL\Debug;$(SolutionDir)\..\DRPGClientDLL\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
