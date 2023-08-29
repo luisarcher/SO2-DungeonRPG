@@ -32,7 +32,7 @@ Monstro NovoMonstroBully(int nPassos);
 
 Monstro NovoMonstroDistraido(int nPassos);
 
-void MoveMonstro(Labirinto *shLab, int d, Monstro *m);
+void MoveMonstro(GameBoard *shLab, int d, Monstro *m);
 
 int MudaDirecao(int anterior);
 

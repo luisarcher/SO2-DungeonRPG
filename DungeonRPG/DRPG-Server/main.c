@@ -1,17 +1,17 @@
 #include "Server.h"
 #include "Common.h"
-#include "Labirinto.h"
+#include "GameBoard.h"
 
 int totalConnections = 0;
 
-//Labirinto gLabirinto;
-Labirinto * shLabirinto;
+//GameBoard gGameBoard;
+GameBoard* shGameBoard;
 Player gClients[MAX_CLIENTS];
 
 BOOL start = FALSE;
 BOOL fim = FALSE;
 
-HANDLE gMutexLabirinto;
+HANDLE gMutexGameBoard;
 HANDLE ghGameInstanceEvent;
 HANDLE ghUpdateGameClientEvent;
 
@@ -31,7 +31,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	_setmode(_fileno(stderr), _O_WTEXT);
 #endif
 
-	if ((gMutexLabirinto = CreateMutex(NULL, FALSE, TEXT("LabirintoOcupado"))) == NULL){
+	if ((gMutexGameBoard = CreateMutex(NULL, FALSE, TEXT("GameBoardOcupado"))) == NULL){
 		_tprintf(TEXT("Criação do Mutex falhou (%d)\n"), GetLastError());
 		return;
 	}
@@ -64,28 +64,28 @@ int _tmain(int argc, LPTSTR argv[]) {
 		NULL,
 		PAGE_READWRITE,
 		0,
-		sizeof(Labirinto),
-		TEXT("ShLabirinto")
+		sizeof(GameBoard),
+		TEXT("ShGameBoard")
 	);
 	if (hMappedObj == NULL) {
 		_tprintf(TEXT("[Erro] Criar objectos mapeamentos(%d)\n"), GetLastError());
 		return -1;
 	}
 
-	shLabirinto = (Labirinto*)MapViewOfFile(hMappedObj,
+	shGameBoard = (GameBoard*)MapViewOfFile(hMappedObj,
 		FILE_MAP_ALL_ACCESS,
 		0,
 		0,
-		sizeof(Labirinto)
+		sizeof(GameBoard)
 	);
-	if (shLabirinto == NULL) {
+	if (shGameBoard == NULL) {
 		_tprintf(TEXT("[Erro] Mapear para memória(%d)\n"), GetLastError());
 		return -1;
 	}
 	/*****  MEMÓRIA PARTILHADA ENDS *****/
 		
-	//gLabirinto = NovoLabirinto();
-	*shLabirinto = LerLabirinto();
+	//gGameBoard = NovoGameBoard();
+	*shGameBoard = LerGameBoard();
 	DistribuirItems();
 
 	/* ####### LANÇAR MONSTROS ########## */
@@ -100,9 +100,9 @@ int _tmain(int argc, LPTSTR argv[]) {
 		int y = 0;
 		do {
 			//srand(time(NULL));
-			x = (rand() % LABIRINTOSIZE);
-			y = (rand() % LABIRINTOSIZE);
-		} while (!(shLabirinto->labirinto[y][x] == EMPTY));
+			x = (rand() % GAMEBOARDSIZE);
+			y = (rand() % GAMEBOARDSIZE);
+		} while (!(shGameBoard->gameBoard[y][x] == EMPTY));
 
 		
 		_stprintf_s(path, 256, TEXT("\DRPG-MonsterAI.exe %d %d %d %d %d"), 51, 4, 10,x, y);
@@ -146,11 +146,11 @@ int _tmain(int argc, LPTSTR argv[]) {
 		WaitForSingleObject(gClients[i].hThread, INFINITE);
 	DesligarThreadsDeCliente();
 
-	CloseHandle(gMutexLabirinto);
+	CloseHandle(gMutexGameBoard);
 	CloseHandle(ghGameInstanceEvent);
 	CloseHandle(ghUpdateGameClientEvent);
 
-	UnmapViewOfFile(shLabirinto);
+	UnmapViewOfFile(shGameBoard);
 	CloseHandle(hMappedObj);
 	CloseHandle(hFileToMap);
 	exit(0);

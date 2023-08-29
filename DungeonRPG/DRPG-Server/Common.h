@@ -26,7 +26,7 @@
 #define MAX_CLIENTS 10
 #define BUFFERSIZE 256
 #define PLAYER_LOS 10	//player line of sight
-#define LABIRINTOSIZE 70
+#define GAMEBOARDSIZE 70
 
 #define KEY_UP 72
 #define KEY_DOWN 80
@@ -46,12 +46,12 @@
 		#define HP_BASE 10
 		#define LENTIDAO_BASE 5
 
-	//Paredes 20~29
+	// Walls 20~29
 	#define WALL_START_INDEX 20
 		#define STONEWALL 20
 	#define WALL_END_INDEX 29
 
-	//Items 30~49 | 500+
+	// Items 30~49 | 500+
 	#define ITEM_START_INDEX 30
 		#define VITAMINA	30	//+1 HP (Up to 200% base hp (200))
 		#define ORANGE_BULL 31	//+3 HP (Up to 200% base hp (200))
@@ -60,7 +60,7 @@
 			//pedras 50(quant), 500+ , ex 503 -> 3 pedras numa posição
 	#define ITEM_END_INDEX 49
 
-	//Item Quantity
+	// Item Quantity
 	#define QNT_VITAMINA  0.03		//3% vitaminas no mapa
 	#define QNT_ORANGE_BULL 0.005	//0.5% orangeBull no mapa
 	#define QNT_REB_CAFEINA 0.02	//2% rebuçadosCafeina no mapa
@@ -75,7 +75,7 @@ extern BOOL fim;
 extern BOOL start;		//game start
 extern int totalConnections;
 
-extern HANDLE gMutexLabirinto;
+extern HANDLE gMutexGameBoard;
 extern HANDLE ghGameInstanceEvent;
 extern HANDLE ghUpdateGameClientEvent;
 

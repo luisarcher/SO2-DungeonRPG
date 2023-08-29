@@ -6,18 +6,18 @@
 #include <fcntl.h>
 #include <stdio.h>
 
-#define LABIRINTOSIZE 70
+#define GAMEBOARDSIZE 70
 #define MONSTER_MAT_SIZE 20
 
 extern BOOL fim;
 
 typedef struct {
-	int labirinto[LABIRINTOSIZE][LABIRINTOSIZE];
+	int gameBoard[GAMEBOARDSIZE][GAMEBOARDSIZE];
 	BOOL init;
-} Labirinto;
+} GameBoard;
 
-extern HANDLE gMutexLabirinto;
-extern Labirinto * shLabirinto;
+extern HANDLE gMutexGameBoard;
+extern GameBoard * shGameBoard;
 
 extern HANDLE ghUpdateGameClientEvent;
 

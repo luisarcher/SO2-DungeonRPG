@@ -6,12 +6,16 @@ DungeonRPG is a multiplayer game where players must collect items randomly place
 
 ___
 
-## Getting started
+## Build
 
 You can build this project on the command line by using tools that are included in Visual Studio. The Microsoft C++ (MSVC) compiler toolset is also downloadable as a standalone package. You don't need to install the Visual Studio IDE if you don't plan to use it.
 
 This article describes how to compile a C program on the command line on Windows:
 https://learn.microsoft.com/en-us/cpp/build/walkthrough-compile-a-c-program-on-the-command-line?view=msvc-170
+
+Copy DRPGClientDLL.lib to:
+ - SO2-DungeonRPG\DungeonRPG\DRPG-Client
+ - SO2-DungeonRPG\DungeonRPG\Debug
 
 ___
 

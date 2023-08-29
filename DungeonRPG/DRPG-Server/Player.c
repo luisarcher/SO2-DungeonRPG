@@ -1,5 +1,5 @@
 #include "Player.h"
-#include "Labirinto.h"
+#include "GameBoard.h"
 #include "Common.h"
 #include "Server.h"
 
@@ -18,7 +18,7 @@ void NewPlayer(int id) {
 	j->atkCounter = 0;
 	j->itemDurationCounter = 0;
 
-	//Define x e y do jogador (pos vazia) e regista-o no labirinto
+	//Define x e y do jogador (pos vazia) e regista-o no gameBoard
 	if (!start) SetPlayerInRandomPosition(j);
 	j->hp =  0;
 }
@@ -40,20 +40,20 @@ void DisconnectPlayer(Player* j) {
 *	Recebe a tecla premida pelo utilizador.
 *	Move-o para a posição desejada caso possível.
 */
-void MoverJogador(int playerId, int keystroke) {
+void MovePlayer(int playerId, int keystroke) {
 	Player* j = &gClients[playerId];
 
 	if (!hasStamina(*j)) return;
 
-	//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
-	WaitForSingleObject(gMutexLabirinto, INFINITE);
+	//GameBoard Ocupado - Bloqueia o acesso ao gameBoard por outras threads
+	WaitForSingleObject(gMutexGameBoard, INFINITE);
 
 	switch (keystroke) {
 		case KEY_UP:
 		{
 			if (j->y > 1)
 			{
-				shLabirinto->labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shLabirinto->labirinto[j->y][j->x] / 100) : EMPTY);
+				shGameBoard->gameBoard[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shGameBoard->gameBoard[j->y][j->x] / 100) : EMPTY);
 				if (!hasWallIn(j->x, j->y - 1) && !hasPlayerIn(j->x, j->y - 1)) j->y--;
 				_tprintf(TEXT("Moving up...\n"));
 			}
@@ -61,9 +61,9 @@ void MoverJogador(int playerId, int keystroke) {
 		}
 		case KEY_DOWN:
 		{
-			if (j->y < LABIRINTOSIZE-2)
+			if (j->y < GAMEBOARDSIZE-2)
 			{
-				shLabirinto->labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shLabirinto->labirinto[j->y][j->x] / 100) : EMPTY);
+				shGameBoard->gameBoard[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shGameBoard->gameBoard[j->y][j->x] / 100) : EMPTY);
 				if (!hasWallIn(j->x, j->y + 1) && !hasPlayerIn(j->x, j->y + 1))j->y++;
 				_tprintf(TEXT("Moving down...\n"));
 			}
@@ -73,7 +73,7 @@ void MoverJogador(int playerId, int keystroke) {
 		{
 			if (j->x > 1)
 			{
-				shLabirinto->labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shLabirinto->labirinto[j->y][j->x] / 100) : EMPTY);
+				shGameBoard->gameBoard[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shGameBoard->gameBoard[j->y][j->x] / 100) : EMPTY);
 				if (!hasWallIn(j->x - 1, j->y) && !hasPlayerIn(j->x - 1, j->y)) j->x--;
 				_tprintf(TEXT("Moving left...\n"));
 			}
@@ -81,9 +81,9 @@ void MoverJogador(int playerId, int keystroke) {
 		}
 		case KEY_RIGHT:
 		{
-			if (j->x < LABIRINTOSIZE - 2)
+			if (j->x < GAMEBOARDSIZE - 2)
 			{
-				shLabirinto->labirinto[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shLabirinto->labirinto[j->y][j->x] / 100) : EMPTY);
+				shGameBoard->gameBoard[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shGameBoard->gameBoard[j->y][j->x] / 100) : EMPTY);
 				if (!hasWallIn(j->x + 1, j->y) && !hasPlayerIn(j->x + 1, j->y)) j->x++;
 				_tprintf(TEXT("Moving right...\n"));
 			}
@@ -99,10 +99,10 @@ void MoverJogador(int playerId, int keystroke) {
 	if (hasObjectIn(j->x, j->y)) AskPlayerToCollectItems(j);
 	
 	// Update matrix after collected items
-	shLabirinto->labirinto[j->y][j->x] = playerId;
+	shGameBoard->gameBoard[j->y][j->x] = playerId;
 	
-	//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
-	ReleaseMutex(gMutexLabirinto);
+	//Liberta GameBoard - Desbloqueia o acesso ao gameBoard a outras threads
+	ReleaseMutex(gMutexGameBoard);
 
 	// Player is now "tired"
 	j->speedCounter = j->movSpeed; //player is able to move on 0
@@ -121,29 +121,29 @@ void UpdatePlayerLOS(int x, int y, int (*matriz)[PLAYER_LOS]) {
 
 	if (x - 5 < 0) iniX = 0;
 	else iniX = x - 5;
-	if (x + 5 > LABIRINTOSIZE) maxX = LABIRINTOSIZE;
+	if (x + 5 > GAMEBOARDSIZE) maxX = GAMEBOARDSIZE;
 	else maxX = x + 5;
 
 	if (y - 5 < 0) iniY = 0;
 	else iniY = y - 5;
-	if (y + 5 > LABIRINTOSIZE) maxY = LABIRINTOSIZE;
+	if (y + 5 > GAMEBOARDSIZE) maxY = GAMEBOARDSIZE;
 	else maxY = y + 5;
 
 	int m=0, n= 0;
 
-	//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
-	WaitForSingleObject(gMutexLabirinto, INFINITE);
+	//GameBoard Ocupado - Bloqueia o acesso ao gameBoard por outras threads
+	WaitForSingleObject(gMutexGameBoard, INFINITE);
 
 	for (int i = iniY; i < maxY; i++, n++, m=0)
 	{
 		for (int j = iniX; j < maxX; j++, m++)
 		{
-			matriz[n][m] = shLabirinto->labirinto[i][j];
+			matriz[n][m] = shGameBoard->gameBoard[i][j];
 		}
 	}
 
-	//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
-	ReleaseMutex(gMutexLabirinto);
+	//Liberta GameBoard - Desbloqueia o acesso ao gameBoard a outras threads
+	ReleaseMutex(gMutexGameBoard);
 }
 
 /**
@@ -156,26 +156,26 @@ void SetEmptyMatrix(int (*matriz)[PLAYER_LOS]) {
 }
 
 /**
-*	Coloca o jogador numa posição aleatória no labirinto que esteja vazia.
+*	Coloca o jogador numa posição aleatória no gameBoard que esteja vazia.
 */
 void SetPlayerInRandomPosition(Player* p) {
 	int x, y;
 
-	//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
-	WaitForSingleObject(gMutexLabirinto, INFINITE);
+	//GameBoard Ocupado - Bloqueia o acesso ao gameBoard por outras threads
+	WaitForSingleObject(gMutexGameBoard, INFINITE);
 
 	do {
 		srand(time(NULL));
-		x = (rand() % LABIRINTOSIZE);
-		y = (rand() % LABIRINTOSIZE);
-	} while (!(shLabirinto->labirinto[y][x] == EMPTY));
+		x = (rand() % GAMEBOARDSIZE);
+		y = (rand() % GAMEBOARDSIZE);
+	} while (!(shGameBoard->gameBoard[y][x] == EMPTY));
 
 	p->x = x;
 	p->y = y;
-	shLabirinto->labirinto[y][x] = p->id;
+	shGameBoard->gameBoard[y][x] = p->id;
 
-	//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
-	ReleaseMutex(gMutexLabirinto);
+	//Liberta GameBoard - Desbloqueia o acesso ao gameBoard a outras threads
+	ReleaseMutex(gMutexGameBoard);
 }
 
 BOOL canAttack(Player p) {
@@ -215,22 +215,22 @@ void CheckItemDurability(Player* p) {
 void AttackClosePlayers(Player* p) {
 	if (!canAttack(*p)) return;
 
-	//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
-	WaitForSingleObject(gMutexLabirinto, INFINITE);
+	//GameBoard Ocupado - Bloqueia o acesso ao gameBoard por outras threads
+	WaitForSingleObject(gMutexGameBoard, INFINITE);
 	for (int i = (p->y - 1); i <= (p->y + 1); i++)
 	{
 		for (int j = (p->x - 1); j <= (p->x + 1); j++)
 		{
 			if (i == p->y && j == p->x) continue;
-			if (hasPlayerIn(j, i) && gClients[shLabirinto->labirinto[i][j]].hp > 0) {
-				gClients[shLabirinto->labirinto[i][j]].hp -= (UseStone(p) ? 2 : 1);
+			if (hasPlayerIn(j, i) && gClients[shGameBoard->gameBoard[i][j]].hp > 0) {
+				gClients[shGameBoard->gameBoard[i][j]].hp -= (UseStone(p) ? 2 : 1);
 				p->atkCounter = (int)LENTIDAO_BASE;
 				return;
 			}
 		}
 	}
-	//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
-	ReleaseMutex(gMutexLabirinto);
+	//Liberta GameBoard - Desbloqueia o acesso ao gameBoard a outras threads
+	ReleaseMutex(gMutexGameBoard);
 }
 
 /**
@@ -238,14 +238,14 @@ void AttackClosePlayers(Player* p) {
 *	caso se verifique, o jogador é atacado.
 */
 void CheckForThreats(Player* p) {
-	//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
-	WaitForSingleObject(gMutexLabirinto, INFINITE);
+	//GameBoard Ocupado - Bloqueia o acesso ao gameBoard por outras threads
+	WaitForSingleObject(gMutexGameBoard, INFINITE);
 
-	if (shLabirinto->labirinto[p->y][p->x] > 1000 && !hasItemIn(shLabirinto->labirinto[p->y][p->x]))
+	if (shGameBoard->gameBoard[p->y][p->x] > 1000 && !hasItemIn(shGameBoard->gameBoard[p->y][p->x]))
 		--p->hp;
 
-	//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
-	ReleaseMutex(gMutexLabirinto);
+	//Liberta GameBoard - Desbloqueia o acesso ao gameBoard a outras threads
+	ReleaseMutex(gMutexGameBoard);
 }
 
 /**
@@ -264,7 +264,7 @@ BOOL UseStone(Player* p) {
 */
 void DropStones(Player* p) {
 	int cellValue = (p->nStones > 0) ? (p->nStones * PEDRAS) : EMPTY;
-	shLabirinto->labirinto[p->y][p->x] = cellValue;
+	shGameBoard->gameBoard[p->y][p->x] = cellValue;
 }
 
 /**
@@ -277,7 +277,7 @@ void DropStones(Player* p) {
 //Protegida pela função que a invoca. (Mutex)
 void AskPlayerToCollectItems(Player* p) {
 	int nPedras = 0;
-	switch (shLabirinto->labirinto[p->y][p->x])
+	switch (shGameBoard->gameBoard[p->y][p->x])
 	{
 	case VITAMINA:
 		if ((p->hp + 1) <= (int)HP_BASE * 2) p->hp++;
@@ -290,7 +290,7 @@ void AskPlayerToCollectItems(Player* p) {
 		p->itemDurationCounter = 15 * 60; // 15 instantes por segundo * 60 segundos = 900 instantes;
 		break;
 	default:
-		if ((nPedras = shLabirinto->labirinto[p->y][p->x]) > PEDRAS){
+		if ((nPedras = shGameBoard->gameBoard[p->y][p->x]) > PEDRAS){
 			nPedras -= (int)PEDRAS;
 			if (p->nStones + nPedras <= (int)PLAYER_STONE_CAP) p->nStones += nPedras;
 		}

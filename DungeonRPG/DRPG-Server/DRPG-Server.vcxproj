@@ -110,14 +110,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Labirinto.c" />
+    <ClCompile Include="GameBoard.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="Player.c" />
     <ClCompile Include="Server.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h" />
-    <ClInclude Include="Labirinto.h" />
+    <ClInclude Include="GameBoard.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Server.h" />
   </ItemGroup>

@@ -1,9 +1,9 @@
 #include "Monster.h"
 #include "Common.h"
 
-Labirinto * shLabirinto;
+GameBoard* shGameBoard;
 BOOL fim = FALSE;
-HANDLE gMutexLabirinto;
+HANDLE gMutexGameBoard;
 HANDLE ghUpdateGameClientEvent;
 
 
@@ -32,8 +32,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 	_setmode(_fileno(stderr), _O_WTEXT);
 #endif
 
-	if ((gMutexLabirinto = OpenMutex(MUTEX_ALL_ACCESS, FALSE, TEXT("LabirintoOcupado"))) == NULL) {
-		_tprintf(TEXT("[ERRO] Falha ao abir mutex de labirinto. (%d)\n"), GetLastError());
+	if ((gMutexGameBoard = OpenMutex(MUTEX_ALL_ACCESS, FALSE, TEXT("GameBoardOcupado"))) == NULL) {
+		_tprintf(TEXT("[ERRO] Falha ao abir mutex de gameBoard. (%d)\n"), GetLastError());
 		exit(-1);
 	}
 	if ((hGameInstanceEvent = OpenEvent(EVENT_ALL_ACCESS, FALSE, TEXT("gameInstanceEvent"))) == NULL) {
@@ -46,7 +46,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	}
 	InitializeSharedMemory(&hMappedObj);
 	
-	_tprintf(TEXT("Vou ler o estado do labirinto...\n"));
+	_tprintf(TEXT("Vou ler o estado do gameBoard...\n"));
 	//system("pause");
 	escondeCursor();
 	//valida aqui o tipo de monstro
@@ -62,7 +62,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	m.posY = 1;*/
 	
 	
-	shLabirinto->labirinto[m.posY][m.posX] = m.tipo;
+	shGameBoard->gameBoard[m.posY][m.posX] = m.tipo;
 	
 	//apenas move random-> implementar a perseguição
 
@@ -83,7 +83,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 				if (r <= 75)
 				{
-					m.direcao = MudaDirecao(shLabirinto, m.direcao, &m);
+					m.direcao = MudaDirecao(shGameBoard, m.direcao, &m);
 				}
 				
 				m.stamina = m.lentidao;
@@ -92,7 +92,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 			else {
 				if (m.tipo = 51)
 				{
-					MoveMonstro(shLabirinto, m.direcao, &m);
+					MoveMonstro(shGameBoard, m.direcao, &m);
 					m.stamina = m.lentidao;
 					m.passos--;
 				}

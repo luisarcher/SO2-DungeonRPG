@@ -26,41 +26,41 @@ Monstro NovoMonstroDistraido(int nPassos,int hp,int x, int y) {
 	return m;
 }
 
-void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
+void MoveMonstro(GameBoard * shLab, int d, Monstro *m) {
 	switch (d)
 	{
 	case UP:
 	{		
-		//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
-		WaitForSingleObject(gMutexLabirinto, INFINITE);
+		//GameBoard Ocupado - Bloqueia o acesso ao gameBoard por outras threads
+		WaitForSingleObject(gMutexGameBoard, INFINITE);
 
 		if ((m->posY - 1) >= 1 && !hasWallIn(m->posX, m->posY - 1) && !hasMonsterIn(m->posX, m->posY - 1)) {
-			if (shLab->labirinto[m->posY][m->posX] > 1000)
+			if (shLab->gameBoard[m->posY][m->posX] > 1000)
 			{
-				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] - (m->tipo * 100);
+				shLab->gameBoard[m->posY][m->posX] = shLab->gameBoard[m->posY][m->posX] - (m->tipo * 100);
 			}
 			else
 			{
-				shLab->labirinto[m->posY][m->posX] = EMPTY;
+				shLab->gameBoard[m->posY][m->posX] = EMPTY;
 			}
 			m->posY = m->posY - 1;
-			if (shLab->labirinto[m->posY][m->posX] == EMPTY)
+			if (shLab->gameBoard[m->posY][m->posX] == EMPTY)
 			{
-				shLab->labirinto[m->posY][m->posX] = m->tipo;
+				shLab->gameBoard[m->posY][m->posX] = m->tipo;
 			}
 			else {
-				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] + (m->tipo * 100);
+				shLab->gameBoard[m->posY][m->posX] = shLab->gameBoard[m->posY][m->posX] + (m->tipo * 100);
 			}
-			//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
-			ReleaseMutex(gMutexLabirinto);
+			//Liberta GameBoard - Desbloqueia o acesso ao gameBoard a outras threads
+			ReleaseMutex(gMutexGameBoard);
 			break;
 		}
 		else {
 			m->direcao = MudaDirecao(UP);
 
-			//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
+			//Liberta GameBoard - Desbloqueia o acesso ao gameBoard a outras threads
 			//A função pai, tem de entregar o recurso antes do "filho" pedir.
-			ReleaseMutex(gMutexLabirinto);
+			ReleaseMutex(gMutexGameBoard);
 			MoveMonstro(shLab, m->direcao, m);
 			break;
 		}
@@ -68,35 +68,35 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 	}
 	case DOWN:
 	{	
-		//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
-		WaitForSingleObject(gMutexLabirinto, INFINITE);
-		if ((m->posY + 1) <= LABIRINTOSIZE - 2 && !hasWallIn( m->posX, m->posY + 1 ) && !hasMonsterIn(m->posX, m->posY + 1)) {
+		//GameBoard Ocupado - Bloqueia o acesso ao gameBoard por outras threads
+		WaitForSingleObject(gMutexGameBoard, INFINITE);
+		if ((m->posY + 1) <= GAMEBOARDSIZE - 2 && !hasWallIn( m->posX, m->posY + 1 ) && !hasMonsterIn(m->posX, m->posY + 1)) {
 			//_tprintf(TEXT("[sfsfsf] a mover para (%d)\n"), m->posY+1);
 			//system("pause");
-			if (shLab->labirinto[m->posY][m->posX] > 1000)
+			if (shLab->gameBoard[m->posY][m->posX] > 1000)
 			{
-				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] - (m->tipo * 100);
+				shLab->gameBoard[m->posY][m->posX] = shLab->gameBoard[m->posY][m->posX] - (m->tipo * 100);
 			}
 			else
 			{
-				shLab->labirinto[m->posY][m->posX] = EMPTY;
+				shLab->gameBoard[m->posY][m->posX] = EMPTY;
 			}
 			m->posY = m->posY + 1;
-			if (shLab->labirinto[m->posY][m->posX] == EMPTY)
+			if (shLab->gameBoard[m->posY][m->posX] == EMPTY)
 			{
-				shLab->labirinto[m->posY][m->posX] = m->tipo;
+				shLab->gameBoard[m->posY][m->posX] = m->tipo;
 			}
 			else {
-				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] +( m->tipo * 100);
+				shLab->gameBoard[m->posY][m->posX] = shLab->gameBoard[m->posY][m->posX] +( m->tipo * 100);
 			}
-			//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
-			ReleaseMutex(gMutexLabirinto);
+			//Liberta GameBoard - Desbloqueia o acesso ao gameBoard a outras threads
+			ReleaseMutex(gMutexGameBoard);
 			break;
 		}
 		else {
 			m->direcao = MudaDirecao(DOWN);
-			//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
-			ReleaseMutex(gMutexLabirinto);
+			//Liberta GameBoard - Desbloqueia o acesso ao gameBoard a outras threads
+			ReleaseMutex(gMutexGameBoard);
 			MoveMonstro(shLab, m->direcao, m);
 			break;
 		}
@@ -104,34 +104,34 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 	}
 	case RIGHT:
 	{	
-		//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
-		WaitForSingleObject(gMutexLabirinto, INFINITE);
+		//GameBoard Ocupado - Bloqueia o acesso ao gameBoard por outras threads
+		WaitForSingleObject(gMutexGameBoard, INFINITE);
 
-		if ((m->posX + 1) <= LABIRINTOSIZE - 2 && !hasWallIn(m->posX + 1, m->posY) && !hasMonsterIn( m->posX+1, m->posY)) {
-			if (shLab->labirinto[m->posY][m->posX] > 1000)
+		if ((m->posX + 1) <= GAMEBOARDSIZE - 2 && !hasWallIn(m->posX + 1, m->posY) && !hasMonsterIn( m->posX+1, m->posY)) {
+			if (shLab->gameBoard[m->posY][m->posX] > 1000)
 			{
-				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] - (m->tipo * 100);
+				shLab->gameBoard[m->posY][m->posX] = shLab->gameBoard[m->posY][m->posX] - (m->tipo * 100);
 			}
 			else
 			{
-				shLab->labirinto[m->posY][m->posX] = EMPTY;
+				shLab->gameBoard[m->posY][m->posX] = EMPTY;
 			}
 			m->posX = m->posX + 1;
-			if (shLab->labirinto[m->posY][m->posX] == EMPTY)
+			if (shLab->gameBoard[m->posY][m->posX] == EMPTY)
 			{
-				shLab->labirinto[m->posY][m->posX] = m->tipo;
+				shLab->gameBoard[m->posY][m->posX] = m->tipo;
 			}
 			else {
-				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] + (m->tipo * 100);
+				shLab->gameBoard[m->posY][m->posX] = shLab->gameBoard[m->posY][m->posX] + (m->tipo * 100);
 			}
-			//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
-			ReleaseMutex(gMutexLabirinto);
+			//Liberta GameBoard - Desbloqueia o acesso ao gameBoard a outras threads
+			ReleaseMutex(gMutexGameBoard);
 			break;
 		}
 		else {
 			m->direcao = MudaDirecao(RIGHT);
-			//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
-			ReleaseMutex(gMutexLabirinto);
+			//Liberta GameBoard - Desbloqueia o acesso ao gameBoard a outras threads
+			ReleaseMutex(gMutexGameBoard);
 			MoveMonstro(shLab, m->direcao, m);
 			break;
 		}
@@ -139,34 +139,34 @@ void MoveMonstro(Labirinto * shLab, int d, Monstro *m) {
 	}
 	case LEFT:
 	{	
-		//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
-		WaitForSingleObject(gMutexLabirinto, INFINITE);
+		//GameBoard Ocupado - Bloqueia o acesso ao gameBoard por outras threads
+		WaitForSingleObject(gMutexGameBoard, INFINITE);
 
 		if ((m->posX - 1) >= 1 && !hasWallIn(m->posX - 1, m->posY) && !hasMonsterIn(m->posX - 1, m->posY)) {
-			if (shLab->labirinto[m->posY][m->posX] > 1000)
+			if (shLab->gameBoard[m->posY][m->posX] > 1000)
 			{
-				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] - (m->tipo * 100);
+				shLab->gameBoard[m->posY][m->posX] = shLab->gameBoard[m->posY][m->posX] - (m->tipo * 100);
 			}
 			else
 			{
-				shLab->labirinto[m->posY][m->posX] = EMPTY;
+				shLab->gameBoard[m->posY][m->posX] = EMPTY;
 			}
 			m->posX = m->posX - 1;
-			if (shLab->labirinto[m->posY][m->posX] == EMPTY)
+			if (shLab->gameBoard[m->posY][m->posX] == EMPTY)
 			{
-				shLab->labirinto[m->posY][m->posX] = m->tipo;
+				shLab->gameBoard[m->posY][m->posX] = m->tipo;
 			}
 			else {
-				shLab->labirinto[m->posY][m->posX] = shLab->labirinto[m->posY][m->posX] + (m->tipo * 100);
+				shLab->gameBoard[m->posY][m->posX] = shLab->gameBoard[m->posY][m->posX] + (m->tipo * 100);
 			}
-			//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
-			ReleaseMutex(gMutexLabirinto);
+			//Liberta GameBoard - Desbloqueia o acesso ao gameBoard a outras threads
+			ReleaseMutex(gMutexGameBoard);
 			break;
 		}
 		else {
 			m->direcao = MudaDirecao(LEFT);
-			//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
-			ReleaseMutex(gMutexLabirinto);
+			//Liberta GameBoard - Desbloqueia o acesso ao gameBoard a outras threads
+			ReleaseMutex(gMutexGameBoard);
 			MoveMonstro(shLab, m->direcao, m);
 			break;
 		}
@@ -195,20 +195,20 @@ void InitializeSharedMemory(HANDLE * hMappedObj) {
 
 	*hMappedObj = OpenFileMapping(FILE_MAP_ALL_ACCESS,
 		FALSE,
-		TEXT("ShLabirinto"));
+		TEXT("ShGameBoard"));
 	if (hMappedObj == NULL) {
 		_tprintf(TEXT("[Erro] Criar objectos mapeados(%d)\n"), GetLastError());
 		system("pause");
 		return -1;
 	}
 
-	shLabirinto = (Labirinto*)MapViewOfFile(*hMappedObj,
+	shGameBoard = (GameBoard*)MapViewOfFile(*hMappedObj,
 		FILE_MAP_ALL_ACCESS,
 		0,
 		0,
-		sizeof(Labirinto)
+		sizeof(GameBoard)
 		);
-	if (shLabirinto == NULL) {
+	if (shGameBoard == NULL) {
 		_tprintf(TEXT("[Erro] Mapear para memória(%d)\n"), GetLastError());
 		system("pause");
 		return -1;
@@ -222,25 +222,25 @@ void DisplayMonsterSurroundings(int x, int y,int hp) {
 
 	if (x - (MONSTER_MAT_SIZE/2) < 0) iniX = 0;
 	else iniX = x - MONSTER_MAT_SIZE / 2;
-	if (x + MONSTER_MAT_SIZE / 2 > LABIRINTOSIZE) maxX = LABIRINTOSIZE;
+	if (x + MONSTER_MAT_SIZE / 2 > GAMEBOARDSIZE) maxX = GAMEBOARDSIZE;
 	else maxX = x + MONSTER_MAT_SIZE / 2;
 
 	if (y - MONSTER_MAT_SIZE / 2 < 0) iniY = 0;
 	else iniY = y - MONSTER_MAT_SIZE / 2;
-	if (y + MONSTER_MAT_SIZE / 2 > LABIRINTOSIZE) maxY = LABIRINTOSIZE;
+	if (y + MONSTER_MAT_SIZE / 2 > GAMEBOARDSIZE) maxY = GAMEBOARDSIZE;
 	else maxY = y + MONSTER_MAT_SIZE / 2;
 
 	int m = 0, n = 0;
 
-	//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
-	WaitForSingleObject(gMutexLabirinto, INFINITE);
+	//GameBoard Ocupado - Bloqueia o acesso ao gameBoard por outras threads
+	WaitForSingleObject(gMutexGameBoard, INFINITE);
 
 	clrscr();
 	for (int i = iniY; i < maxY; i++, n++, m = 0)
 	{
 		for (int j = iniX; j < maxX; j++, m++)
 		{
-			int c = shLabirinto->labirinto[i][j];
+			int c = shGameBoard->gameBoard[i][j];
 			if (c > 1000) {
 				c = c % 100;
 				if (c >= PLAYER_START_INDEX && c <= PLAYER_END_INDEX)
@@ -293,18 +293,18 @@ void DisplayMonsterSurroundings(int x, int y,int hp) {
 	}
 	_tprintf(TEXT("Monster at: Y:%d X:%d\n HP: %d"),y,x, hp);
 
-	//Liberta Labirinto - Desbloqueia o acesso ao labirinto a outras threads
-	ReleaseMutex(gMutexLabirinto);
+	//Liberta GameBoard - Desbloqueia o acesso ao gameBoard a outras threads
+	ReleaseMutex(gMutexGameBoard);
 }
 
 void ReadSharedMemory() {
 	//while (!fim) {
 		system("cls");
-		for (int i = 0; i < LABIRINTOSIZE; i++)
+		for (int i = 0; i < GAMEBOARDSIZE; i++)
 		{
-			for (int j = 0; j < LABIRINTOSIZE; j++)
+			for (int j = 0; j < GAMEBOARDSIZE; j++)
 			{
-				int c = shLabirinto->labirinto[i][j];
+				int c = shGameBoard->gameBoard[i][j];
 				if (c >= WALL_START_INDEX && c <= WALL_END_INDEX)
 				{
 					_tprintf(TEXT("%c"), 9619);
@@ -338,7 +338,7 @@ void ReadSharedMemory() {
 }
 
 void CloseHandles(HANDLE * hMappedObj) {
-	UnmapViewOfFile(shLabirinto);
+	UnmapViewOfFile(shGameBoard);
 	CloseHandle(*hMappedObj);
 }
 
@@ -364,9 +364,9 @@ void escondeCursor() {
 
 void CheckForThreats(Monstro *m) {
 	
-	if (shLabirinto->labirinto[m->posY][m->posX] > 1000 && !hasItemIn(shLabirinto->labirinto[m->posY][m->posX]) )
+	if (shGameBoard->gameBoard[m->posY][m->posX] > 1000 && !hasItemIn(shGameBoard->gameBoard[m->posY][m->posX]) )
 	{
-		//_tprintf(TEXT("threat at Y:%d X: %d\nvalor no mapa:%d\nResto = %d\n"), m->posY, m->posX, shLabirinto->labirinto[m->posY][m->posX], shLabirinto->labirinto[m->posY][m->posX] % 100);
+		//_tprintf(TEXT("threat at Y:%d X: %d\nvalor no mapa:%d\nResto = %d\n"), m->posY, m->posX, shGameBoard->gameBoard[m->posY][m->posX], shGameBoard->gameBoard[m->posY][m->posX] % 100);
 		//system("pause");
 		m->hp++;
 	}
@@ -393,13 +393,13 @@ void clrscr() {
 }
 
 BOOL hasWallIn(int x, int y) {
-	return shLabirinto->labirinto[y][x] >= WALL_START_INDEX
-		&& shLabirinto->labirinto[y][x] <= WALL_END_INDEX;
+	return shGameBoard->gameBoard[y][x] >= WALL_START_INDEX
+		&& shGameBoard->gameBoard[y][x] <= WALL_END_INDEX;
 }
 
 BOOL hasMonsterIn(int x, int y) {
-	return shLabirinto->labirinto[y][x] >= MONSTER_START_INDEX
-		&& shLabirinto->labirinto[y][x] <= MONSTER_END_INDEX;
+	return shGameBoard->gameBoard[y][x] >= MONSTER_START_INDEX
+		&& shGameBoard->gameBoard[y][x] <= MONSTER_END_INDEX;
 }
 
 BOOL hasItemIn(int d) {
@@ -422,8 +422,8 @@ BOOL hasItemIn(int d) {
 }
 
 BOOL hasPlayerIn(int x, int y) {
-	return shLabirinto->labirinto[y][x] >= PLAYER_START_INDEX
-		&& shLabirinto->labirinto[y][x] <= PLAYER_END_INDEX;
+	return shGameBoard->gameBoard[y][x] >= PLAYER_START_INDEX
+		&& shGameBoard->gameBoard[y][x] <= PLAYER_END_INDEX;
 }
 
 
@@ -431,35 +431,35 @@ BOOL hasPlayerIn(int x, int y) {
 void CheckForPlayers(Monstro *m) {
 	
 
-	WaitForSingleObject(gMutexLabirinto, INFINITE);
-	for (int i = 0; i < LABIRINTOSIZE; i++)
+	WaitForSingleObject(gMutexGameBoard, INFINITE);
+	for (int i = 0; i < GAMEBOARDSIZE; i++)
 	{
-		for (int j = 0; j < LABIRINTOSIZE; j++)
+		for (int j = 0; j < GAMEBOARDSIZE; j++)
 		{
 			
-			int c = shLabirinto->labirinto[i][j];
+			int c = shGameBoard->gameBoard[i][j];
 			if (!hasItemIn(c) && hasPlayerIn(i, j))
 			{
 				if (i > m->posY)//se estiver abaixo
 				{
-					MoveMonstro(shLabirinto,DOWN,m);
+					MoveMonstro(shGameBoard,DOWN,m);
 					break;
 				}
 				else if (i < m->posY) //se estiver acima
 				{
-					MoveMonstro(shLabirinto, UP, m);
+					MoveMonstro(shGameBoard, UP, m);
 					break;
 				}
 				else
 				{
 					if (j > m->posX)// se estiver à direita
 					{
-						MoveMonstro(shLabirinto, LEFT, m);
+						MoveMonstro(shGameBoard, LEFT, m);
 						break;
 					}
 					else if (j < m->posX)//se estiver à esquerda
 					{
-						MoveMonstro(shLabirinto, RIGHT, m);
+						MoveMonstro(shGameBoard, RIGHT, m);
 						break;
 					}
 				}
@@ -467,7 +467,7 @@ void CheckForPlayers(Monstro *m) {
 			
 		}
 	}
-	ReleaseMutex(gMutexLabirinto);
+	ReleaseMutex(gMutexGameBoard);
 }
 
 	

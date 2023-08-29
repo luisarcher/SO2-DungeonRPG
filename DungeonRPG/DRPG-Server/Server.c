@@ -1,6 +1,6 @@
 #include "Server.h"
 #include "Player.h"
-#include "Labirinto.h"
+#include "GameBoard.h"
 
 TCHAR broadcastMessage[BUFFERSIZE];
 
@@ -169,8 +169,8 @@ DWORD WINAPI HandleClientConnection(LPVOID param) {
 		else { //O jogo está a decorrer
 			if (pedido.command == MOVEUP || pedido.command == MOVEDOWN
 				|| pedido.command == MOVELEFT || pedido.command == MOVERIGHT) {
-				MoverJogador((int)param, (pedido.command - 600));
-				_tcscpy(respostaServidor, TEXT("A mover..."));
+				MovePlayer((int)param, (pedido.command - 600));
+				_tcscpy(respostaServidor, TEXT("Moving ..."));
 			}
 			else {
 				switch (pedido.command)
