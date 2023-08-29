@@ -1,7 +1,7 @@
 #ifndef SERVER_H_INCLUDED
 #define SERVER_H_INCLUDED
 #include "Common.h"
-#include "Jogador.h"
+#include "Player.h"
 
 #define PIPE_NAME TEXT("\\\\.\\pipe\\DRPG")
 #define PIPE_NAME_JOGO TEXT("\\\\.\\pipe\\DRPG-Jogo")
@@ -25,11 +25,11 @@ typedef struct {
 typedef struct {
 	int matriz[PLAYER_LOS][PLAYER_LOS];
 	TCHAR msg[BUFFERSIZE];
-	InformarJogador playerInfo;
+	PlayerInformation playerInfo;
 } ServerResponse;
 
-DWORD WINAPI RecebeClientes(LPVOID param);		//Listen
-DWORD WINAPI AtendeCliente(LPVOID param);
+DWORD WINAPI ListenForConnections(LPVOID param);		//Listen
+DWORD WINAPI HandleClientConnection(LPVOID param);
 DWORD WINAPI ActualizaClientes(LPVOID param);
 DWORD WINAPI GameTimer(LPVOID param);
 DWORD WINAPI GameEvents(LPVOID param);

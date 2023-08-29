@@ -1,7 +1,7 @@
 #ifndef LABIRINTO_H_INCLUDED
 #define LABIRINTO_H_INCLUDED
 
-#include "Jogador.h"
+#include "Player.h"
 
 typedef struct LABIRINTO Labirinto;
 struct LABIRINTO {

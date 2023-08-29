@@ -1,5 +1,5 @@
 #include "Server.h"
-#include "Jogador.h"
+#include "Player.h"
 #include "Labirinto.h"
 
 TCHAR broadcastMessage[BUFFERSIZE];
@@ -7,12 +7,12 @@ TCHAR broadcastMessage[BUFFERSIZE];
 /**
 *	Thread que recebe e regista os novos clientes.
 */
-DWORD WINAPI RecebeClientes(LPVOID param) {
+DWORD WINAPI ListenForConnections(LPVOID param) {
 	DWORD n;
 	while (!fim && totalConnections < MAX_CLIENTS) {
 
-		//PIPE TO HANDLE REQUESTS
-		_tprintf(TEXT("[SERVER] Vou passar à criação de uma cópia do pipe '%s' ... \n"), PIPE_NAME);
+		// PIPE TO HANDLE REQUESTS
+		_tprintf(TEXT("[SERVER] Creating connection pipe for game stats: '%s' ... \n"), PIPE_NAME);
 		if ((gClients[totalConnections].hPipe = CreateNamedPipe(
 			PIPE_NAME, 
 			PIPE_ACCESS_DUPLEX, 
@@ -21,13 +21,13 @@ DWORD WINAPI RecebeClientes(LPVOID param) {
 			BUFFERSIZE * sizeof(TCHAR), 
 			BUFFERSIZE * sizeof(TCHAR),
 			1000, NULL)) == INVALID_HANDLE_VALUE){
-			_tperror(TEXT("Erro ao criar named pipe!"));
+			_tperror(TEXT("Error creating pipe for game stats!"));
 			exit(-1);
 		}
 
-		//PIPE FOR SENDING GAME BOARD
-		_tprintf(TEXT("[SERVER] Vou passar à criação de uma cópia do pipe '%s' ... \n"), PIPE_NAME_JOGO);
-		if ((gClients[totalConnections].hPipeJogo = CreateNamedPipe(
+		// PIPE FOR SENDING THE GAME BOARD STATUS
+		_tprintf(TEXT("[SERVER] Creating connection pipe for game map: '%s' ... \n"), PIPE_NAME_JOGO);
+		if ((gClients[totalConnections].hPipeGame = CreateNamedPipe(
 			PIPE_NAME_JOGO, 
 			PIPE_ACCESS_OUTBOUND, 
 			PIPE_WAIT | PIPE_TYPE_MESSAGE | PIPE_READMODE_MESSAGE, 
@@ -35,25 +35,27 @@ DWORD WINAPI RecebeClientes(LPVOID param) {
 			sizeof(ServerResponse), 
 			sizeof(ServerResponse),
 			1000, NULL)) == INVALID_HANDLE_VALUE) {
-			_tperror(TEXT("Erro ao criar named pipe para o jogo!"));
+			_tperror(TEXT("Error creating pipe for game map!"));
 			exit(-1);
 		}
 
-		//Espera a ligação de um cliente (ConnectNamedPipe é bloqueante)
-		_tprintf(TEXT("[SERVER] Esperar ligação de um cliente...\n"));
+		// Waits for a client connection (ConnectNamedPipe - Blocking)
+		_tprintf(TEXT("[SERVER] Waiting client connection ...\n"));
 		if (!ConnectNamedPipe(gClients[totalConnections].hPipe, NULL)) {
-			_tperror(TEXT("Erro na ligação!"));
+			_tperror(TEXT("Error connecting on pipe for game stats!"));
 			exit(-1);
 		}
 
-		if (!ConnectNamedPipe(gClients[totalConnections].hPipeJogo, NULL)) {
-			_tperror(TEXT("Erro na ligação!"));
+		if (!ConnectNamedPipe(gClients[totalConnections].hPipeGame, NULL)) {
+			_tperror(TEXT("Error connecting on pipe for game map!"));
 			exit(-1);
 		}
 
-		NovoJogador(totalConnections); //prepara os dados do novo jogador
-		//Atende o cliente que se ligou
-		gClients[totalConnections].hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)AtendeCliente, (LPVOID)totalConnections, 0, &n);
+		// Prepare new player data
+		NewPlayer(totalConnections);
+
+		// Handles a new client connection
+		gClients[totalConnections].hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)HandleClientConnection, (LPVOID)totalConnections, 0, &n);
 		totalConnections++;
 	}
 	return 0;
@@ -112,7 +114,7 @@ int activePlayers() {
 /**
 * Analisa o pedido do cliente e envia uma resposta.
 */
-DWORD WINAPI AtendeCliente(LPVOID param) {
+DWORD WINAPI HandleClientConnection(LPVOID param) {
 	HANDLE hPipeCliente = gClients[(int)param].hPipe;
 
 	TCHAR buf[BUFFERSIZE];
@@ -139,13 +141,13 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 				_tcscat(respostaServidor, buf);
 				break;
 			case SETNAME:
-				_tcscpy(gClients[(int)param].nome, pedido.msg);
+				_tcscpy(gClients[(int)param].name, pedido.msg);
 				_tcscpy(respostaServidor, TEXT("Estás registado como: "));
 				_tcscat(respostaServidor, pedido.msg);
 
 				//Broadcast
 				_tcscat(broadcastMessage, TEXT("Novo Cliente Ligado: "));
-				_tcscat(broadcastMessage, gClients[(int)param].nome);
+				_tcscat(broadcastMessage, gClients[(int)param].name);
 				break;
 
 			case STARTGAME:
@@ -154,7 +156,7 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 
 				//Broadcast
 				_tcscat(broadcastMessage, TEXT("Novo jogo iniciado por: "));
-				_tcscat(broadcastMessage, gClients[(int)param].nome);
+				_tcscat(broadcastMessage, gClients[(int)param].name);
 				break;
 
 			case QUITGAME:
@@ -177,17 +179,17 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 					_tcscpy(respostaServidor, TEXT("Estatísticas de jogo a decorrer"));
 					break;
 				case SWITCH_STONE_AUTOHIT:
-					if (gClients[(int)param].stoneAutoHit) {
-						gClients[(int)param].stoneAutoHit = FALSE;
-						_tcscpy(respostaServidor, TEXT("Stone AutoHit: Desligado!"));
+					if (gClients[(int)param].stoneAutoHitToggle) {
+						gClients[(int)param].stoneAutoHitToggle = FALSE;
+						_tcscpy(respostaServidor, TEXT("Stone AutoHit: Disabled!"));
 					}
 					else {
-						gClients[(int)param].stoneAutoHit = TRUE;
-						_tcscpy(respostaServidor, TEXT("Stone AutoHit: Ligado!"));
+						gClients[(int)param].stoneAutoHitToggle = TRUE;
+						_tcscpy(respostaServidor, TEXT("Stone AutoHit: Enabled!"));
 					}
 					break;
 				case STARTGAME:
-					_tcscpy(respostaServidor, TEXT("O jogo já começou!"));
+					_tcscpy(respostaServidor, TEXT("The game already started!"));
 					break;
 
 				case QUITGAME:
@@ -196,9 +198,9 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 			} //fim if - mover
 		} //fim if - start
 		//Entrega a resposta final ao cliente
-		_tprintf(TEXT("[Server] A responder com %d bytes: \'%s\' ao cliente [%d] (ReadFile)\n"), n, respostaServidor, (int)param);
+		_tprintf(TEXT("[Server] Sending %d bytes: \'%s\' to client [%d] (ReadFile)\n"), n, respostaServidor, (int)param);
 		if (!WriteFile(hPipeCliente, respostaServidor, sizeof(TCHAR) * BUFFERSIZE, &n, NULL)) {
-			_tperror(TEXT("[ERRO] Responder ao cliente... (WriteFile)\n"));
+			_tperror(TEXT("[ERROR] Error replying to client... (WriteFile)\n"));
 			exit(-1);
 		}
 
@@ -207,11 +209,11 @@ DWORD WINAPI AtendeCliente(LPVOID param) {
 	} while (pedido.command != QUITGAME);
 
 	DropStones(&gClients[(int)param]);
-	DesligarJogador(&gClients[(int)param]);
+	DisconnectPlayer(&gClients[(int)param]);
 
 	//Broadcast
-	_tcscat(broadcastMessage, gClients[(int)param].nome);
-	_tcscat(broadcastMessage, TEXT(" saiu do jogo."));
+	_tcscat(broadcastMessage, gClients[(int)param].name);
+	_tcscat(broadcastMessage, TEXT(" left the game."));
 
 	_tprintf(TEXT("Thread %d exiting\n"), GetCurrentThreadId());
 	return 0;
@@ -241,12 +243,12 @@ DWORD WINAPI ActualizaClientes(LPVOID param) {
 			for (int i = 0; i < totalConnections; i++) {
 				if (gClients[i].hp > 0) {
 					//Enviar dados do jogador
-					resposta.playerInfo = PrepararCopiaDadosParaEnviar(gClients[i]);
+					resposta.playerInfo = CopyPlayerData(gClients[i]);
 
 					if (!start) SetEmptyMatrix(resposta.matriz); //security
 					else UpdatePlayerLOS(gClients[i].x, gClients[i].y, resposta.matriz);
-					if (!WriteFile(gClients[i].hPipeJogo, &resposta, sizeof(ServerResponse), &n, NULL)) {
-						_tprintf(TEXT("[ERRO] Ao escrever no pipe do cliente %d:%s\n"), gClients[i].id, gClients[i].nome);
+					if (!WriteFile(gClients[i].hPipeGame, &resposta, sizeof(ServerResponse), &n, NULL)) {
+						_tprintf(TEXT("[ERROR] Error writing to client %d:%s\n"), gClients[i].id, gClients[i].name);
 						gClients[i].hp = 0;
 					}
 				}

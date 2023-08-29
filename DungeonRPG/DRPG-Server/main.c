@@ -6,7 +6,7 @@ int totalConnections = 0;
 
 //Labirinto gLabirinto;
 Labirinto * shLabirinto;
-Jogador gClients[MAX_CLIENTS];
+Player gClients[MAX_CLIENTS];
 
 BOOL start = FALSE;
 BOOL fim = FALSE;
@@ -124,7 +124,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 
 	/* ################################## */
 
-	hThreadListener = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)RecebeClientes, NULL, 0, NULL);
+	hThreadListener = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ListenForConnections, NULL, 0, NULL);
 	hThreadSender	= CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ActualizaClientes, NULL, 0, NULL);
 	hThreadGameTime		= CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)GameTimer, NULL, 0, NULL);
 	hThreadGameEvents	= CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)GameEvents, NULL, 0, NULL);
@@ -132,10 +132,10 @@ int _tmain(int argc, LPTSTR argv[]) {
 	//fim = TRUE; //define quando as threads devem terminar
 
 	//Esperar e fechar threads
-	WaitForSingleObject(hThreadListener, INFINITE);
-	WaitForSingleObject(hThreadSender, INFINITE);
-	WaitForSingleObject(hThreadGameTime, INFINITE);
-	WaitForSingleObject(hThreadGameEvents, INFINITE);
+	WaitForSingleObject(hThreadListener,	INFINITE);
+	WaitForSingleObject(hThreadSender,		INFINITE);
+	WaitForSingleObject(hThreadGameTime,	INFINITE);
+	WaitForSingleObject(hThreadGameEvents,	INFINITE);
 	CloseHandle(hThreadListener);
 	CloseHandle(hThreadSender);
 	CloseHandle(hThreadGameTime);

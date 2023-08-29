@@ -1,20 +1,20 @@
-#include "Jogador.h"
+#include "Player.h"
 #include "Labirinto.h"
 #include "Common.h"
 #include "Server.h"
 
 /**
-*	Regista um novo jogador ao ligar-se.
+*	Registers a new player.
 */
-void NovoJogador(int id) {
-	Jogador * j = &gClients[id];
-	_tcscpy(j->nome, TEXT("guest"));
-	j->lentidao = (int)LENTIDAO_BASE;
+void NewPlayer(int id) {
+	Player* j = &gClients[id];
+	_tcscpy(j->name, TEXT("guest"));
+	j->movSpeed = (int)LENTIDAO_BASE;
 	j->id = id;
 	j->nStones = 0;
-	j->stoneAutoHit = TRUE;
+	j->stoneAutoHitToggle = TRUE;
 
-	j->lentidaoCounter = 0;
+	j->speedCounter = 0;
 	j->atkCounter = 0;
 	j->itemDurationCounter = 0;
 
@@ -27,12 +27,12 @@ void NovoJogador(int id) {
 *	Define o jogador como "inactivo".
 *	Desliga e fecha os pipes do cliente.
 */
-void DesligarJogador(Jogador * j) {
+void DisconnectPlayer(Player* j) {
 	j->hp = 0;
 	DisconnectNamedPipe(j->hPipe);
-	DisconnectNamedPipe(j->hPipeJogo);
+	DisconnectNamedPipe(j->hPipeGame);
 	CloseHandle(j->hPipe);
-	CloseHandle(j->hPipeJogo);
+	CloseHandle(j->hPipeGame);
 	_tprintf(TEXT("[SERVIDOR] Cliente [%d] desligou-se!\n"), j->id);
 }
 
@@ -41,7 +41,7 @@ void DesligarJogador(Jogador * j) {
 *	Move-o para a posição desejada caso possível.
 */
 void MoverJogador(int playerId, int keystroke) {
-	Jogador *j = &gClients[playerId];
+	Player* j = &gClients[playerId];
 
 	if (!hasStamina(*j)) return;
 
@@ -105,7 +105,7 @@ void MoverJogador(int playerId, int keystroke) {
 	ReleaseMutex(gMutexLabirinto);
 
 	// Player is now "tired"
-	j->lentidaoCounter = j->lentidao; //player is able to move on 0
+	j->speedCounter = j->movSpeed; //player is able to move on 0
 	
 	//Para efeitos de debug
 	_tprintf(TEXT("P[%d] -> POSX: %d POSY: %d\n\n"),playerId, j->x, j->y);
@@ -158,7 +158,7 @@ void SetEmptyMatrix(int (*matriz)[PLAYER_LOS]) {
 /**
 *	Coloca o jogador numa posição aleatória no labirinto que esteja vazia.
 */
-void SetPlayerInRandomPosition(Jogador * p) {
+void SetPlayerInRandomPosition(Player* p) {
 	int x, y;
 
 	//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
@@ -178,20 +178,20 @@ void SetPlayerInRandomPosition(Jogador * p) {
 	ReleaseMutex(gMutexLabirinto);
 }
 
-BOOL canAttack(Jogador p) {
+BOOL canAttack(Player p) {
 	return (p.atkCounter == 0);
 }
 
-BOOL hasStamina(Jogador p) {
-	return (p.lentidaoCounter == 0);
+BOOL hasStamina(Player p) {
+	return (p.speedCounter == 0);
 }
 
 /**
 *	O jogador recupera um ponto de stamina e de ataque.
 */
-void RecoverPlayerStamina(Jogador * p) {
-	if (p->lentidaoCounter > 0)
-		--p->lentidaoCounter;
+void RecoverPlayerStamina(Player* p) {
+	if (p->speedCounter > 0)
+		--p->speedCounter;
 	if (p->atkCounter > 0)
 		--p->atkCounter;
 }
@@ -199,12 +199,12 @@ void RecoverPlayerStamina(Jogador * p) {
 /**
 *	Reduz um "instante" na duração dos items do jogador.
 */
-void CheckItemDurability(Jogador * p) {
+void CheckItemDurability(Player* p) {
 	if (p->itemDurationCounter > 0)
 		--p->itemDurationCounter;
 	else {
-		if (p->lentidao < LENTIDAO_BASE)
-			p->lentidao = LENTIDAO_BASE;
+		if (p->movSpeed < LENTIDAO_BASE)
+			p->movSpeed = LENTIDAO_BASE;
 	}
 }
 
@@ -212,7 +212,7 @@ void CheckItemDurability(Jogador * p) {
 *	Verifica se o jogador tem a possibilidade de atacar.
 *	Verifica se existe algum jogador nas proximidades, se sim, ataca-o.
 */
-void AttackClosePlayers(Jogador * p) {
+void AttackClosePlayers(Player* p) {
 	if (!canAttack(*p)) return;
 
 	//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
@@ -237,7 +237,7 @@ void AttackClosePlayers(Jogador * p) {
 *	Verifica se existe algum monstro na mesma casa do jogador,
 *	caso se verifique, o jogador é atacado.
 */
-void CheckForThreats(Jogador* p) {
+void CheckForThreats(Player* p) {
 	//Labirinto Ocupado - Bloqueia o acesso ao labirinto por outras threads
 	WaitForSingleObject(gMutexLabirinto, INFINITE);
 
@@ -251,8 +251,8 @@ void CheckForThreats(Jogador* p) {
 /**
 *	O jogador usa uma das suas pedras para atacar.
 */
-BOOL UseStone(Jogador * p) {
-	if (p->stoneAutoHit == TRUE && p->nStones > 0) {
+BOOL UseStone(Player* p) {
+	if (p->stoneAutoHitToggle == TRUE && p->nStones > 0) {
 		--p->nStones;
 		return TRUE;
 	}
@@ -262,7 +262,7 @@ BOOL UseStone(Jogador * p) {
 /**
 *	A posição do jogador no labririnto é preenchida com o número de pedras que este possui.
 */
-void DropStones(Jogador * p) {
+void DropStones(Player* p) {
 	int cellValue = (p->nStones > 0) ? (p->nStones * PEDRAS) : EMPTY;
 	shLabirinto->labirinto[p->y][p->x] = cellValue;
 }
@@ -275,7 +275,7 @@ void DropStones(Jogador * p) {
 * deve de ser sobreposta com o id do utilizador.
 */
 //Protegida pela função que a invoca. (Mutex)
-void AskPlayerToCollectItems(Jogador * p) {
+void AskPlayerToCollectItems(Player* p) {
 	int nPedras = 0;
 	switch (shLabirinto->labirinto[p->y][p->x])
 	{
@@ -286,7 +286,7 @@ void AskPlayerToCollectItems(Jogador * p) {
 		if ((p->hp + 1) <= (int)HP_BASE * 2) p->hp += 3;
 		break;
 	case REB_CAFEINA:
-		p->lentidao = (int)LENTIDAO_BASE - 2; //Efeito só deve de durar por 1 min (does not stack)
+		p->movSpeed = (int)LENTIDAO_BASE - 2; //Efeito só deve de durar por 1 min (does not stack)
 		p->itemDurationCounter = 15 * 60; // 15 instantes por segundo * 60 segundos = 900 instantes;
 		break;
 	default:
@@ -301,14 +301,14 @@ void AskPlayerToCollectItems(Jogador * p) {
 	}
 }
 
-InformarJogador PrepararCopiaDadosParaEnviar(Jogador p) {
-	InformarJogador _info;
+PlayerInformation CopyPlayerData(Player p) {
+	PlayerInformation _info;
 	_info.atkCounter = p.atkCounter;
 	_info.hp = p.hp;
 	_info.itemDurationCounter = p.itemDurationCounter;
-	_info.lentidaoCounter = p.lentidaoCounter;
+	_info.speedCounter = p.speedCounter;
 	_info.nStones = p.nStones;
-	_info.stoneAutoHit = p.stoneAutoHit;
+	_info.stoneAutoHitToggle = p.stoneAutoHitToggle;
 	_info.x = p.x;
 	_info.y = p.y;
 	return _info;

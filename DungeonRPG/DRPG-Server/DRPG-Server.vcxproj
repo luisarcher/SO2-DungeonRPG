@@ -110,15 +110,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Jogador.c" />
     <ClCompile Include="Labirinto.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="Player.c" />
     <ClCompile Include="Server.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h" />
-    <ClInclude Include="Jogador.h" />
     <ClInclude Include="Labirinto.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Server.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

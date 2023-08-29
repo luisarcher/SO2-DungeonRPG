@@ -24,7 +24,7 @@
     <ClCompile Include="Server.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Jogador.c">
+    <ClCompile Include="Player.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,7 +38,7 @@
     <ClInclude Include="Labirinto.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Jogador.h">
+    <ClInclude Include="Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
