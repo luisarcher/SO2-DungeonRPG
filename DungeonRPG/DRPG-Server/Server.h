@@ -1,5 +1,5 @@
-#ifndef SERVER_H_INCLUDED
-#define SERVER_H_INCLUDED
+#ifndef DRPG_SERVER_SERVER_H_
+#define DRPG_SERVER_SERVER_H_
 #include "Common.h"
 #include "Player.h"
 
@@ -23,22 +23,23 @@ typedef struct {
 } ClientRequest;
 
 typedef struct {
-	int matriz[PLAYER_LOS][PLAYER_LOS];
+	int playerLOS[PLAYER_LOS][PLAYER_LOS];
 	TCHAR msg[BUFFERSIZE];
 	PlayerInformation playerInfo;
 } ServerResponse;
 
-DWORD WINAPI ListenForConnections(LPVOID param);		//Listen
-DWORD WINAPI HandleClientConnection(LPVOID param);
-DWORD WINAPI ActualizaClientes(LPVOID param);
-DWORD WINAPI GameTimer(LPVOID param);
-DWORD WINAPI GameEvents(LPVOID param);
+DWORD WINAPI ListenForConnections	(LPVOID param);
+DWORD WINAPI HandleClientConnection	(LPVOID param);
+DWORD WINAPI BroadcastServerData	(LPVOID param);
+DWORD WINAPI GameTimer				(LPVOID param);
+DWORD WINAPI GameEvents				(LPVOID param);
 
-int activePlayers();
+int  GetActivePlayers();
 void StartGame();
 
 //void CopyGameStateToSharedMemory();
-void DesligarThreadsDeCliente();
+void DisconnectClientThreads();
 
 extern TCHAR broadcastMessage[BUFFERSIZE];
-#endif
+
+#endif // DRPG_SERVER_SERVER_H_

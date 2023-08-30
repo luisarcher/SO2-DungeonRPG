@@ -5,7 +5,7 @@
 TCHAR broadcastMessage[BUFFERSIZE];
 
 /**
-*	Thread que recebe e regista os novos clientes.
+*	Thread that receives and registers new clients.
 */
 DWORD WINAPI ListenForConnections(LPVOID param) {
 	DWORD n;
@@ -96,7 +96,7 @@ DWORD WINAPI GameEvents(LPVOID param) {
 /**
 *	Para cada cliente, fecha o handle da sua thread.
 */
-void DesligarThreadsDeCliente() {
+void DisconnectClientThreads() {
 	for (int i = 0; i < totalConnections; i++)
 		CloseHandle(gClients[i].hThread);
 }
@@ -104,7 +104,7 @@ void DesligarThreadsDeCliente() {
 /**
 *	Devolve o número de jogadores activos.
 */
-int activePlayers() {
+int GetActivePlayers() {
 	int nPlayers = 0;
 	for (int i = 0; i < totalConnections; i++)
 		if (gClients[i].hp > 0) ++nPlayers;
@@ -112,13 +112,13 @@ int activePlayers() {
 }
 
 /**
-* Analisa o pedido do cliente e envia uma resposta.
+* Analisa o pedido do cliente e envia uma serverResponse.
 */
 DWORD WINAPI HandleClientConnection(LPVOID param) {
 	HANDLE hPipeCliente = gClients[(int)param].hPipe;
 
 	TCHAR buf[BUFFERSIZE];
-	TCHAR respostaServidor[BUFFERSIZE];
+	TCHAR serverResponseServidor[BUFFERSIZE];
 	DWORD n;
 	BOOL ret;
 
@@ -128,22 +128,22 @@ DWORD WINAPI HandleClientConnection(LPVOID param) {
 		ret = ReadFile(hPipeCliente, &pedido, sizeof(ClientRequest), &n, NULL);
 		if (!ret || !n) break;
 		_tprintf(TEXT("[Server] Recebi %d bytes: \'%s\'... (ReadFile)\n"),n,pedido.msg);
-		memset(respostaServidor, '\0', sizeof(TCHAR) * BUFFERSIZE); //prepara a "string" de resposta
+		memset(serverResponseServidor, '\0', sizeof(TCHAR) * BUFFERSIZE); //prepara a "string" de serverResponse
 
 		if (!start) {
 			switch (pedido.command)
 			{
 			case GAMESTATUS:
-				//swprintf(resposta.msg, "%d", totalConnections); //Clientes Ligados
-				_tcscpy(respostaServidor, TEXT("Estatísticas dados pré-jogo...\n"));
+				//swprintf(serverResponse.msg, "%d", totalConnections); //Clientes Ligados
+				_tcscpy(serverResponseServidor, TEXT("Estatísticas dados pré-jogo...\n"));
 				_swprintf(buf, TEXT("%d"), totalConnections);
-				_tcscat(respostaServidor, TEXT("Total de jogadores ligados: "));
-				_tcscat(respostaServidor, buf);
+				_tcscat(serverResponseServidor, TEXT("Total de jogadores ligados: "));
+				_tcscat(serverResponseServidor, buf);
 				break;
 			case SETNAME:
 				_tcscpy(gClients[(int)param].name, pedido.msg);
-				_tcscpy(respostaServidor, TEXT("Estás registado como: "));
-				_tcscat(respostaServidor, pedido.msg);
+				_tcscpy(serverResponseServidor, TEXT("Estás registado como: "));
+				_tcscat(serverResponseServidor, pedido.msg);
 
 				//Broadcast
 				_tcscat(broadcastMessage, TEXT("Novo Cliente Ligado: "));
@@ -152,7 +152,7 @@ DWORD WINAPI HandleClientConnection(LPVOID param) {
 
 			case STARTGAME:
 				StartGame();
-				_tcscpy(respostaServidor, TEXT("Começaste um novo jogo!"));
+				_tcscpy(serverResponseServidor, TEXT("Começaste um novo jogo!"));
 
 				//Broadcast
 				_tcscat(broadcastMessage, TEXT("Novo jogo iniciado por: "));
@@ -170,26 +170,26 @@ DWORD WINAPI HandleClientConnection(LPVOID param) {
 			if (pedido.command == MOVEUP || pedido.command == MOVEDOWN
 				|| pedido.command == MOVELEFT || pedido.command == MOVERIGHT) {
 				MovePlayer((int)param, (pedido.command - 600));
-				_tcscpy(respostaServidor, TEXT("Moving ..."));
+				_tcscpy(serverResponseServidor, TEXT("Moving ..."));
 			}
 			else {
 				switch (pedido.command)
 				{
 				case GAMESTATUS:
-					_tcscpy(respostaServidor, TEXT("Estatísticas de jogo a decorrer"));
+					_tcscpy(serverResponseServidor, TEXT("Estatísticas de jogo a decorrer"));
 					break;
 				case SWITCH_STONE_AUTOHIT:
 					if (gClients[(int)param].stoneAutoHitToggle) {
 						gClients[(int)param].stoneAutoHitToggle = FALSE;
-						_tcscpy(respostaServidor, TEXT("Stone AutoHit: Disabled!"));
+						_tcscpy(serverResponseServidor, TEXT("Stone AutoHit: Disabled!"));
 					}
 					else {
 						gClients[(int)param].stoneAutoHitToggle = TRUE;
-						_tcscpy(respostaServidor, TEXT("Stone AutoHit: Enabled!"));
+						_tcscpy(serverResponseServidor, TEXT("Stone AutoHit: Enabled!"));
 					}
 					break;
 				case STARTGAME:
-					_tcscpy(respostaServidor, TEXT("The game already started!"));
+					_tcscpy(serverResponseServidor, TEXT("The game already started!"));
 					break;
 
 				case QUITGAME:
@@ -197,9 +197,9 @@ DWORD WINAPI HandleClientConnection(LPVOID param) {
 				}
 			} //fim if - mover
 		} //fim if - start
-		//Entrega a resposta final ao cliente
-		_tprintf(TEXT("[Server] Sending %d bytes: \'%s\' to client [%d] (ReadFile)\n"), n, respostaServidor, (int)param);
-		if (!WriteFile(hPipeCliente, respostaServidor, sizeof(TCHAR) * BUFFERSIZE, &n, NULL)) {
+		//Entrega a serverResponse final ao cliente
+		_tprintf(TEXT("[Server] Sending %d bytes: \'%s\' to client [%d] (ReadFile)\n"), n, serverResponseServidor, (int)param);
+		if (!WriteFile(hPipeCliente, serverResponseServidor, sizeof(TCHAR) * BUFFERSIZE, &n, NULL)) {
 			_tperror(TEXT("[ERROR] Error replying to client... (WriteFile)\n"));
 			exit(-1);
 		}
@@ -222,20 +222,20 @@ DWORD WINAPI HandleClientConnection(LPVOID param) {
 /**
 *	Envia os dados de difusão a todos os clientes
 */
-DWORD WINAPI ActualizaClientes(LPVOID param) {
+DWORD WINAPI BroadcastServerData(LPVOID param) {
 	DWORD n;
-	ServerResponse resposta;
+	ServerResponse serverResponse;
 
 	while (!fim) {
 
 		//Espera que o evento de difusão seja sinalizado.
 		WaitForSingleObject(ghUpdateGameClientEvent, INFINITE);
 
-		if (totalConnections > 0 && activePlayers() > 0) {
+		if (totalConnections > 0 && GetActivePlayers() > 0) {
 			//Concatena a mensagem de difusão para todos os clientes
-			memset(resposta.msg, TEXT('\0'), sizeof(TCHAR) * BUFFERSIZE);
+			memset(serverResponse.msg, TEXT('\0'), sizeof(TCHAR) * BUFFERSIZE);
 			if (broadcastMessage != TEXT('\0')) {
-				_tcscpy(resposta.msg, broadcastMessage);
+				_tcscpy(serverResponse.msg, broadcastMessage);
 				memset(broadcastMessage, TEXT('\0'), sizeof(TCHAR) * BUFFERSIZE);
 			}
 
@@ -243,17 +243,17 @@ DWORD WINAPI ActualizaClientes(LPVOID param) {
 			for (int i = 0; i < totalConnections; i++) {
 				if (gClients[i].hp > 0) {
 					//Enviar dados do jogador
-					resposta.playerInfo = CopyPlayerData(gClients[i]);
+					serverResponse.playerInfo = CopyPlayerData(gClients[i]);
 
-					if (!start) SetEmptyMatrix(resposta.matriz); //security
-					else UpdatePlayerLOS(gClients[i].x, gClients[i].y, resposta.matriz);
-					if (!WriteFile(gClients[i].hPipeGame, &resposta, sizeof(ServerResponse), &n, NULL)) {
+					if (!start) SetEmptyMatrix(serverResponse.playerLOS); //security
+					else UpdatePlayerLOS(gClients[i].x, gClients[i].y, serverResponse.playerLOS);
+					if (!WriteFile(gClients[i].hPipeGame, &serverResponse, sizeof(ServerResponse), &n, NULL)) {
 						_tprintf(TEXT("[ERROR] Error writing to client %d:%s\n"), gClients[i].id, gClients[i].name);
 						gClients[i].hp = 0;
 					}
 				}
 			}//for ends
-			_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), (int)n, activePlayers());
+			_tprintf(TEXT("[SERVER] Enviei %d bytes aos %d clientes... (WriteFile)\n"), (int)n, GetActivePlayers());
 			
 			//_tprintf(TEXT("Shared Memory:\n"));
 			//CopyGameStateToSharedMemory();

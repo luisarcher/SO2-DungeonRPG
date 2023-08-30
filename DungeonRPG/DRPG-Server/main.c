@@ -1,6 +1,7 @@
 #include "Server.h"
 #include "Common.h"
 #include "GameBoard.h"
+#include <stdio.h>
 
 int totalConnections = 0;
 
@@ -14,6 +15,28 @@ BOOL fim = FALSE;
 HANDLE gMutexGameBoard;
 HANDLE ghGameInstanceEvent;
 HANDLE ghUpdateGameClientEvent;
+
+// Initialize mutexes and events for synchronization
+void InitializeEventsAndMutexes() {
+	// Mutex for controlling access to the game board
+	if ((gMutexGameBoard = CreateMutex(NULL, FALSE, TEXT("GameBoardOcupado"))) == NULL) {
+		_tprintf(TEXT("Mutex creation failed (%d)\n"), GetLastError());
+		return;
+	}
+
+	//Manual reset event
+	if ((ghGameInstanceEvent = CreateEvent(NULL, TRUE, FALSE, TEXT("gameInstanceEvent"))) == NULL) {
+		_tprintf(TEXT("Event creation failed (%d)\n"), GetLastError());
+		return;
+	}
+
+	//Auto-reset Event
+	if ((ghUpdateGameClientEvent = CreateEvent(NULL, FALSE, FALSE, TEXT("ActualizarClientes"))) == NULL) {
+		_tprintf(TEXT("Event creation failed (%d)\n"), GetLastError());
+		return;
+	}
+}
+
 
 int _tmain(int argc, LPTSTR argv[]) {
 	HANDLE hThreadListener;
@@ -31,22 +54,9 @@ int _tmain(int argc, LPTSTR argv[]) {
 	_setmode(_fileno(stderr), _O_WTEXT);
 #endif
 
-	if ((gMutexGameBoard = CreateMutex(NULL, FALSE, TEXT("GameBoardOcupado"))) == NULL){
-		_tprintf(TEXT("Criação do Mutex falhou (%d)\n"), GetLastError());
-		return;
-	}
+	// Initialize synchronization objects
+	InitializeEventsAndMutexes();
 
-	//Manual reset event
-	if ((ghGameInstanceEvent = CreateEvent(NULL,TRUE,FALSE,TEXT("gameInstanceEvent"))) == NULL) {
-		_tprintf(TEXT("Criação do Evento falhou (%d)\n"), GetLastError());
-		return;
-	}
-
-	//Auto-reset Event
-	if ((ghUpdateGameClientEvent = CreateEvent(NULL, FALSE, FALSE, TEXT("ActualizarClientes"))) == NULL) {
-		_tprintf(TEXT("Criação do Evento falhou (%d)\n"), GetLastError());
-		return;
-	}
 	/*****  MEMÓRIA PARTILHADA  *****/
 	hFileToMap = CreateFile(TEXT("DungeonRPG"),
 		GENERIC_READ | GENERIC_WRITE,
@@ -82,7 +92,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 		_tprintf(TEXT("[Erro] Mapear para memória(%d)\n"), GetLastError());
 		return -1;
 	}
-	/*****  MEMÓRIA PARTILHADA ENDS *****/
+
+	// Initialise Shared Memory
 		
 	//gGameBoard = NovoGameBoard();
 	*shGameBoard = ReadGameBoard();
@@ -91,8 +102,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 	/* ####### LANÇAR MONSTROS ########## */
 	int nMonsters = ((rand() % MONSTERS_MAX + 1) + MONSTERS_MIN);
 	TCHAR path[512];
-	
-	
+
+
 	//for (size_t i = 0; i < nMonsters; i++)
 	for (size_t i = 0; i < 2; i++)
 	{
@@ -104,30 +115,27 @@ int _tmain(int argc, LPTSTR argv[]) {
 			y = (rand() % GAMEBOARDSIZE);
 		} while (!(shGameBoard->gameBoard[y][x] == EMPTY));
 
-		
-		_stprintf_s(path, 256, TEXT("\DRPG-MonsterAI.exe %d %d %d %d %d"), 51, 4, 10,x, y);
+		_stprintf_s(path, 256, TEXT("\DRPG-MonsterAI.exe %d %d %d %d %d"), 51, 4, 10, x, y);
 		ZeroMemory(&si, sizeof(STARTUPINFO));
 		si.cb = sizeof(STARTUPINFO);
 		CreateProcess(
-			NULL, 
-			path, 
-			NULL, 
-			NULL, 
-			0, 
+			NULL,
+			path,
+			NULL,
+			NULL,
+			0,
 			CREATE_NEW_CONSOLE,
-			NULL, 
-			NULL, 
-			&si, 
+			NULL,
+			NULL,
+			&si,
 			&pi);
 
 	}
 
-	/* ################################## */
-
-	hThreadListener = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ListenForConnections, NULL, 0, NULL);
-	hThreadSender	= CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ActualizaClientes, NULL, 0, NULL);
-	hThreadGameTime		= CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)GameTimer, NULL, 0, NULL);
-	hThreadGameEvents	= CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)GameEvents, NULL, 0, NULL);
+	hThreadListener		= CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ListenForConnections,	NULL, 0, NULL);
+	hThreadSender		= CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)BroadcastServerData,	NULL, 0, NULL);
+	hThreadGameTime		= CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)GameTimer,				NULL, 0, NULL);
+	hThreadGameEvents	= CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)GameEvents,				NULL, 0, NULL);
 
 	//fim = TRUE; //define quando as threads devem terminar
 
@@ -144,7 +152,7 @@ int _tmain(int argc, LPTSTR argv[]) {
 	//Espera pelas threads dos clientes e desliga-as
 	for (int i = 0; i < totalConnections; i++)
 		WaitForSingleObject(gClients[i].hThread, INFINITE);
-	DesligarThreadsDeCliente();
+	DisconnectClientThreads();
 
 	CloseHandle(gMutexGameBoard);
 	CloseHandle(ghGameInstanceEvent);
