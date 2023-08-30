@@ -1,6 +1,6 @@
 #include "GameBoard.h"
 
-GameBoard NovoGameBoard() {
+GameBoard NewGameBoard() {
 	GameBoard l;
 	for (int i = 0; i < 70; i++)
 	{
@@ -20,7 +20,7 @@ GameBoard NovoGameBoard() {
 	return l;
 }
 
-GameBoard LerGameBoard() {
+GameBoard ReadGameBoard() {
 	GameBoard l;
 	FILE *f;
 	int n = 0, i = 0, j = 0;
@@ -61,7 +61,7 @@ BOOL hasMonsterAndPlayerIn(int x, int y) {
 BOOL hasObjectIn(int x, int y) {
 	return (shGameBoard->gameBoard[y][x] >= ITEM_START_INDEX
 		&& shGameBoard->gameBoard[y][x] <= ITEM_END_INDEX)
-		|| (shGameBoard->gameBoard[y][x] > PEDRAS //Ver common.h
+		|| (shGameBoard->gameBoard[y][x] > STONES
 			&& shGameBoard->gameBoard[y][x] < 600);
 }
 
@@ -70,7 +70,7 @@ BOOL hasWallIn(int x, int y) {
 		&& shGameBoard->gameBoard[y][x] <= WALL_END_INDEX;
 }
 
-void DistribuirItems() {
+void DistributeItemsOnMap() {
 	int x, y;
 	srand(time(NULL));
 
@@ -82,7 +82,7 @@ void DistribuirItems() {
 			x = (rand() % GAMEBOARDSIZE);
 			y = (rand() % GAMEBOARDSIZE);
 		} while (!(shGameBoard->gameBoard[y][x] == EMPTY));
-		shGameBoard->gameBoard[y][x] = VITAMINA;
+		shGameBoard->gameBoard[y][x] = VITAMIN;
 	}
 
 	//Distribuir Orange Bull
@@ -104,7 +104,7 @@ void DistribuirItems() {
 			x = (rand() % GAMEBOARDSIZE);
 			y = (rand() % GAMEBOARDSIZE);
 		} while (!(shGameBoard->gameBoard[y][x] == EMPTY));
-		shGameBoard->gameBoard[y][x] = REB_CAFEINA;
+		shGameBoard->gameBoard[y][x] = REB_CAFFEINE;
 	}
 
 	//Distribuir Pedras
@@ -115,6 +115,6 @@ void DistribuirItems() {
 			x = (rand() % GAMEBOARDSIZE);
 			y = (rand() % GAMEBOARDSIZE);
 		} while (!(shGameBoard->gameBoard[y][x] == EMPTY));
-		shGameBoard->gameBoard[y][x] = (int)PEDRAS + 1;
+		shGameBoard->gameBoard[y][x] = (int)STONES + 1;
 	}
 }

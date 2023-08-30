@@ -3,13 +3,10 @@
 #include "Common.h"
 #include "Server.h"
 
-/**
-*	Registers a new player.
-*/
 void NewPlayer(int id) {
 	Player* j = &gClients[id];
 	_tcscpy(j->name, TEXT("guest"));
-	j->movSpeed = (int)LENTIDAO_BASE;
+	j->movSpeed = (int)BASE_SLOWNESS;
 	j->id = id;
 	j->nStones = 0;
 	j->stoneAutoHitToggle = TRUE;
@@ -18,105 +15,97 @@ void NewPlayer(int id) {
 	j->atkCounter = 0;
 	j->itemDurationCounter = 0;
 
-	//Define x e y do jogador (pos vazia) e regista-o no gameBoard
+	// Define player's x and y (empty position) and register in the gameBoard
 	if (!start) SetPlayerInRandomPosition(j);
-	j->hp =  0;
+	j->hp = 0;
 }
 
-/**
-*	Define o jogador como "inactivo".
-*	Desliga e fecha os pipes do cliente.
-*/
 void DisconnectPlayer(Player* j) {
 	j->hp = 0;
 	DisconnectNamedPipe(j->hPipe);
 	DisconnectNamedPipe(j->hPipeGame);
 	CloseHandle(j->hPipe);
 	CloseHandle(j->hPipeGame);
-	_tprintf(TEXT("[SERVIDOR] Cliente [%d] desligou-se!\n"), j->id);
+	_tprintf(TEXT("[SERVER] Client [%d] has disconnected!\n"), j->id);
 }
 
 /**
-*	Recebe a tecla premida pelo utilizador.
-*	Move-o para a posição desejada caso possível.
-*/
+ * Receives the key pressed by the user.
+ * Moves the player to the desired position if possible.
+ */
 void MovePlayer(int playerId, int keystroke) {
 	Player* j = &gClients[playerId];
 
 	if (!hasStamina(*j)) return;
 
-	//GameBoard Ocupado - Bloqueia o acesso ao gameBoard por outras threads
+	// Occupied gameBoard - Blocks gameBoard access for other threads
 	WaitForSingleObject(gMutexGameBoard, INFINITE);
 
 	switch (keystroke) {
-		case KEY_UP:
-		{
-			if (j->y > 1)
-			{
-				shGameBoard->gameBoard[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shGameBoard->gameBoard[j->y][j->x] / 100) : EMPTY);
-				if (!hasWallIn(j->x, j->y - 1) && !hasPlayerIn(j->x, j->y - 1)) j->y--;
-				_tprintf(TEXT("Moving up...\n"));
-			}
-			break;
+	case KEY_UP:
+	{
+		if (j->y > 1) {
+			shGameBoard->gameBoard[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shGameBoard->gameBoard[j->y][j->x] / 100) : EMPTY);
+			if (!hasWallIn(j->x, j->y - 1) && !hasPlayerIn(j->x, j->y - 1)) j->y--;
+			_tprintf(TEXT("Moving up...\n"));
 		}
-		case KEY_DOWN:
-		{
-			if (j->y < GAMEBOARDSIZE-2)
-			{
-				shGameBoard->gameBoard[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shGameBoard->gameBoard[j->y][j->x] / 100) : EMPTY);
-				if (!hasWallIn(j->x, j->y + 1) && !hasPlayerIn(j->x, j->y + 1))j->y++;
-				_tprintf(TEXT("Moving down...\n"));
-			}
-			break;
-		}
-		case KEY_LEFT:
-		{
-			if (j->x > 1)
-			{
-				shGameBoard->gameBoard[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shGameBoard->gameBoard[j->y][j->x] / 100) : EMPTY);
-				if (!hasWallIn(j->x - 1, j->y) && !hasPlayerIn(j->x - 1, j->y)) j->x--;
-				_tprintf(TEXT("Moving left...\n"));
-			}
-			break;
-		}
-		case KEY_RIGHT:
-		{
-			if (j->x < GAMEBOARDSIZE - 2)
-			{
-				shGameBoard->gameBoard[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shGameBoard->gameBoard[j->y][j->x] / 100) : EMPTY);
-				if (!hasWallIn(j->x + 1, j->y) && !hasPlayerIn(j->x + 1, j->y)) j->x++;
-				_tprintf(TEXT("Moving right...\n"));
-			}
-			break;
-		}
-		default:
-		{
-			_tprintf(TEXT("[SERVER] Não foi possível movimentar o jogador!"));
-			break;
-		}
+		break;
 	}
-	
+	case KEY_DOWN:
+	{
+		if (j->y < GAMEBOARDSIZE - 2) {
+			shGameBoard->gameBoard[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shGameBoard->gameBoard[j->y][j->x] / 100) : EMPTY);
+			if (!hasWallIn(j->x, j->y + 1) && !hasPlayerIn(j->x, j->y + 1)) j->y++;
+			_tprintf(TEXT("Moving down...\n"));
+		}
+		break;
+	}
+	case KEY_LEFT:
+	{
+		if (j->x > 1) {
+			shGameBoard->gameBoard[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shGameBoard->gameBoard[j->y][j->x] / 100) : EMPTY);
+			if (!hasWallIn(j->x - 1, j->y) && !hasPlayerIn(j->x - 1, j->y)) j->x--;
+			_tprintf(TEXT("Moving left...\n"));
+		}
+		break;
+	}
+	case KEY_RIGHT:
+	{
+		if (j->x < GAMEBOARDSIZE - 2) {
+			shGameBoard->gameBoard[j->y][j->x] = (hasMonsterAndPlayerIn(j->x, j->y) ? (shGameBoard->gameBoard[j->y][j->x] / 100) : EMPTY);
+			if (!hasWallIn(j->x + 1, j->y) && !hasPlayerIn(j->x + 1, j->y)) j->x++;
+			_tprintf(TEXT("Moving right...\n"));
+		}
+		break;
+	}
+	default:
+	{
+		_tprintf(TEXT("[SERVER] Unable to move the player!"));
+		break;
+	}
+	}
+
 	if (hasObjectIn(j->x, j->y)) AskPlayerToCollectItems(j);
-	
-	// Update matrix after collected items
+
+	// Update matrix after collecting items
 	shGameBoard->gameBoard[j->y][j->x] = playerId;
-	
-	//Liberta GameBoard - Desbloqueia o acesso ao gameBoard a outras threads
+
+	// Release gameBoard - Unlocks gameBoard access for other threads
 	ReleaseMutex(gMutexGameBoard);
 
 	// Player is now "tired"
-	j->speedCounter = j->movSpeed; //player is able to move on 0
-	
-	//Para efeitos de debug
-	_tprintf(TEXT("P[%d] -> POSX: %d POSY: %d\n\n"),playerId, j->x, j->y);
+	j->speedCounter = j->movSpeed; // player is able to move after 0
+
+	// For debug purposes
+	_tprintf(TEXT("P[%d] -> POSX: %d POSY: %d\n\n"), playerId, j->x, j->y);
 }
 
 /**
-*	Preenche a "parte visível" pelo utilizador e valida os limites do mapa.
-*/
-void UpdatePlayerLOS(int x, int y, int (*matriz)[PLAYER_LOS]) {
-	SetEmptyMatrix(matriz);
-	
+ * Fills the "visible part" for the player and validates map boundaries.
+ */
+void UpdatePlayerLOS(int x, int y, int(*matrix)[PLAYER_LOS]) {
+	SetEmptyMatrix(matrix);
+
 	int iniX, iniY, maxX, maxY;
 
 	if (x - 5 < 0) iniX = 0;
@@ -129,39 +118,37 @@ void UpdatePlayerLOS(int x, int y, int (*matriz)[PLAYER_LOS]) {
 	if (y + 5 > GAMEBOARDSIZE) maxY = GAMEBOARDSIZE;
 	else maxY = y + 5;
 
-	int m=0, n= 0;
+	int m = 0, n = 0;
 
-	//GameBoard Ocupado - Bloqueia o acesso ao gameBoard por outras threads
+	// Locked gameBoard - Blocks gameBoard access for other threads
 	WaitForSingleObject(gMutexGameBoard, INFINITE);
 
-	for (int i = iniY; i < maxY; i++, n++, m=0)
-	{
-		for (int j = iniX; j < maxX; j++, m++)
-		{
-			matriz[n][m] = shGameBoard->gameBoard[i][j];
+	for (int i = iniY; i < maxY; i++, n++, m = 0) {
+		for (int j = iniX; j < maxX; j++, m++) {
+			matrix[n][m] = shGameBoard->gameBoard[i][j];
 		}
 	}
 
-	//Liberta GameBoard - Desbloqueia o acesso ao gameBoard a outras threads
+	// Release gameBoard - Unlocks gameBoard access for other threads
 	ReleaseMutex(gMutexGameBoard);
 }
 
 /**
-*	Preenche a matriz do jogador com "novoeiro".
-*/
-void SetEmptyMatrix(int (*matriz)[PLAYER_LOS]) {
+ * Fills the player's matrix with "fog of war".
+ */
+void SetEmptyMatrix(int(*matrix)[PLAYER_LOS]) {
 	for (int i = 0; i < PLAYER_LOS; i++)
 		for (int j = 0; j < PLAYER_LOS; j++)
-			matriz[i][j] = FOG_OF_WAR;
+			matrix[i][j] = FOG_OF_WAR;
 }
 
 /**
-*	Coloca o jogador numa posição aleatória no gameBoard que esteja vazia.
-*/
+ * Places the player in a random position on the gameBoard that is empty.
+ */
 void SetPlayerInRandomPosition(Player* p) {
 	int x, y;
 
-	//GameBoard Ocupado - Bloqueia o acesso ao gameBoard por outras threads
+	// Locked gameBoard - Blocks gameBoard access for other threads
 	WaitForSingleObject(gMutexGameBoard, INFINITE);
 
 	do {
@@ -174,7 +161,7 @@ void SetPlayerInRandomPosition(Player* p) {
 	p->y = y;
 	shGameBoard->gameBoard[y][x] = p->id;
 
-	//Liberta GameBoard - Desbloqueia o acesso ao gameBoard a outras threads
+	// Release gameBoard - Unlocks gameBoard access for other threads
 	ReleaseMutex(gMutexGameBoard);
 }
 
@@ -187,8 +174,8 @@ BOOL hasStamina(Player p) {
 }
 
 /**
-*	O jogador recupera um ponto de stamina e de ataque.
-*/
+ * The player recovers one point of stamina and attack.
+ */
 void RecoverPlayerStamina(Player* p) {
 	if (p->speedCounter > 0)
 		--p->speedCounter;
@@ -197,60 +184,61 @@ void RecoverPlayerStamina(Player* p) {
 }
 
 /**
-*	Reduz um "instante" na duração dos items do jogador.
-*/
+ * Reduces a "tick" in the player's item duration.
+ */
 void CheckItemDurability(Player* p) {
 	if (p->itemDurationCounter > 0)
 		--p->itemDurationCounter;
 	else {
-		if (p->movSpeed < LENTIDAO_BASE)
-			p->movSpeed = LENTIDAO_BASE;
+		if (p->movSpeed < BASE_SLOWNESS)
+			p->movSpeed = BASE_SLOWNESS;
 	}
 }
 
 /**
-*	Verifica se o jogador tem a possibilidade de atacar.
-*	Verifica se existe algum jogador nas proximidades, se sim, ataca-o.
-*/
+ * Checks if the player is able to attack.
+ * Checks if there is any player nearby, if yes, attacks it.
+ */
 void AttackClosePlayers(Player* p) {
 	if (!canAttack(*p)) return;
 
-	//GameBoard Ocupado - Bloqueia o acesso ao gameBoard por outras threads
+	// Locked gameBoard - Blocks gameBoard access for other threads
 	WaitForSingleObject(gMutexGameBoard, INFINITE);
-	for (int i = (p->y - 1); i <= (p->y + 1); i++)
-	{
-		for (int j = (p->x - 1); j <= (p->x + 1); j++)
-		{
+
+	for (int i = (p->y - 1); i <= (p->y + 1); i++) {
+		for (int j = (p->x - 1); j <= (p->x + 1); j++) {
 			if (i == p->y && j == p->x) continue;
 			if (hasPlayerIn(j, i) && gClients[shGameBoard->gameBoard[i][j]].hp > 0) {
 				gClients[shGameBoard->gameBoard[i][j]].hp -= (UseStone(p) ? 2 : 1);
-				p->atkCounter = (int)LENTIDAO_BASE;
+				p->atkCounter = (int)BASE_SLOWNESS;
 				return;
 			}
 		}
 	}
-	//Liberta GameBoard - Desbloqueia o acesso ao gameBoard a outras threads
+
+	// Release gameBoard - Unlocks gameBoard access for other threads
 	ReleaseMutex(gMutexGameBoard);
 }
 
 /**
-*	Verifica se existe algum monstro na mesma casa do jogador,
-*	caso se verifique, o jogador é atacado.
-*/
+ * Checks if there is a monster in the same cell as the player,
+ * if so, the player is attacked.
+ */
 void CheckForThreats(Player* p) {
-	//GameBoard Ocupado - Bloqueia o acesso ao gameBoard por outras threads
+	// Locked gameBoard - Blocks gameBoard access for other threads
 	WaitForSingleObject(gMutexGameBoard, INFINITE);
 
 	if (shGameBoard->gameBoard[p->y][p->x] > 1000 && !hasItemIn(shGameBoard->gameBoard[p->y][p->x]))
 		--p->hp;
 
-	//Liberta GameBoard - Desbloqueia o acesso ao gameBoard a outras threads
+	// Release gameBoard - Unlocks gameBoard access for other threads
 	ReleaseMutex(gMutexGameBoard);
 }
 
 /**
-*	O jogador usa uma das suas pedras para atacar.
-*/
+ * The player uses one of their stones to attack.
+ * The used stone is discarded from player's stone count.
+ */
 BOOL UseStone(Player* p) {
 	if (p->stoneAutoHitToggle == TRUE && p->nStones > 0) {
 		--p->nStones;
@@ -260,42 +248,41 @@ BOOL UseStone(Player* p) {
 }
 
 /**
-*	A posição do jogador no labririnto é preenchida com o número de pedras que este possui.
-*/
+ * The player's position in the maze is filled with the number of stones they have.
+ */
 void DropStones(Player* p) {
-	int cellValue = (p->nStones > 0) ? (p->nStones * PEDRAS) : EMPTY;
+	int cellValue = (p->nStones > 0) ? (p->nStones * STONES) : EMPTY;
 	shGameBoard->gameBoard[p->y][p->x] = cellValue;
 }
 
 /**
-* Item que está nas cordenadas actuais do jogador,
-* mas que o movimento ainda não tenha sido registado na matriz global
-* para ele poder obter o objecto.
-* Depois de apanhado, a posição do objecto na matriz,
-* deve de ser sobreposta com o id do utilizador.
-*/
-//Protegida pela função que a invoca. (Mutex)
+ * Item at the current player's coordinates,
+ * but the movement hasn't been registered in the global matrix yet
+ * so they can obtain the object.
+ * After collecting, the object's position in the matrix
+ * should be overwritten with the user's ID.
+ */
+ // Protected by the invoking function. (Mutex)
 void AskPlayerToCollectItems(Player* p) {
-	int nPedras = 0;
-	switch (shGameBoard->gameBoard[p->y][p->x])
-	{
-	case VITAMINA:
-		if ((p->hp + 1) <= (int)HP_BASE * 2) p->hp++;
+	int nStones = 0;
+	switch (shGameBoard->gameBoard[p->y][p->x]) {
+	case VITAMIN:
+		if ((p->hp + 1) <= (int)BASE_HP * 2) p->hp++;
 		break;
 	case ORANGE_BULL:
-		if ((p->hp + 1) <= (int)HP_BASE * 2) p->hp += 3;
+		if ((p->hp + 1) <= (int)BASE_HP * 2) p->hp += 3;
 		break;
-	case REB_CAFEINA:
-		p->movSpeed = (int)LENTIDAO_BASE - 2; //Efeito só deve de durar por 1 min (does not stack)
-		p->itemDurationCounter = 15 * 60; // 15 instantes por segundo * 60 segundos = 900 instantes;
+	case REB_CAFFEINE:
+		p->movSpeed = (int)BASE_SLOWNESS - 2;	// Effect should only last for 1 minute (does not stack)
+		p->itemDurationCounter = 15 * 60;		// 15 ticks per second * 60 seconds = 900 ticks;
 		break;
 	default:
-		if ((nPedras = shGameBoard->gameBoard[p->y][p->x]) > PEDRAS){
-			nPedras -= (int)PEDRAS;
-			if (p->nStones + nPedras <= (int)PLAYER_STONE_CAP) p->nStones += nPedras;
+		if ((nStones = shGameBoard->gameBoard[p->y][p->x]) > STONES) {
+			nStones -= (int)STONES;
+			if (p->nStones + nStones <= (int)PLAYER_STONE_CAP) p->nStones += nStones;
 		}
 		else {
-			_tprintf(TEXT("[SERVER] Falha ao apanhar objecto!"));
+			_tprintf(TEXT("[SERVER] Failed to collect object!"));
 		}
 		break;
 	}
@@ -315,20 +302,15 @@ PlayerInformation CopyPlayerData(Player p) {
 }
 
 BOOL hasItemIn(int d) {
+	int monsterType = (d - 501) / 100;
 
-	int mp = (d - 501) / 100;
-
-
-	if ((mp >= MONSTER_START_INDEX && mp <= MONSTER_END_INDEX))
-	{
-
+	if ((monsterType >= MONSTER_START_INDEX && monsterType <= MONSTER_END_INDEX)) {
 		return TRUE;
 	}
-	else if ((d % 100 >= ITEM_START_INDEX && d % 100 <= ITEM_END_INDEX))
-	{
-
+	else if ((d % 100 >= ITEM_START_INDEX && d % 100 <= ITEM_END_INDEX)) {
 		return TRUE;
 	}
-	else
+	else {
 		return FALSE;
+	}
 }

@@ -9,16 +9,15 @@ struct GAMEBOARD {
 	BOOL init;
 };
 
-GameBoard NovoGameBoard();
-GameBoard LerGameBoard();
+GameBoard NewGameBoard();
+GameBoard ReadGameBoard();
 
-void DistribuirItems();
+void DistributeItemsOnMap();
 
 BOOL hasPlayerIn(int x, int y);
 BOOL hasMonsterAndPlayerIn(int x, int y);
 BOOL hasObjectIn(int x, int y);
 BOOL hasWallIn(int x, int y);
 
-//extern GameBoard gGameBoard;
 extern GameBoard * shGameBoard;
 #endif

@@ -85,8 +85,8 @@ int _tmain(int argc, LPTSTR argv[]) {
 	/*****  MEMÓRIA PARTILHADA ENDS *****/
 		
 	//gGameBoard = NovoGameBoard();
-	*shGameBoard = LerGameBoard();
-	DistribuirItems();
+	*shGameBoard = ReadGameBoard();
+	DistributeItemsOnMap();
 
 	/* ####### LANÇAR MONSTROS ########## */
 	int nMonsters = ((rand() % MONSTERS_MAX + 1) + MONSTERS_MIN);

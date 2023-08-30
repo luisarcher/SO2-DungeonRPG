@@ -268,7 +268,7 @@ DWORD WINAPI ActualizaClientes(LPVOID param) {
 void StartGame() {
 	start = TRUE;
 	for (int i = 0; i < totalConnections; i++)
-		gClients[i].hp = HP_BASE;
+		gClients[i].hp = BASE_HP;
 }
 
 /**
