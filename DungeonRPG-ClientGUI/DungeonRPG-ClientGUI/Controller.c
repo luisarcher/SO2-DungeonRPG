@@ -1,7 +1,7 @@
 #include "Controller.h"
 #include "./../../DRPGClientDLL/DRPGClientDLL/ClientDLL.h"
 
-DWORD EnviaTecla(int _command) {
+DWORD SendCommand(int _command) {
 	ClientRequest cr;
 
 	cr.command = _command;
@@ -11,7 +11,7 @@ DWORD EnviaTecla(int _command) {
 	return LerMensagem(hPipe, receivedMSG);
 }
 
-DWORD Registar(TCHAR * nome) {
+DWORD Register(TCHAR * nome) {
 	ClientRequest cr;
 
 	cr.command = SETNAME;

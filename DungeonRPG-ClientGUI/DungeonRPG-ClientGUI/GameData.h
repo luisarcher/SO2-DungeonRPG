@@ -13,7 +13,7 @@
 #define REB_CAFEINA_I	8
 #define STONES_I		9
 
-extern TCHAR * trataErrosPipe[3];
+extern TCHAR * errorHandlingPipe[3];
 extern TCHAR * _bitmaps[N_BITMAPS];
 
-DWORD WINAPI AtualizaJogo(LPVOID lpParam);
+DWORD WINAPI UpdateGameView(LPVOID lpParam);

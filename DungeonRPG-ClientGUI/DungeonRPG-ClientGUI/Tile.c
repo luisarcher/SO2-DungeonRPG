@@ -1,4 +1,4 @@
-#include "Labirinto.h"
+#include "Tile.h"
 
 BOOL isWall(int pos){
 	return pos >= WALL_START_INDEX

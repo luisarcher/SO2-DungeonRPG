@@ -21,9 +21,9 @@ LRESULT CALLBACK DlgBoxConnectProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM 
 				ret = InicializarPipes(&hPipe, &hPipeJogo, buffer);
 
 				if (!ret) {
-					_tcscpy(buffer, TEXT("Não foi possível ligar ao servidor! Erro: \n"));
-					_tcscat(buffer, trataErrosPipe[ret*(-1)]);
-					MessageBox(hWnd, buffer, TEXT("Não ligado"), MB_OK | MB_ICONERROR);
+					_tcscpy(buffer, TEXT("Could not connect to server! Error: \n"));
+					_tcscat(buffer, errorHandlingPipe[ret*(-1)]);
+					MessageBox(hWnd, buffer, TEXT("Not connected!"), MB_OK | MB_ICONERROR);
 					return TRUE;
 				}
 				else {
@@ -32,8 +32,8 @@ LRESULT CALLBACK DlgBoxConnectProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM 
 					memset(buffer, TEXT('\0'), sizeof(TCHAR)*100);
 					GetDlgItemText(hWnd, IDC_txtLogin, buffer, 100);
 					if (buffer[0] != TEXT('\0'))
-						if (!Registar(buffer))
-							MessageBox(hWnd, TEXT("Erro ao registar o nome no servidor!"), TEXT("Registar"), MB_OK | MB_ICONERROR);
+						if (!Register(buffer))
+							MessageBox(hWnd, TEXT("Error registering on the server!"), TEXT("Register"), MB_OK | MB_ICONERROR);
 					
 					hThreadBroadcastReceiver = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LerBroadcast, (LPVOID)hPipeJogo, 0, NULL);
 					EndDialog(hWnd, 0);

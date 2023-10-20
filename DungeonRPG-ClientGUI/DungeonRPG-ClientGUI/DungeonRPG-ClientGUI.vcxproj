@@ -146,7 +146,7 @@
     <ClCompile Include="GameData.c" />
     <ClCompile Include="Controller.c" />
     <ClCompile Include="SetupGame.c" />
-    <ClCompile Include="Labirinto.c" />
+    <ClCompile Include="Tile.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="MenuProc.c" />
     <ClCompile Include="GameProc.c" />
@@ -157,7 +157,7 @@
     <ClInclude Include="GameData.h" />
     <ClInclude Include="Controller.h" />
     <ClInclude Include="SetupGame.h" />
-    <ClInclude Include="Labirinto.h" />
+    <ClInclude Include="Tile.h" />
     <ClInclude Include="MenuProc.h" />
     <ClInclude Include="GameProc.h" />
     <ClInclude Include="resource.h" />

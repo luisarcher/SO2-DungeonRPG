@@ -2,8 +2,8 @@
 #include "MenuProc.h"
 #include "SetupGame.h"
 #include "GameData.h"
-#include "Labirinto.h"
 #include "UserInterface.h"
+#include "Controller.h"
 
 HDC hdcDoubleBuffer;
 
@@ -16,7 +16,7 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 	HBITMAP		hBitmap;
 
 	RECT area, info;
-	TCHAR buf[BUFFERSIZE];
+	//TCHAR buf[BUFFERSIZE];
 
 	switch (messg)
 	{
@@ -25,16 +25,16 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		hdc = GetDC(hWnd);
 
 		//Carregar bitmaps
-		result = CarregarTodasAsImagens();
+		result = LoadGameResources();
 		if (result <= 0) {
-			MessageBox(hWnd, TEXT("Erro ao carregar imagens"), TEXT("Carregar Imagens"), MB_OK | MB_ICONERROR);
+			MessageBox(hWnd, TEXT("Error loading images!"), TEXT("Loading images"), MB_OK | MB_ICONERROR);
 		}
 
 		ConfigurarDCs(hdc);
 
 		ReleaseDC(hWnd, hdc);
 		hdcDoubleBuffer = NULL;
-		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)AtualizaJogo, (LPVOID)hWnd, 0, NULL);
+		CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)UpdateGameView, (LPVOID)hWnd, 0, NULL);
 		break;
 
 	case WM_DESTROY:	
@@ -42,7 +42,7 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		break;
 	case WM_PAINT:
-		//iniciar
+		// Start the game
 		hdc = BeginPaint(hWnd, &paintStruct);
 
 		//Depois define-se melhor a área de jogo
@@ -103,16 +103,16 @@ LRESULT CALLBACK WinProc(HWND hWnd, UINT messg, WPARAM wParam, LPARAM lParam)
 		switch (wParam)
 		{
 		case VK_DOWN:
-			EnviaTecla(MOVEDOWN);
+			SendCommand(MOVEDOWN);
 			break;
 		case VK_UP:
-			EnviaTecla(MOVEUP);
+			SendCommand(MOVEUP);
 			break;
 		case VK_LEFT:
-			EnviaTecla(MOVELEFT);
+			SendCommand(MOVELEFT);
 			break;
 		case VK_RIGHT:
-			EnviaTecla(MOVERIGHT);
+			SendCommand(MOVERIGHT);
 			break;
 
 		case WM_ERASEBKGND:		//Não deixar que o fundo seja apagado (para técnica de BoubleBuffer)

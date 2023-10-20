@@ -3,6 +3,6 @@
 
 extern TCHAR receivedMSG[BUFFERSIZE];
 
-DWORD EnviaTecla(int _command);
-DWORD Registar(TCHAR * nome);
+DWORD SendCommand(int _command);
+DWORD Register(TCHAR * nome);
 DWORD CallStartGame();

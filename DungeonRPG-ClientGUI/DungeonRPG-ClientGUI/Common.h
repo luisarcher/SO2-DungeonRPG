@@ -5,7 +5,7 @@
 #include "./../../DRPGClientDLL/DRPGClientDLL/ClientDLL.h"
 
 #define N_BITMAPS			10
-#define LABIRINTOSIZE		70
+#define GAMEMAPSIZE		70
 #define TILE_SZ				64
 #define BOARD_TOP_MARGIN	25
 #define BOARD_LEFT_MARGIN	25

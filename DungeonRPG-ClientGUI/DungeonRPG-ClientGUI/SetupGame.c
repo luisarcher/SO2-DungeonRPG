@@ -4,7 +4,7 @@
 HDC		bitmapElementsDC[N_BITMAPS];
 HBITMAP	bitmapElementsOrigin[N_BITMAPS];
 
-ATOM RegistaClasse(HINSTANCE hInstance, TCHAR * szWinName) {
+ATOM RegisterWndClassApp(HINSTANCE hInstance, TCHAR * szWinName) {
 	WNDCLASSEX wcApp;	// WNDCLASSEX é uma estrutura cujos membros servem para definir as características da classe da janela
 	
 	/* Definição das características da janela */
@@ -27,13 +27,13 @@ ATOM RegistaClasse(HINSTANCE hInstance, TCHAR * szWinName) {
 	return(RegisterClassEx(&wcApp));
 }
 
-HWND CriarJanela(HINSTANCE hInstance, TCHAR * szWinName) {
+HWND CreateWnd(HINSTANCE hInstance, TCHAR * szWinName) {
 	// ============================================================================
-	// 3. Criar a janela
+	// 3. Create window
 	// ============================================================================
 	return CreateWindow(
 		szWinName,
-		TEXT("Dungeon RPG - Sistemas Operativos 2"),
+		TEXT("Dungeon RPG"),
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
@@ -45,7 +45,7 @@ HWND CriarJanela(HINSTANCE hInstance, TCHAR * szWinName) {
 		0);
 }
 
-int CarregarTodasAsImagens() {
+int LoadGameResources() {
 	for (int i = 0; i < N_BITMAPS; i++) {
 		bitmapElements[i] = LoadBitmap(GetModuleHandle(NULL),_bitmaps[i]);
 		if (bitmapElements[i] == NULL) {

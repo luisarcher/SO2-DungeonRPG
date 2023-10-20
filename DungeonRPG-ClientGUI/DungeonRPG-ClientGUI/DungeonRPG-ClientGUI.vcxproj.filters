@@ -21,7 +21,7 @@
     <ClCompile Include="MenuProc.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Labirinto.c">
+    <ClCompile Include="Tile.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Controller.c">
@@ -50,7 +50,7 @@
     <ClInclude Include="MenuProc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Labirinto.h">
+    <ClInclude Include="Tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Controller.h">

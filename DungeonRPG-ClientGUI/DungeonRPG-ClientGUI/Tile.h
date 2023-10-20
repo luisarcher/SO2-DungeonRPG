@@ -1,15 +1,16 @@
 #pragma once
 #include "Common.h"
 
+// TODO: Test if we need this. As the map is being painted directly from the response from the server.
 typedef struct LABIRINTO {
-	int labirinto[LABIRINTOSIZE][LABIRINTOSIZE];
+	int labirinto[GAMEMAPSIZE][GAMEMAPSIZE];
 	BOOL init;
 } Labirinto;
 
-//Opacos
+// Opaque
 BOOL isWall(int pos);
 
-//Com transparência
+// Transparent
 BOOL isObject(int pos);
 
 BOOL isPlayer(int pos);

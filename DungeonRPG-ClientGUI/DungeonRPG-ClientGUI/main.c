@@ -21,12 +21,12 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR lpCmdLine, int nC
 	TCHAR *szProgName = TEXT("DungeonRPG");
 	ghInstance = hInst;
 
-	//Registar a classe no windows
-	if (!RegistaClasse(hInst, szProgName))
+	// Registar a classe no windows
+	if (!RegisterWndClassApp(hInst, szProgName))
 		return 0;
 
 	//Criar a janela
-	if ((hWnd = CriarJanela(hInst, szProgName)) == NULL)
+	if ((hWnd = CreateWnd(hInst, szProgName)) == NULL)
 		return 0;
 
 	//Mostrar Janela
